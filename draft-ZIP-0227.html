@@ -22,9 +22,9 @@ Created: 2022-05-01
 License: MIT
 Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://github.com/zcash/zips/issues/618</a>&gt;</pre>
         <section id="terminology"><h2><span class="section-heading">Terminology</span><span class="section-anchor"> <a rel="bookmark" href="#terminology"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The key word "MUST" in this document is to be interpreted as described in RFC 2119 <a id="id1" class="footnote_reference" href="#rfc2119">1</a>.</p>
-            <p>The term "network upgrade" in this document is to be interpreted as described in ZIP 200 <a id="id2" class="footnote_reference" href="#zip-0200">2</a>.</p>
-            <p>The term "Orchard" in this document is to be interpreted as described in ZIP 224 <a id="id3" class="footnote_reference" href="#zip-0224">3</a>.</p>
+            <p>The key word "MUST" in this document is to be interpreted as described in RFC 2119 <a id="footnote-reference-1" class="footnote_reference" href="#rfc2119">1</a>.</p>
+            <p>The term "network upgrade" in this document is to be interpreted as described in ZIP 200 <a id="footnote-reference-2" class="footnote_reference" href="#zip-0200">2</a>.</p>
+            <p>The term "Orchard" in this document is to be interpreted as described in ZIP 224 <a id="footnote-reference-3" class="footnote_reference" href="#zip-0224">3</a>.</p>
             <p>We define the following additional terms:</p>
             <ul>
                 <li>Asset: A type of note that can be transferred on the Zcash block chain. ZEC is the default (and currently the only defined) asset for the Zcash mainnet.</li>
@@ -33,13 +33,13 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
             </ul>
         </section>
         <section id="abstract"><h2><span class="section-heading">Abstract</span><span class="section-anchor"> <a rel="bookmark" href="#abstract"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>ZIP 226 <a id="id4" class="footnote_reference" href="#zip-0226">4</a> and ZIP 227 <a id="id5" class="footnote_reference" href="#zip-0227">5</a> propose in conjunction the Zcash Shielded Assets (ZSA) protocol, which is an extension of the Orchard protocol that enables the creation, transfer and burn of custom assets on the Zcash chain. The creation of such assets is defined in ZIP 227 <a id="id6" class="footnote_reference" href="#zip-0227">5</a>. The transfer and burn of such assets is defined in ZIP 226 <a id="id7" class="footnote_reference" href="#zip-0226">4</a>.</p>
+            <p>ZIP 226 <a id="footnote-reference-4" class="footnote_reference" href="#zip-0226">4</a> and ZIP 227 <a id="footnote-reference-5" class="footnote_reference" href="#zip-0227">5</a> propose in conjunction the Zcash Shielded Assets (ZSA) protocol, which is an extension of the Orchard protocol that enables the creation, transfer and burn of custom assets on the Zcash chain. The creation of such assets is defined in ZIP 227 <a id="footnote-reference-6" class="footnote_reference" href="#zip-0227">5</a>. The transfer and burn of such assets is defined in ZIP 226 <a id="footnote-reference-7" class="footnote_reference" href="#zip-0226">4</a>.</p>
         </section>
         <section id="motivation"><h2><span class="section-heading">Motivation</span><span class="section-anchor"> <a rel="bookmark" href="#motivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The current Orchard protocol does not support custom assets, which is an important aspect for the proper evolution of the Zcash ecosystem. Enabling multi-asset support on the Zcash chain will open the door for a host of applications and enhance the ecosystem with application developers and asset custody institutions for issuance and bridging purposes.</p>
         </section>
         <section id="overview-rationale"><h2><span class="section-heading">Overview &amp; Rationale</span><span class="section-anchor"> <a rel="bookmark" href="#overview-rationale"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This ZIP specifies the issuance mechanism of the Zcash Shielded Assets (ZSA) protocol and must work conjunction with ZIP 226 <a id="id8" class="footnote_reference" href="#zip-0226">4</a>, as the issuance mechanism is only valid for the ZSA transfer protocol, as it produces notes that can only be transferred under ZSA.</p>
+            <p>This ZIP specifies the issuance mechanism of the Zcash Shielded Assets (ZSA) protocol and must work conjunction with ZIP 226 <a id="footnote-reference-8" class="footnote_reference" href="#zip-0226">4</a>, as the issuance mechanism is only valid for the ZSA transfer protocol, as it produces notes that can only be transferred under ZSA.</p>
             <p>In short, we are going to enable only <em>transparent</em> issuance, since we believe that as a first step, transparency is important to properly test the applications that will be most used in the Zcash ecosystem, while enabling tracking of supply of assets. In essence, any user of the blockchain can issue new asset types, yet only a single issuer (a set of keys) can issue that specific asset type, as the asset identifiers are tied to the issuer keys.</p>
             <p>We have designed the protocol such that at the time of issuance, the issuer can already allocate all the tokens to the corresponding owners by creating the corresponding (shielded) output notes to the corresponding addresses. As is implied, the issuance mechanism is itself transparent, but the allocation is totally private. Furthermore, in a single issuance transaction, the issuer can create multiple asset types (and allocate all of those too). Finally, a key component of our design is the <cite>finiteIssuance</cite> boolean that defines whether a specific asset type can have more tokens issued or not.</p>
             <p>The issuance mechanism is broad enough for issuers to either create native assets on Zcash (i.e.: assets that originate on the Zcash blockchain), as well as for institutions to create bridges from other chains and import wrapped assets. In fact, the protocol described below enables, what we hope will be a useful set of, applications:</p>
@@ -140,6 +140,58 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
                     <li>Add the sum of all the values in all output notes per <cite>assetID</cite> to <cite>issuanceSupplyInfo[assetID].totalSupply</cite></li>
                     <li>After verification, add note commitment to the merkle tree.</li>
                 </ul>
+            </section>
+        </section>
+        <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>A new issuance transaction digest algorithm is defined that constructs the identifier for an issuance transaction. Each branch of the tree of hashes will correspond to a specific subset of transaction data. The overall structure of the hash is as follows; each name referenced here will be described in detail below:</p>
+            <pre>issuance_txid_digest
+├── issueActions
+└── issuerVerificationKey</pre>
+            <p>In the specification below, nodes of the tree are presented in depth-first order.</p>
+            <section id="issuance-txid-digest"><h3><span class="section-heading">issuance_txid_digest</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>A BLAKE2b-256 hash of the following values</p>
+                <pre>T.1: issueActions            (field encoding bytes)
+T.2: issuerVerificationKey   (field encoding bytes)</pre>
+                <p>The personalization field of this hash is set to:</p>
+                <pre>"ZTxIdOrcZSAIssue"</pre>
+                <section id="t-1-issueactions"><h4><span class="section-heading">T.1 issueActions</span><span class="section-anchor"> <a rel="bookmark" href="#t-1-issueactions"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>A byte encoding of Issue Action information for all Issue Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
+                    <pre>T.1a: notes                   (field encoding bytes)
+T.1b: assetDescription        (field encoding bytes)
+T.1c: isFinalized             (1 byte)</pre>
+                    <section id="t-1a-notes"><h5><span class="section-heading">T.1a: notes</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>A byte encoding of Note information for all Notes belonging to the Action. For each Note, the following elements are included in the hash:</p>
+                        <pre>T.1a.1: recipient                    (field encoding bytes)
+T.1a.2: value                        (field encoding bytes)
+T.1a.3: asset                        (field encoding bytes)
+T.1a.4: rho                          (field encoding bytes)
+T.1a.5: rseed                        (field encoding bytes)</pre>
+                        <section id="t-1a-1-recipient"><h6><span class="section-heading">T.1a.1: recipient</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-1-recipient"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
+                            <p>Raw Address encoded as specified in [Zcash Protocol Spec § 5.6.4.2: Orchard Raw Payment Addresses].</p>
+                        </section>
+                        <section id="t-1a-2-value"><h6><span class="section-heading">T.1a.2: value</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-2-value"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
+                            <p>Note value encoded as little-endian 8-byte representation of u64 raw value.</p>
+                        </section>
+                        <section id="t-1a-3-asset"><h6><span class="section-heading">T.1a.3: asset</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-3-asset"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
+                            <p>Asset ID encoded as 32-byte representation of Pallas point.</p>
+                        </section>
+                        <section id="t-1a-4-rho"><h6><span class="section-heading">T.1a.4: rho</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-4-rho"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
+                            <p>Nullifier encoded as 32-byte representation of Pallas point.</p>
+                        </section>
+                        <section id="t-1a-5-rseed"><h6><span class="section-heading">T.1a.5: rseed</span><span class="section-anchor"> <a rel="bookmark" href="#t-1a-5-rseed"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
+                            <p>The ZIP 212 32-byte seed randomness for a note.</p>
+                        </section>
+                    </section>
+                    <section id="t-1b-assetdescription"><h5><span class="section-heading">T.1b: assetDescription</span><span class="section-anchor"> <a rel="bookmark" href="#t-1b-assetdescription"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>UTF-8 encoding of the asset description string.</p>
+                    </section>
+                    <section id="t-1c-isfinalized"><h5><span class="section-heading">T.1c: isFinalized</span><span class="section-anchor"> <a rel="bookmark" href="#t-1c-isfinalized"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>1-byte representation of a boolean flag that is set to 'true' if the asset type was finalized in this action and 'false' otherwise. 'True' is represented as 1, 'false' as 0.</p>
+                    </section>
+                </section>
+                <section id="t-2-issuerverificationkey"><h4><span class="section-heading">T.2 issuerVerificationKey</span><span class="section-anchor"> <a rel="bookmark" href="#t-2-issuerverificationkey"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>A byte encoding of issuer verification key for the bundle as defined in [Zcash Protocol Spec § 4.2.3: Orchard Key Components].</p>
+                </section>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
