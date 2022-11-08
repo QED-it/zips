@@ -226,7 +226,7 @@ The burn mechanism may be needed for off-boarding the wrapped assets from the ch
 
 In essence, the burn mechanism is a transparent / revealing extension to the transfer protocol that enables a specific amount of any asset type to be sent into “oblivion”. Our burn mechanism does NOT send assets to a non-spendable address, it simply reduces the total number of assets in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC assets.
 
-First, contrary to the strict transfer transaction, we allow the sender to include a :math:`\mathsf{valueBalvalueBalance_{type}}` variable for every asset type that is being burnt. As we will show in the transaction structure, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC asset.
+First, contrary to the strict transfer transaction, we allow the sender to include a :math:`\mathsf{valueBalance_{type}}` variable for every asset type that is being burnt. As we will show in the transaction structure, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC asset.
 
 For every custom asset that is burnt, we add to the `assetBurn` vector the tuple :math:`(\mathsf{valueBalance_{type}, type}_\mathbb{P})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that asset. This ensures that the values are all balanced out with respect to the asset types in the transfer.
 
