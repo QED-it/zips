@@ -8,6 +8,10 @@
            Kris Nuttycombe
            Jack Grigg
            Francisco Gindre
+           Daniel Benarroch
+           Jonathan Rouach
+           Pablo Kogan
+           Vivek Arte
   Status: Draft
   Category: Standards / Wallet
   Obsoletes: ZIP 313
