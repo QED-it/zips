@@ -241,7 +241,7 @@ For the `IssueBundle`:
 
 NOTE that the commitment is not included in the `IssuanceAction` itself. As explained below, it is later computed by the validators and added to the `NoteCommitmentTree`.
 
-Concrete Applications
+Concrete Applications (lets move this section into Rationale, this header should be a sub header inside Rationale, remove duplicate text in the Unified section)
 ---------------------
 
 **Bridging Assets**
@@ -273,7 +273,7 @@ For each `IssueAction` in `IssueBundle`:
 
 - check that :math:`\mathsf{asset\_desc}` is a string with `0 < byte size <= 512`.
 - retrieve :math:`\mathsf{AssetId}` from the first note in the sequence and check that :math:`\mathsf{AssetId = GroupHash^{\mathbb{P}}(ik || asset\_desc)}` is properly derived.(use same Terminology as previously)
-- check that the :math:`\mathsf{AssetId}` does not exist in the ``previously_finalized`` set in the global state. (use same Terminology as previously, now it is AssetBase?)
+- check that the :math:`\mathsf{AssetId}` does not exist in the ``previously_finalized`` set in the global state. 
 - check that every note in the `IssueAction` contains the same :math:`\mathsf{AssetId}` and is properly constructed as :math:`note = (\mathsf{g_d, pk_d, v, \rho, \psi, AssetId})`.
 
 If all of the above checks pass, do the following:
