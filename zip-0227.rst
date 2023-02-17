@@ -134,28 +134,31 @@ Every asset must have a unique Asset Identifier. We define this to be a globally
 :math:`(\mathsf{ik}, \mathsf{asset\_desc})`, where: :math:`\mathsf{ik}` is the issuance public key and :math:`\mathsf{asset\_desc}` is a UTF-8 byte string.
 
 A given Asset Identifier is used across all Zcash protocols that support ZSAs.
-For this Asset Identifier, we derive an Asset Digest, :math:`\mathsf{AssetDigest}`, which is :math:`\mathsf{BLAKE2b-256}` hash of the Asset Identifier.
-Then, a specific Asset Base is derived from the Asset Digest within each shielded protocol.
+For this Asset Identifier, we derive an Asset Digest, :math:`\mathsf{AssetDigest}`, which is a :math:`\mathsf{BLAKE2b-256}` hash of the Asset Identifier.
+Then, a specific Asset Base is derived from the Asset Digest within each shielded protocol, using the applicable hash-to-curve algorithm.
+This Asset Base is included in shielded notes.
 
-For Orchard: 
-:math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}` , using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.
+For the Orchard-based ZSA protocol, we denote this by 
+:math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}`.
 
 Let 
 
 - :math:`\mathsf{asset\_desc}` be the asset description, a UTF-8 encoded string of up to 512 bytes, which includes any information pertaining to the issuance.
 - :math:`\mathsf{ik}` be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.
 
-Define :math:`\mathsf{AssetDigest_{\mathsf{AssetId}}} := \mathsf{BLAKE2b\text{-}256}(\mathsf{EncodeAssetId}(\mathsf{AssetId}))`,
+Define :math:`\mathsf{AssetDigest_{\mathsf{AssetId}}} := \mathsf{BLAKE2b\text{-}256}(\text{"ZZSA-AssetDigest"}, \mathsf{EncodeAssetId}(\mathsf{AssetId}))`,
 
 where
 
-- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}(\mathsf{ik}, \mathsf{asset\_desc}) := \mathsf{ik} || \mathsf{asset\_desc}`.
+- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}(\mathsf{ik}, \mathsf{asset\_desc}) := \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}`.
 
 Define :math:`\mathsf{AssetBase^{Protocol}_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase^{Protocol}}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`,
 where
 
 In the case of Orchard, we define :math:`\mathsf{ZSAValueBase^{Orchard}}(\mathsf{asset\_id}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{asset\_id})`
 where :math:`\mathsf{GroupHash}^\mathbb{P}` is defined as in [#protocol-concretegrouphashpallasandvesta]_.
+
+Note that for the native ZEC Asset in Orchard, we define :math:`\mathsf{AssetBase^{Orchard}_{\mathsf{ZEC}}} := \mathcal{V}^{\mathsf{Orchard}}`. 
 
 The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:
 
