@@ -228,10 +228,10 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
                             <td>A sequence of note descriptions within the issuance action</td>
                         </tr>
                         <tr>
-                            <td>1 bit</td>
-                            <td><code>finalize</code></td>
-                            <td>boolean</td>
-                            <td>The boolean that determines the finality of the issuance of that Asset</td>
+                            <td>1 byte</td>
+                            <td><code>flagsIssuance</code></td>
+                            <td>byte</td>
+                            <td>An 8-bit value with the <code>finalize</code> boolean value as the LSB, and the other bits set to 0.</td>
                         </tr>
                     </tbody>
                 </table>
