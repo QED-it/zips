@@ -298,7 +298,7 @@ A new issuance transaction digest algorithm is defined that constructs the ident
 
     issuance_txid_digest
     ├── issue_actions_digest
-    └── issuerVerificationKey
+    └── issuanceValidatingKey
 
 In the specification below, nodes of the tree are presented in depth-first order.
 

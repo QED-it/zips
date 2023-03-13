@@ -423,7 +423,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
             <p>A new issuance transaction digest algorithm is defined that constructs the identifier for an issuance transaction. Each branch of the tree of hashes will correspond to a specific subset of issuance transaction data. The overall structure of the hash is as follows; each name referenced here will be described in detail below:</p>
             <pre>issuance_txid_digest
 ├── issue_actions_digest
-└── issuerVerificationKey</pre>
+└── issuanceValidatingKey</pre>
             <p>In the specification below, nodes of the tree are presented in depth-first order.</p>
             <section id="issuance-txid-digest"><h3><span class="section-heading">issuance_txid_digest</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>A BLAKE2b-256 hash of the following values</p>
