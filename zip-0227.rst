@@ -168,6 +168,7 @@ Issuance Action Description
 
 An issuance action, `IssueAction`, is the instance of issuing a specific custom Asset, and contains the following fields:
 
+- :math:`\mathsf{assetDescSize}`: the size of the Asset description, a number between :math:`0` and :math:`512`, stored in two bytes.
 - :math:`\mathsf{asset\_desc}`: the Asset description, a UTF-8 encoded string of up to 512 bytes
 - `notes`: an array containing the unencrypted output notes of the recipients of the Asset, of type `Note`
 - ``finalize``: a boolean that defines whether the issuance of that specific custom Asset is finalized or not
@@ -177,7 +178,8 @@ An asset's :math:`\mathsf{AssetId}` is added to the :math:`\mathsf{previously\_f
 ================= =============================== ========================== ===========================================================================================
 Size              Name                            Data Type                  Description
 ================= =============================== ========================== ===========================================================================================
-Varies            :math:`\mathsf{asset\_desc}`    byte                       UTF-8 encoded string of varied size, up to 512 bytes
+2 bytes           :math:`\mathsf{assetDescSize}`  byte                       The length of the :math:`\mathsf{asset\_desc}` string in bytes
+Varies            :math:`\mathsf{asset\_desc}`    byte                       UTF-8 encoded string, of size :math:`\mathsf{assetDescSize}` bytes
 Varies            nNotes                          compactSize                The number of notes in the issuance action
 noteSize * nNotes vNotes                          Note[nNotes]               A sequence of note descriptions within the issuance action
 1 byte            ``flagsIssuance``               byte                       An 8-bit value with the ``finalize`` boolean value as the LSB, and the other bits set to 0.

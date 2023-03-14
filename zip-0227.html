@@ -181,6 +181,13 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
                 <p>An issuance action, <cite>IssueAction</cite>, is the instance of issuing a specific custom Asset, and contains the following fields:</p>
                 <ul>
                     <li>
+                        <span class="math">\(\mathsf{assetDescSize}\)</span>
+                    : the size of the Asset description, a number between
+                        <span class="math">\(0\)</span>
+                     and
+                        <span class="math">\(512\)</span>
+                    , stored in two bytes.</li>
+                    <li>
                         <span class="math">\(\mathsf{asset\_desc}\)</span>
                     : the Asset description, a UTF-8 encoded string of up to 512 bytes</li>
                     <li><cite>notes</cite>: an array containing the unencrypted output notes of the recipients of the Asset, of type <cite>Note</cite></li>
@@ -208,12 +215,24 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/618">https://g
                     </thead>
                     <tbody>
                         <tr>
+                            <td>2 bytes</td>
+                            <td>
+                                <span class="math">\(\mathsf{assetDescSize}\)</span>
+                            </td>
+                            <td>byte</td>
+                            <td>The length of the
+                                <span class="math">\(\mathsf{asset\_desc}\)</span>
+                             string in bytes</td>
+                        </tr>
+                        <tr>
                             <td>Varies</td>
                             <td>
                                 <span class="math">\(\mathsf{asset\_desc}\)</span>
                             </td>
                             <td>byte</td>
-                            <td>UTF-8 encoded string of varied size, up to 512 bytes</td>
+                            <td>UTF-8 encoded string, of size
+                                <span class="math">\(\mathsf{assetDescSize}\)</span>
+                             bytes</td>
                         </tr>
                         <tr>
                             <td>Varies</td>
