@@ -56,7 +56,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/676">https://githu
             <ul>
                 <li>Any user of the Zcash block chain can issue custom Assets on chain.</li>
                 <li>The issuance mechanism should enable public tracking of the supply of the Assets on the Zcash block chain.</li>
-                <li>At the time of issuance, the issuer should be able to allocate all the Assets to the corresponding owners by creating the corresponding (shielded) output notes to the respective addresses. This allows for allocation to be totally private even though the issuance mechanism is itself transparent.</li>
                 <li>Issuing or changing the attributes of a specific Asset should require cryptographic authorization.</li>
                 <li>The Asset identification should be unique (among all shielded pools) and different issuer public keys should not be able to generate the same Asset Identifier.</li>
                 <li>An issuer should be able to issue different Assets in the same transaction. In other words, in a single "issuance bundle", the issuer should be able publish many "issuance actions", potentially creating multiple Custom Assets.</li>
@@ -338,7 +337,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/676">https://githu
                             <td>64</td>
                             <td>issueAuthSig</td>
                             <td>byte[64]</td>
-                            <td>The signature of the transaction SIGHASH, signed by the issuer</td>
+                            <td>The signature of the transaction SIGHASH, signed by the issuer, validated as in <a href="#issuance-authorization-signature-scheme">Issuance Authorization Signature Scheme</a></td>
                         </tr>
                     </tbody>
                 </table>

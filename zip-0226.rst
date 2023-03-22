@@ -325,9 +325,8 @@ Transaction Fees
 The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade [#zip-0317b]_.
 
 Deployment
-==========
-
-The Zcash Shielded Assets protocol should be deployed by replacing the Orchard protocol in a subsequent Network Upgrade. The design of this protocol ensures that there is no need to use any turnstile mechanism, being that Orchard-based ZEC notes can be used directly within the ZSA Actions.
+-----------
+The Zcash Shielded Assets protocol will be deployed in a subsequent Network Upgrade. The design of this protocol ensures that there is no need to use any turnstile mechanism, being that Orchard-based ZEC notes can be used directly within the ZSA Actions.
 
 Test Vectors
 ============

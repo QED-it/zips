@@ -65,7 +65,6 @@ Requirements
 
 - Any user of the Zcash block chain can issue custom Assets on chain.
 - The issuance mechanism should enable public tracking of the supply of the Assets on the Zcash block chain.
-- At the time of issuance, the issuer should be able to allocate all the Assets to the corresponding owners by creating the corresponding (shielded) output notes to the respective addresses. This allows for allocation to be totally private even though the issuance mechanism is itself transparent.
 - Issuing or changing the attributes of a specific Asset should require cryptographic authorization.
 - The Asset identification should be unique (among all shielded pools) and different issuer public keys should not be able to generate the same Asset Identifier.
 - An issuer should be able to issue different Assets in the same transaction. In other words, in a single "issuance bundle", the issuer should be able publish many "issuance actions", potentially creating multiple Custom Assets.
@@ -218,14 +217,14 @@ An issuance bundle, `IssueBundle`, is the aggregate of all the issuance-related 
 
 The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format [#protocol-transactionstructure]_.
 
-======= ==================== ========================== =========================================================================
+======= ==================== ========================== ==========================================================================================================================
 Bytes              Name               Data Type                  Description
-======= ==================== ========================== =========================================================================
+======= ==================== ========================== ==========================================================================================================================
 Varies  nIssueActions        compactSize                The number of issuance actions in the bundle
 Varies  vIssueActions        IssueAction[nIssueActions] A sequence of issuance actions descriptions
 32      :math:`\mathsf{ik}`  byte[32]                   The issuance validating key of the issuer, used to validate the signature
-64      issueAuthSig         byte[64]                   The signature of the transaction SIGHASH, signed by the issuer
-======= ==================== ========================== =========================================================================
+64      issueAuthSig         byte[64]                   The signature of the transaction SIGHASH, signed by the issuer, validated as in `Issuance Authorization Signature Scheme`_
+======= ==================== ========================== ==========================================================================================================================
 
 Issuance Protocol
 -----------------
