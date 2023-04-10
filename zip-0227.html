@@ -101,18 +101,17 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/676">https://githu
                     <span class="math">\(\mathbb{B}^{\mathbb{Y}[32]}\)</span>
                 , like the Orchard spending key <a id="footnote-reference-14" class="footnote_reference" href="#protocol-orchardkeycomponents">17</a>.</p>
                 <section id="issuance-master-key-derivation-for-hierarchical-deterministic-wallets"><h4><span class="section-heading">Issuance master key derivation for hierarchical deterministic wallets</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-master-key-derivation-for-hierarchical-deterministic-wallets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>In <code>zcashd</code>, this key is derived in a manner similar to the generation of the Orchard master key in ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-orchard-master">10</a>. We reuse the functions defined there in what follows in this section.</p>
-                    <p>We define the master extended issuance key
-                        <span class="math">\(m_{\mathsf{Issuance}} := \mathsf{MasterKeyGen}(\texttt{"ZIP32ZSAIssuance"})\)</span>
+                    <p>The issuance master key is derived using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-orchard-master">10</a>. We reuse the functions defined there in what follows in this section.</p>
+                    <p>Let
+                        <span class="math">\(S\)</span>
+                     be a seed byte sequence of a chosen length, which MUST be at least 32 and at most 252 bytes. We define the master extended issuance key
+                        <span class="math">\(m_{\mathsf{Issuance}} := \mathsf{MasterKeyGen}(\texttt{"ZIP32ZSAIssuance"}, S)\)</span>
                     .</p>
-                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-16" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">11</a>, we only use hardened child key derivation for the issuance master key. We reuse the following function for child key derivation, with a unique personalization value of
-                        <span class="math">\([\mathtt{0xa1}]\)</span>
-                    :</p>
-                    <p>
-                        <span class="math">\(\mathsf{CDKsk}((\mathsf{sk}_{par},\mathsf{c}_{par}), [\mathtt{0xa1}], i) \to (\mathsf{sk}_i, \mathsf{c}_i)\)</span>
-                    </p>
+                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-16" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">11</a>, we only use hardened child key derivation for the issuance master key. We reuse the
+                        <span class="math">\(\mathsf{CDKsk}\)</span>
+                     function for Orchard child key derivation from ZIP 32.</p>
                     <p>We use the notation of ZIP 32 <a id="footnote-reference-17" class="footnote_reference" href="#zip-0032-orchard-key-path">13</a> for shielded HD paths, and define the issuance master key path as
-                        <span class="math">\(m_\mathsf{Issuance} / purpose' / coin\_type' / account'\)</span>
+                        <span class="math">\(m_\mathsf{Issuance} / purpose / coin\_type' / account'\)</span>
                     . We fix the path levels as follows:</p>
                     <ul>
                         <li>
@@ -131,9 +130,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/676">https://githu
                             <span class="math">\(0\)</span>
                         .</li>
                     </ul>
-                    <p>This key path gives us an "extended" issuance master key
+                    <p>Given the <em>extended issuance master key</em>
                         <span class="math">\((\mathsf{sk}, \mathsf{c})\)</span>
-                    , from which we set the issuance master key to be
+                    , we set the issuance master key to be
                         <span class="math">\(\mathsf{sk_{iss}} := \mathsf{sk}\)</span>
                     .</p>
                 </section>
