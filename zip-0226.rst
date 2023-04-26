@@ -116,19 +116,21 @@ This note commitment scheme is instantiated using the Sinsemilla Commitment [#pr
     \end{cases}
     \end{align}
 
-where (note that :math:`\mathsf{repr}_{\mathbb{P}}` is as defined for the Pallas curve [#protocol-pallasandvesta]_, :math:`l^{\mathsf{Orchard}}_{\mathsf{base}}` is as defined in §5.3 [#protocol-constants]_, and :math:`\mathsf{I2LEBSP}` is as defined in §5.1 [#protocol-endian]_ of the Zcash protocol specification):
+where:
 
 .. math:: \begin{align}
     \mathsf{cm}_{\mathsf{ZSA}} &:= \mathsf{SinsemillaCommit}_{\mathsf{rcm}}( \texttt{"z.cash:ZSA-NoteCommit"}, \\
     &\mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}}))
     \end{align}
 
+Note that :math:`\mathsf{repr}_{\mathbb{P}}` is as defined for the Pallas curve [#protocol-pallasandvesta]_, :math:`\ell^{\mathsf{Orchard}}_{\mathsf{base}}` is as defined in §5.3 [#protocol-constants]_, and :math:`\mathsf{I2LEBSP}` is as defined in §5.1 [#protocol-endian]_ of the Zcash protocol specification.
+
 The nullifier is generated in the same manner as in the Orchard protocol [#protocol-commitmentsandnullifiers]_.
 
 The ZSA note plaintext also includes the Asset Base in addition to the components in the Orchard note plaintext [#protocol-notept]_.
 It consists of 
 
-.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[l_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{l_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
+.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
 
 Rationale for Note Commitment
 '''''''''''''''''''''''''''''

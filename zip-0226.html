@@ -142,20 +142,21 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
 \mathsf{cm^{OrchardZSA}} &amp;\text{otherwise}
 \end{cases}
 \end{align}\)</div>
-                <p>where (note that
-                    <span class="math">\(\mathsf{repr}_{\mathbb{P}}\)</span>
-                 is as defined for the Pallas curve <a id="footnote-reference-24" class="footnote_reference" href="#protocol-pallasandvesta">15</a>,
-                    <span class="math">\(l^{\mathsf{Orchard}}_{\mathsf{base}}\)</span>
-                 is as defined in §5.3 <a id="footnote-reference-25" class="footnote_reference" href="#protocol-constants">14</a>, and
-                    <span class="math">\(\mathsf{I2LEBSP}\)</span>
-                 is as defined in §5.1 <a id="footnote-reference-26" class="footnote_reference" href="#protocol-endian">13</a> of the Zcash protocol specification):</p>
+                <p>where:</p>
                 <div class="math">\(\begin{align}
 \mathsf{cm}_{\mathsf{ZSA}} &amp;:= \mathsf{SinsemillaCommit}_{\mathsf{rcm}}( \texttt{"z.cash:ZSA-NoteCommit"}, \\
 &amp;\mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}}))
 \end{align}\)</div>
+                <p>Note that
+                    <span class="math">\(\mathsf{repr}_{\mathbb{P}}\)</span>
+                 is as defined for the Pallas curve <a id="footnote-reference-24" class="footnote_reference" href="#protocol-pallasandvesta">15</a>,
+                    <span class="math">\(\ell^{\mathsf{Orchard}}_{\mathsf{base}}\)</span>
+                 is as defined in §5.3 <a id="footnote-reference-25" class="footnote_reference" href="#protocol-constants">14</a>, and
+                    <span class="math">\(\mathsf{I2LEBSP}\)</span>
+                 is as defined in §5.1 <a id="footnote-reference-26" class="footnote_reference" href="#protocol-endian">13</a> of the Zcash protocol specification.</p>
                 <p>The nullifier is generated in the same manner as in the Orchard protocol <a id="footnote-reference-27" class="footnote_reference" href="#protocol-commitmentsandnullifiers">12</a>.</p>
                 <p>The ZSA note plaintext also includes the Asset Base in addition to the components in the Orchard note plaintext <a id="footnote-reference-28" class="footnote_reference" href="#protocol-notept">8</a>. It consists of</p>
-                <div class="math">\((\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[l_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{l_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})\)</div>
+                <div class="math">\((\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})\)</div>
                 <section id="rationale-for-note-commitment"><h4><span class="section-heading">Rationale for Note Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-note-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>In the ZSA protocol, the instance of the note commitment scheme,
                         <span class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm}}\)</span>
