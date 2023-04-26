@@ -172,7 +172,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>
                     <span class="math">\(\mathsf{asset\_desc}\)</span>
-                 be the asset description, a UTF-8 encoded string of up to 512 bytes, which includes any information pertaining to the issuance.</li>
+                 be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
                 <li>
                     <span class="math">\(\mathsf{ik}\)</span>
                  be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
@@ -222,7 +222,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     , stored in two bytes.</li>
                     <li>
                         <span class="math">\(\mathsf{asset\_desc}\)</span>
-                    : the Asset description, a UTF-8 encoded string of up to 512 bytes</li>
+                    : the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                     <li><cite>notes</cite>: an array containing the unencrypted output notes of the recipients of the Asset, of type <cite>Note</cite></li>
                     <li><code>finalize</code>: a boolean that defines whether the issuance of that specific custom Asset is finalized or not</li>
                 </ul>
@@ -525,7 +525,7 @@ T.1a.5: rseed                        (field encoding bytes)</pre>
                         </section>
                     </section>
                     <section id="t-1b-assetdescription"><h5><span class="section-heading">T.1b: assetDescription</span><span class="section-anchor"> <a rel="bookmark" href="#t-1b-assetdescription"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>UTF-8 encoding of the Asset description string.</p>
+                        <p>The Asset description byte string.</p>
                     </section>
                     <section id="t-1c-flagsissuance"><h5><span class="section-heading">T.1c: flagsIssuance</span><span class="section-anchor"> <a rel="bookmark" href="#t-1c-flagsissuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
                         <p>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</p>
