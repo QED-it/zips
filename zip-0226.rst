@@ -295,16 +295,29 @@ ZSA Transaction Structure
 
 The transaction format is similar to the version 5 transaction format described in the Zcash specification [#protocol-transactionstructure]_, with the following additions to the Orchard bundle:
 
-+-----------------+-------------+-----------------------------------+-------------------------+
-| Bytes           | Name        | Data Type                         | Description             |
-+=================+=============+===================================+=========================+
-| varies          | nAssetBurn  | compactSize                       | number of Assets burnt  |
-+-----------------+-------------+-----------------------------------+-------------------------+
-| 40*nAssetBurn   | vAssetBurn  | bytes[40][nAssetBurn]             | 32 bytes Asset type_t,  |
-|                 |             |                                   | 8 bytes of valueBalance |
-+-----------------+-------------+-----------------------------------+-------------------------+
++---------------+------------+-------------------------+-----------------------------------------------------------------------------------+
+| Bytes         | Name       | Data Type               | Description                                                                       |
++===============+============+=========================+===================================================================================+
+| varies        | nAssetBurn | compactSize             | The number of Assets burnt.                                                       |
++---------------+------------+-------------------------+-----------------------------------------------------------------------------------+
+| 40*nAssetBurn | vAssetBurn | AssetBurnV6[nAssetBurn] | A sequence of Asset Burn descriptions, encoded per `ZSA Asset Burn Description`_. |
++---------------+------------+-------------------------+-----------------------------------------------------------------------------------+
 
 In terms of the Action size, the ZSA action size differs from the Orchard action size by 32 bytes (due to the addition of the :math:`\mathsf{AssetId}`). This implies that the size goes from 820 bytes in the Orchard action to 852 bytes in the ZSA Action.
+
+ZSA Asset Burn Description
+--------------------------
+
+A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurnV6 type:
+
++-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| Bytes | Name      | Data Type                   | Description                                                                                                               |
++=======+===========+=============================+===========================================================================================================================+
+| 32    | AssetType | byte[32]                    | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`. |
++-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
+| 8     | valueBurn | :math:`\{1 .. 2^{64} - 1\}` | The amount of the AssetType being burnt.                                                                                  |
++-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
+
 
 Security and Privacy Considerations
 ===================================

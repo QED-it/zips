@@ -410,23 +410,54 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <td>varies</td>
                         <td>nAssetBurn</td>
                         <td>compactSize</td>
-                        <td>number of Assets burnt</td>
+                        <td>The number of Assets burnt.</td>
                     </tr>
                     <tr>
                         <td>40*nAssetBurn</td>
                         <td>vAssetBurn</td>
-                        <td>bytes[40][nAssetBurn]</td>
-                        <td>32 bytes Asset type_t, 8 bytes of valueBalance</td>
+                        <td>AssetBurnV6[nAssetBurn]</td>
+                        <td>A sequence of Asset Burn descriptions, encoded per <a href="#zsa-asset-burn-description">ZSA Asset Burn Description</a>.</td>
                     </tr>
                 </tbody>
             </table>
             <p>In terms of the Action size, the ZSA action size differs from the Orchard action size by 32 bytes (due to the addition of the
                 <span class="math">\(\mathsf{AssetId}\)</span>
             ). This implies that the size goes from 820 bytes in the Orchard action to 852 bytes in the ZSA Action.</p>
+            <section id="zsa-asset-burn-description"><h3><span class="section-heading">ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurnV6 type:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bytes</th>
+                            <th>Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>32</td>
+                            <td>AssetType</td>
+                            <td>byte[32]</td>
+                            <td>For the Orchard-based ZSA protocol, this is the encoding of the Asset Base
+                                <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
+                            .</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td>valueBurn</td>
+                            <td>
+                                <span class="math">\(\{1 .. 2^{64} - 1\}\)</span>
+                            </td>
+                            <td>The amount of the AssetType being burnt.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <ul>
-                <li>Even if the Orchard protocol and ZSA protocol do not share the same anonymity pool (nodes can keep track of the notes that where published with different transaction structures), the migration from one to the other is done automatically and seamlessly. The Orchard bundle will be replaced by the ZSA bundle and all ZEC notes will be fully spendable with the new transaction structure.</li>
+                <li>The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. It will be possible to distinguish between notes generated via these two protocols. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.</li>
                 <li>When including new Assets we would like to maintain the amount and identifiers of Assets private, which is achieved with the design.</li>
                 <li>We prevent the "roadblock" attack on the Asset Identifier by ensuring the output notes receive an Asset Base that exists on the global state.</li>
                 <li>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets.
@@ -439,18 +470,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="transaction-fees"><h3><span class="section-heading">Transaction Fees</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-40" class="footnote_reference" href="#zip-0317b">25</a>.</p>
-            </section>
-            <section id="security-and-privacy"><h3><span class="section-heading">Security and Privacy</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <ul>
-                    <li>The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. It will be possible to distinguish between notes generated via these two protocols. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.</li>
-                    <li>When including new Assets we would like to maintain the amount and identifiers of Assets private, which is achieved with the design.</li>
-                    <li>We prevent the "roadblock" attack on the Asset Identifier by ensuring the output notes receive an Asset Base that exists on the global state.</li>
-                    <li>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets.
-                        <ul>
-                            <li>One proposal for a petname system for the zcashd wallet is the use of an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.</li>
-                        </ul>
-                    </li>
-                </ul>
             </section>
             <section id="deployment"><h3><span class="section-heading">Deployment</span><span class="section-anchor"> <a rel="bookmark" href="#deployment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The Zcash Shielded Assets protocol will be deployed in a subsequent Network Upgrade.</p>
