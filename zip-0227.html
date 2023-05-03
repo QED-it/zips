@@ -432,6 +432,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>If <code>finalize = 1</code>, add
                     <span class="math">\(\mathsf{AssetId}\)</span>
                  to the <code>previously_finalized</code> set immediately after the block in which this transaction occurs.</li>
+                <li>(Replay Protection) If issue bundle is present, the fees MUST be greater than zero.</li>
             </ul>
         </section>
         <section id="rationale"><h2><span class="section-heading">Rationale</span><span class="section-anchor"> <a rel="bookmark" href="#rationale"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -450,6 +451,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     </ul>
                 </li>
                 <li>We require a check whether the <code>finalize</code> flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the <code>previously_finalized</code> set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
+                <li>We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction contains only an issue bundle, the <code>SIGHASH</code> would be computed solely based on the issue bundle. A duplicate bundle would have the same <code>SIGHASH</code> and therefore the same issuance authorization signature, which allows for a replay attack.</li>
             </ul>
             <section id="concrete-applications"><h3><span class="section-heading">Concrete Applications</span><span class="section-anchor"> <a rel="bookmark" href="#concrete-applications"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p><strong>Asset Features</strong></p>

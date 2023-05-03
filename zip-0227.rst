@@ -272,6 +272,8 @@ If all of the above checks pass, do the following:
 - For each note, compute the note commitment as :math:`\mathsf{cm} = \mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, AssetBase)}` as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-notestructure]_ and
 - add :math:`\mathsf{cm}` to the Merkle tree of note commitments, `NoteCommitmentTree`.
 - If ``finalize = 1``, add :math:`\mathsf{AssetId}` to the ``previously_finalized`` set immediately after the block in which this transaction occurs.
+- (Replay Protection) If issue bundle is present, the fees MUST be greater than zero.
+
 
 
 Rationale
@@ -288,6 +290,7 @@ The following is a list of rationale for different decisions made in the proposa
     - information to be committed by the issuer, though not enforceable by the protocol.
 
 - We require a check whether the ``finalize`` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the ``previously_finalized`` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
+- We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction contains only an issue bundle, the ``SIGHASH`` would be computed solely based on the issue bundle. A duplicate bundle would have the same ``SIGHASH`` and therefore the same issuance authorization signature, which allows for a replay attack. 
 
 Concrete Applications
 ---------------------
