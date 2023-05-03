@@ -38,7 +38,7 @@ We define the following additional terms:
 
 - Native Asset: a Custom Asset with issuance defined on the Zcash block chain.
 - Wrapped Asset: a Custom Asset with native issuance defined outside the Zcash block chain.
-- Split Input: an Action input identifying a Custom Asset note, used to ensure that the output note of that Action is of a validly issued :math:`\mathsf{AssetId}` when there is no corresponding real input note to spend. The Action does not spend the note identified by the Split Input.
+- Split Input: an Action input used to ensure that the output note of that Action is of a validly issued :math:`\mathsf{AssetBase}` when there is no corresponding real input note, in situations where the number of outputs are larger than the number of inputs. See formal definition in `Split Notes`_.
 - Split Action: an Action that contains a Split Input.
 
 Abstract
@@ -196,14 +196,14 @@ As in the Orchard protocol, the binding signature verification key, :math:`\math
 Split Notes
 -----------
 
-One of the key functionalities in a UTXO-based protocol is the fact that input notes are usually split in two (or more) output notes, as in most cases, not all the value in a single note is sent to a single output. This requires a 1-to-many (Orchard) transaction. However, because each Action represents an input and an output, the resulting transaction must have multiple inputs. In order to cope with this today, the Actions that have not been assigned input notes are instead given *dummy spend notes* [#protocol-dummynotes]_, which we call split Actions and split notes respectively. Basically, the input note is “faked” inside of the proof in order to hide which Action contains the *real* spend note.
+A Split Input is an exact copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:
 
-This, however, brings some issues when it comes to adding multiple Asset Identifiers, as the output note of the split Actions *cannot* contain *any* Asset Base, but it must be enforced to be an actual output of a GroupHash computation (in fact we want it to be of the same Asset Base as the original input note, but the binding signature takes care that the proper balancing is performed). If not, then the prover could essentially input a multiple (or linear combination) of an existing Asset Base, with the goal to attack the network by overflowing the ZEC value balance and hence counterfeiting ZEC funds.
+- A ``split_flag`` is raised.
+- The value of the note is replaced with the value 0 during the computation of the value commitment.
 
-In order to prevent this, we make some modifications to the circuit. Specifically we remove the dummy note functionality for Custom Assets and we enforce that *every* input note to an ZSA Action must be proven to exist in the set of note commitments in the note commitment tree. We then enforce this real note to be “unspendable” in the sense that its value
-will be zeroed in split Actions and the nullifier will be randomized, making the note not spendable in the specific Action. Then, the proof itself ensures that the output note is of the same Asset Base as the input note. In the circuit, the split note functionality will be activated by a boolean private input to the proof.
+Input notes are sometimes split in two (or more) output notes, as in most cases, not all the value in a single note is sent to a single output.
 
-This creates a chain of induction that ensures that the value base points of all output notes of a transfer are actual outputs of a GroupHash, as they originate in the Issuance protocol which is publicly verified. If this were not done then it would be possible to violate balance, for example by using a value base point derived from those of other Assets.
+When the number of input notes of a particular Asset Base is smaller than the required number of output notes for the same Asset Base, the sender creates Split Inputs for the same Asset Base.
 
 Note that we do not care about whether the note identified by a Split Input is owned by the sender, or whether it was nullified before.
 
@@ -213,7 +213,18 @@ Wallets and other clients have a choice to make to ensure the Asset Base is pres
 2. The Split Input note could be a different unspent note containing the same Asset Base (note that the note will not actually be spent).
 3. The Split Input note could be an already spent note containing the same Asset Base (note that by zeroing the value in the circuit, we prevent double spending).
 
-The specific circuit changes are presented below.
+Rationale for Split Notes
+'''''''''''''''''''''''''
+
+In the Orchard protocol, since each Action represents an input and an output, the transaction that wants to send one input to multiple outputs must have multiple inputs. The Orchard protocol gives *dummy spend notes* [#protocol-dummynotes]_ to the Actions that have not been assigned input notes.
+
+The Orchard technique requires modification for the ZSA protocol with multiple Asset Identifiers, as the output note of the split Actions *cannot* contain *any* Asset Base, but it must be enforced to be an actual output of a GroupHash computation (in fact, we want it to be of the same Asset Base as the original input note, but the binding signature takes care that the proper balancing is performed). If not, then the prover could essentially input a multiple (or linear combination) of an existing Asset Base, and thereby attack the network by overflowing the ZEC value balance and hence counterfeiting ZEC funds.
+
+In order to prevent this, for Custom Assets we enforce that *every* input note to an ZSA Action must be proven to exist in the set of note commitments in the note commitment tree. We then enforce this real note to be “unspendable” in the sense that its value will be zeroed in split Actions and the nullifier will be randomized, making the note not spendable in the specific Action. Then, the proof itself ensures that the output note is of the same Asset Base as the input note. In the circuit, the split note functionality will be activated by a boolean private input to the proof.
+This ensures that the value base points of all output notes of a transfer are actual outputs of a GroupHash, as they originate in the Issuance protocol which is publicly verified.
+
+Note that the Orchard dummy note functionality remains in use for ZEC notes, and the Split Input technique is used in order to support Custom Assets.
+
 
 Circuit Statement
 -----------------
@@ -262,7 +273,7 @@ The input note in the old note commitment integrity check must either include an
 Backward Compatibility
 ----------------------
 
-In order to have a "clean" backwards compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
+In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
 - The input notes with an Asset Base denote the Custom Assets, generating a note commitment that includes the Asset Identifier; whereas the notes without an Asset Base denote the ZEC notes from before the protocol upgrade, and generate a note commitment that does not include the Asset Base, in order to maintain the referencability to the Merkle tree
 - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof
 - The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes.
@@ -280,13 +291,13 @@ We require that for every :math:`\mathsf{valueBalance_{AssetId}}` provided as ab
 For every custom Asset that is burnt, we add to the `assetBurn` vector the tuple :math:`(\mathsf{valueBalance_{AssetId}, AssetId})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
 
 
-:math:`\mathsf{assetBurn = \{ (v^{AssetId}, AssetId)}\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{v^{AssetId}} \neq 0 \}`
+.. math:: \mathsf{assetBurn = \{ (v^{AssetId}, AssetId)}\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{v^{AssetId}} \neq 0 \}
 
 The value balances for each Asset Identifier in `assetBurn` represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
 
 Finally, the validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetId}` as the value base point of the Pedersen Commitment. This is done as follows
 
-:math:`\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\forall \mathsf{AssetId}\textit{ s.t. }\mathsf{v^{AssetId}\neq 0}} \mathsf{ValueCommit_0^{OrchardZSA}(v^{AssetId}, AssetId) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}`
+.. math:: \mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\forall \mathsf{AssetId}\textit{ s.t. }\mathsf{v^{AssetId}\neq 0}} \mathsf{ValueCommit_0^{OrchardZSA}(v^{AssetId}, AssetId) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
 
 In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.
 
