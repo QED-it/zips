@@ -270,15 +270,6 @@ The input note in the old note commitment integrity check must either include an
     - The note commitment uses a different domain separator for ZSA note commitment
 
 
-Backward Compatibility
-----------------------
-
-In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
-- The input notes with an Asset Base denote the Custom Assets, generating a note commitment that includes the Asset Identifier; whereas the notes without an Asset Base denote the ZEC notes from before the protocol upgrade, and generate a note commitment that does not include the Asset Base, in order to maintain the referencability to the Merkle tree
-- The value commitment is abstracted to allow for the value base-point as a variable private input to the proof
-- The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes.
-
-
 Burn Mechanism
 ==============
 The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we add it here for readability.
@@ -301,7 +292,7 @@ Finally, the validator needs to verify the Balance and Binding Signature by addi
 
 In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.
 
-**Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
+**Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
 
 ZSA Transaction Structure
 =========================
@@ -342,6 +333,7 @@ Security and Privacy Considerations
 
     - One proposal for a petname system for the zcashd wallet is the use of an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.
 
+
 Other Considerations
 ====================
 
@@ -349,6 +341,14 @@ Transaction Fees
 ----------------
 
 The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade [#zip-0317b]_.
+
+Backward Compatibility
+----------------------
+
+In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
+- The input notes with an Asset Base denote the Custom Assets, generating a note commitment that includes the Asset Identifier; whereas the notes without an Asset Base denote the ZEC notes from before the protocol upgrade, and generate a note commitment that does not include the Asset Base, in order to maintain the referencability to the Merkle tree
+- The value commitment is abstracted to allow for the value base-point as a variable private input to the proof
+- The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes.
 
 Deployment
 -----------
