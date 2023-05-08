@@ -349,22 +349,26 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="burn-mechanism"><h2><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we add it here for readability.</p>
-            <p>In essence, the burn mechanism is a transparent / revealing extension to the transfer protocol that enables a specific amount of any Asset identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
-            <p>First, contrary to the strict transfer transaction, we allow the sender to include a
-                <span class="math">\(\mathsf{valueBalance_{AssetId}}\)</span>
-             variable for every Asset Identifier that is being burnt. As we will show in the transaction structure, this is separate from the regular
+            <p>The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we describe it here for readability.</p>
+            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
+            <p>The sender includes a
+                <span class="math">\(\mathsf{valueBurn_{AssetId}}\)</span>
+             variable for every Asset Identifier that is being burnt. As we will show in the <a href="#zsa-transaction-structure">ZSA Transaction Structure</a>, this is separate from the regular
                 <span class="math">\(\mathsf{valueBalance^Orchard}\)</span>
              that is the default transparent value for the ZEC Asset. We require that for every
-                <span class="math">\(\mathsf{valueBalance_{AssetId}}\)</span>
+                <span class="math">\(\mathsf{valueBurn_{AssetId}}\)</span>
              provided as above by the sender,
-                <span class="math">\(\mathsf{valueBalance_{AssetId}} \neq 0\)</span>
+                <span class="math">\(\mathsf{valueBurn_{AssetId}} \neq 0\)</span>
             . This is enforced via a consensus rule.</p>
-            <p>For every custom Asset that is burnt, we add to the <cite>assetBurn</cite> vector the tuple
-                <span class="math">\((\mathsf{valueBalance_{AssetId}, AssetId})\)</span>
+            <p>For every Custom Asset that is burnt, we add to the
+                <span class="math">\(\mathsf{assetBurn}\)</span>
+             vector the tuple
+                <span class="math">\((\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})\)</span>
              such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.</p>
-            <div class="math">\(\mathsf{assetBurn = \{ (v^{AssetId}, AssetId)}\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{v^{AssetId}} \neq 0 \}\)</div>
-            <p>The value balances for each Asset Identifier in <cite>assetBurn</cite> represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).</p>
+            <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{valueBurn_{AssetId}} \neq 0 \}\)</div>
+            <p>The value balances for each Asset Identifier in
+                <span class="math">\(\mathsf{assetBurn}\)</span>
+             represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).</p>
             <p>Finally, the validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective
                 <span class="math">\(\mathsf{AssetId}\)</span>
              as the value base point of the Pedersen Commitment. This is done as follows</p>
