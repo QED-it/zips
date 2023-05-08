@@ -350,31 +350,44 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="burn-mechanism"><h2><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we describe it here for readability.</p>
-            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
+            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
             <p>The sender includes a
-                <span class="math">\(\mathsf{valueBurn_{AssetId}}\)</span>
+                <span class="math">\(\mathsf{v^{AssetBase}}\)</span>
              variable for every Asset Identifier that is being burnt. As we will show in the <a href="#zsa-transaction-structure">ZSA Transaction Structure</a>, this is separate from the regular
                 <span class="math">\(\mathsf{valueBalance^Orchard}\)</span>
-             that is the default transparent value for the ZEC Asset. We require that for every
-                <span class="math">\(\mathsf{valueBurn_{AssetId}}\)</span>
-             provided as above by the sender,
-                <span class="math">\(\mathsf{valueBurn_{AssetId}} \neq 0\)</span>
-            . This is enforced via a consensus rule.</p>
+             that is the default transparent value for the ZEC Asset.</p>
             <p>For every Custom Asset that is burnt, we add to the
                 <span class="math">\(\mathsf{assetBurn}\)</span>
              vector the tuple
-                <span class="math">\((\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})\)</span>
+                <span class="math">\((\mathsf{AssetBase},\mathsf{v^{AssetBase}})\)</span>
              such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.</p>
-            <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{valueBurn_{AssetId}} \neq 0 \}\)</div>
+            <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}\)</div>
             <p>The value balances for each Asset Identifier in
                 <span class="math">\(\mathsf{assetBurn}\)</span>
              represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).</p>
-            <p>Finally, the validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective
-                <span class="math">\(\mathsf{AssetId}\)</span>
+            <p>The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective
+                <span class="math">\(\mathsf{AssetBase}\)</span>
              as the value base point of the Pedersen Commitment. This is done as follows</p>
-            <div class="math">\(\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\forall \mathsf{AssetId}\textit{ s.t. }\mathsf{v^{AssetId}\neq 0}} \mathsf{ValueCommit_0^{OrchardZSA}(v^{AssetId}, AssetId) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
+            <div class="math">\(\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
             <p>In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.</p>
-            <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
+            <section id="burn-mechanism-consensus-rule-changes"><h3><span class="section-heading">Burn Mechanism Consensus Rule Changes</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rule-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <ol type="1">
+                    <li>We require that
+                        <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\)</span>
+                    . That is, Native Assets are not allowed to be burnt.</li>
+                    <li>We require that for every
+                        <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0\)</span>
+                    .</li>
+                    <li>We require that there be no duplication of Custom Assets in the
+                        <span class="math">\(\mathsf{assetBurn}\)</span>
+                     set. That is, every
+                        <span class="math">\(\mathsf{AssetBase}\)</span>
+                     has at most one entry in
+                        <span class="math">\(\mathsf{assetBurn}\)</span>
+                    .</li>
+                </ol>
+                <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
+            </section>
         </section>
         <section id="zsa-transaction-structure"><h2><span class="section-heading">ZSA Transaction Structure</span><span class="section-anchor"> <a rel="bookmark" href="#zsa-transaction-structure"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The transaction format is similar to the version 5 transaction format described in the Zcash specification <a id="footnote-reference-40" class="footnote_reference" href="#protocol-transactionstructure">22</a>, with the following additions to the Orchard bundle:</p>
@@ -397,7 +410,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <tr>
                         <td>40*nAssetBurn</td>
                         <td>vAssetBurn</td>
-                        <td>AssetBurnV6[nAssetBurn]</td>
+                        <td>AssetBurn[nAssetBurn]</td>
                         <td>A sequence of Asset Burn descriptions, encoded per <a href="#zsa-asset-burn-description">ZSA Asset Burn Description</a>.</td>
                     </tr>
                 </tbody>
@@ -406,7 +419,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{AssetId}\)</span>
             ). This implies that the size goes from 820 bytes in the Orchard action to 852 bytes in the ZSA Action.</p>
             <section id="zsa-asset-burn-description"><h3><span class="section-heading">ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurnV6 type:</p>
+                <p>A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn type:</p>
                 <table>
                     <thead>
                         <tr>
@@ -419,7 +432,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <tbody>
                         <tr>
                             <td>32</td>
-                            <td>AssetType</td>
+                            <td>AssetBase</td>
                             <td>byte[32]</td>
                             <td>For the Orchard-based ZSA protocol, this is the encoding of the Asset Base
                                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>

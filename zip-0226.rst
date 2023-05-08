@@ -271,24 +271,31 @@ Burn Mechanism
 ==============
 The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we describe it here for readability.
 
-The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
+The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
 
-The sender includes a :math:`\mathsf{valueBurn_{AssetId}}` variable for every Asset Identifier that is being burnt. As we will show in the `ZSA Transaction Structure`_, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC Asset.
-We require that for every :math:`\mathsf{valueBurn_{AssetId}}` provided as above by the sender, :math:`\mathsf{valueBurn_{AssetId}} \neq 0`. This is enforced via a consensus rule.
+The sender includes a :math:`\mathsf{v^{AssetBase}}` variable for every Asset Identifier that is being burnt. As we will show in the `ZSA Transaction Structure`_, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC Asset.
 
-For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` vector the tuple :math:`(\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
+For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` vector the tuple :math:`(\mathsf{AssetBase},\mathsf{v^{AssetBase}})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
 
-.. math:: \mathsf{assetBurn} = \{ (\mathsf{AssetId},\mathsf{valueBurn_{AssetId}})\ |\ \forall\ \mathsf{AssetId}\ \textit{s.t.}\ \mathsf{valueBurn_{AssetId}} \neq 0 \}
+.. math:: \mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}
 
 The value balances for each Asset Identifier in :math:`\mathsf{assetBurn}` represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
 
-Finally, the validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetId}` as the value base point of the Pedersen Commitment. This is done as follows
+The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetBase}` as the value base point of the Pedersen Commitment. This is done as follows
 
-.. math:: \mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\forall \mathsf{AssetId}\textit{ s.t. }\mathsf{v^{AssetId}\neq 0}} \mathsf{ValueCommit_0^{OrchardZSA}(v^{AssetId}, AssetId) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
+.. math:: \mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
 
 In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.
 
+Burn Mechanism Consensus Rule Changes
+-------------------------------------
+
+1. We require that :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, Native Assets are not allowed to be burnt.
+2. We require that for every :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0`.
+3. We require that there be no duplication of Custom Assets in the :math:`\mathsf{assetBurn}` set. That is, every :math:`\mathsf{AssetBase}` has at most one entry in :math:`\mathsf{assetBurn}`.
+
 **Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
+
 
 ZSA Transaction Structure
 =========================
@@ -300,7 +307,7 @@ The transaction format is similar to the version 5 transaction format described 
 +===============+============+=========================+===================================================================================+
 | varies        | nAssetBurn | compactSize             | The number of Assets burnt.                                                       |
 +---------------+------------+-------------------------+-----------------------------------------------------------------------------------+
-| 40*nAssetBurn | vAssetBurn | AssetBurnV6[nAssetBurn] | A sequence of Asset Burn descriptions, encoded per `ZSA Asset Burn Description`_. |
+| 40*nAssetBurn | vAssetBurn | AssetBurn[nAssetBurn]   | A sequence of Asset Burn descriptions, encoded per `ZSA Asset Burn Description`_. |
 +---------------+------------+-------------------------+-----------------------------------------------------------------------------------+
 
 In terms of the Action size, the ZSA action size differs from the Orchard action size by 32 bytes (due to the addition of the :math:`\mathsf{AssetId}`). This implies that the size goes from 820 bytes in the Orchard action to 852 bytes in the ZSA Action.
@@ -308,12 +315,12 @@ In terms of the Action size, the ZSA action size differs from the Orchard action
 ZSA Asset Burn Description
 --------------------------
 
-A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurnV6 type:
+A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn type:
 
 +-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | Bytes | Name      | Data Type                   | Description                                                                                                               |
 +=======+===========+=============================+===========================================================================================================================+
-| 32    | AssetType | byte[32]                    | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`. |
+| 32    | AssetBase | byte[32]                    | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`. |
 +-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | 8     | valueBurn | :math:`\{1 .. 2^{64} - 1\}` | The amount of the AssetType being burnt.                                                                                  |
 +-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
