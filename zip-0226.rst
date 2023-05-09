@@ -91,7 +91,7 @@ This :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` will be the base point of the
 Rationale for Asset Identifiers
 '''''''''''''''''''''''''''''''
 
-In future network and protocol upgrades, the same Asset description string can be carried on, potentially mapping into a different shielded pool. In that case, nodes should know how to transform the Asset Identifier, the Asset Digest, and the Asset Base from one shielded pool to another, while ensuring there are no balance violations [#zip-0209]_.
+In future network and protocol upgrades, the same Asset description string can be carried on, potentially mapping into a different shielded pool. In that case, nodes should know how to transform the Asset Identifier, the Asset Digest, and the Asset Base from one shielded pool to another, while ensuring there are no balance violations [#zip-0209]_. 
 
 Note Structure & Commitment
 ---------------------------
