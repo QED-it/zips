@@ -143,9 +143,7 @@ The note commitment output is still indistinguishable from the original Orchard 
 
 .. math:: \mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, \mathsf{AssetBase}^{\mathsf{Orchard}})} \in \mathsf{NoteCommit^{Orchard}.Output}
 
-This allows us to maintain a single commitment instance for the old note commitment, that will be used both for pre-ZSA Orchard notes and for ZSA notes. The pre-ZSA Orchard notes will be conserved and not actually converted into ZSA notes, as we will always need to compute them.
-However, new notes will always be ZSA notes with an Asset Base (even if they are for ZEC and not a Custom Asset).
-
+This definition can be viewed as a hypernym of the Orchard note commitment, and will allow maintaining a single commitment instance for the note commitment, which will be used both for pre-ZSA Orchard and ZSA notes.  
 
 Value Commitment
 ----------------
@@ -156,7 +154,7 @@ In the case of the ZSA protocol, the value of different Asset Identifiers in a g
 
 where :math:`\mathsf{v^{net}_{AssetId}} = \mathsf{v^{old}_{AssetId} - v^{new}_{AssetId}}` such that :math:`\mathsf{v^{old}_{AssetId}}` and :math:`\mathsf{v^{new}_{AssetId}}` are the values of the old and new notes of Asset Identifier :math:`\mathsf{AssetId}` respectively,
 
-.. _`value base`:
+.. _`asset base`:
 
 :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}` is defined in ZIP 227 [#zip-0227]_, and
 
@@ -197,14 +195,14 @@ As in the Orchard protocol, the binding signature verification key, :math:`\math
 Split Notes
 -----------
 
-A Split Input is an exact copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:
+A Split Input is a copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:
 
 - A ``split_flag`` boolean is set to 1.
 - The value of the note is replaced with the value 0 during the computation of the value commitment.
 
 Input notes are sometimes split in two (or more) output notes, as in most cases, not all the value in a single note is sent to a single output.
 
-When the number of input notes of a particular Asset Base is smaller than the required number of output notes for the same Asset Base, the sender creates Split Inputs for the same Asset Base. Note that we do not care about whether the previously issued note copied to create a Split Input is owned by the sender, or whether it was nullified before.
+When the number of input notes of a particular Asset Base is smaller than the required number of output notes for the same Asset Base, the sender creates Split Inputs of the same Asset Base as padding for the input-less Actions. Note that we do not care about whether the previously issued note copied to create a Split Input is owned by the sender, or whether it was nullified before.
 
 Wallets and other clients have to choose from the following to ensure the Asset Base is preserved for the output note of a Split Action:
 
@@ -230,10 +228,10 @@ Circuit Statement
 
 Every *ZSA Action statement* is closely similar to the Orchard Action statement [#protocol-actionstatement]_, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.
 
-Asset Identifier Equality
+Asset Base Equality
 '''''''''''''''''''''''''
 
-The following constraints must be added to ensure that the input and output note are of the same :math:`\mathsf{AssetId}`:
+The following constraints must be added to ensure that the input and output note are of the same :math:`\mathsf{AssetBase}`:
 
 - The Asset Base, :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}`, for the note is witnessed once, as an auxiliary input.
 - In the Old note commitment integrity constraint in the Orchard Action statement [#protocol-actionstatement]_, :math:`\mathsf{NoteCommit^{Orchard}_{rcm^{old}}(repr_{\mathbb{P}}(g_d^{old}), repr_{\mathbb{P}}(pk_d^{old}), v^{old}, \rho^{old}, \psi^{old})}` is replaced with :math:`\mathsf{NoteCommit^{OrchardZSA}_{rcm^{old}}(repr_{\mathbb{P}}(g_d^{old}), repr_{\mathbb{P}}(pk_d^{old}), v^{old}, \rho^{old}, \psi^{old}, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`.
@@ -245,7 +243,7 @@ Value Commitment Correctness
 The following constraints must be added to ensure that the value commitment is computed using the witnessed Asset Base, as represented in the notes:
 
 - The fixed-base multiplication constraints between the value and the value base point of the value commitment, :math:`\mathsf{cv}`, is replaced with a variable-base multiplication between the two.
-- The witness to the value base point (as defined in the `value base`_ equation) is the auxiliary input :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}`.
+- The witness to the value base point (as defined in the `asset base`_ equation) is the auxiliary input :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}`.
 
 Asset Identifier Consistency for Split Actions
 ''''''''''''''''''''''''''''''''''''''''''''''
@@ -269,9 +267,8 @@ The input note in the old note commitment integrity check must either include an
 
 Burn Mechanism
 ==============
-The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we describe it here for readability.
 
-The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
+The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
 
 The sender includes a :math:`\mathsf{v^{AssetBase}}` variable for every Asset Identifier that is being burnt. As we will show in the `ZSA Transaction Structure`_, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC Asset.
 
@@ -287,8 +284,8 @@ The validator needs to verify the Balance and Binding Signature by adding the va
 
 In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.
 
-Burn Mechanism Consensus Rule Changes
--------------------------------------
+Burn Mechanism Consensus Rules
+------------------------------
 
 1. We require that :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, Native Assets are not allowed to be burnt.
 2. We require that for every :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0`.
@@ -329,7 +326,7 @@ A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn ty
 Security and Privacy Considerations
 ===================================
 
-- The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. It will be possible to distinguish between notes generated via these two protocols. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.
+- The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. As with any protocol upgrade, it will be possible to distinguish between notes generated by each protocol. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.
 - When including new Assets we would like to maintain the amount and identifiers of Assets private, which is achieved with the design.
 - We prevent the "roadblock" attack on the Asset Identifier by ensuring the output notes receive an Asset Base that exists on the global state.
 - Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets. 
@@ -349,9 +346,10 @@ Backward Compatibility
 ----------------------
 
 In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
-- The input notes with an Asset Base denote the Custom Assets, generating a note commitment that includes the Asset Identifier; whereas the notes without an Asset Base denote the ZEC notes from before the protocol upgrade, and generate a note commitment that does not include the Asset Base, in order to maintain the referencability to the Merkle tree
-- The value commitment is abstracted to allow for the value base-point as a variable private input to the proof
-- The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes.
+- Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the :math:`AssetBase` value as well.
+- The existing Orchard shielded pool will continue to be used for the new ZSA notes post the upgrade.
+- The value commitment is abstracted to allow for the value base-point as a variable private input to the proof.
+- The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include both dummy and split input notes.
 
 Deployment
 -----------

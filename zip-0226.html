@@ -165,7 +165,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      in that for Custom Assets, the Asset Base will be added as an input to the commitment computation. In the case where the Asset is the ZEC Asset, the commitment is computed identically to the Orchard note commitment, without making use of the ZEC Asset Base as an input. As we will see, the nested structure of the Sinsemilla-based commitment <a id="footnote-reference-29" class="footnote_reference" href="#protocol-concretesinsemillacommit">18</a> allows us to add the Asset Base as a final recursive step, and hence keep a single instance of the Sinsemilla hash function in the circuit for the note commitment verification.</p>
                     <p>The note commitment output is still indistinguishable from the original Orchard ZEC note commitments, by definition of the Sinsemilla hash function <a id="footnote-reference-30" class="footnote_reference" href="#protocol-concretesinsemillahash">17</a>. ZSA note commitments will therefore be added to the same Orchard Note Commitment Tree. In essence, we have:</p>
                     <div class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, \mathsf{AssetBase}^{\mathsf{Orchard}})} \in \mathsf{NoteCommit^{Orchard}.Output}\)</div>
-                    <p>This allows us to maintain a single commitment instance for the old note commitment, that will be used both for pre-ZSA Orchard notes and for ZSA notes. The pre-ZSA Orchard notes will be conserved and not actually converted into ZSA notes, as we will always need to compute them. However, new notes will always be ZSA notes with an Asset Base (even if they are for ZEC and not a Custom Asset).</p>
+                    <p>This definition can be viewed as a hypernym of the Orchard note commitment, and will allow maintaining a single commitment instance for the note commitment, which will be used both for pre-ZSA Orchard and ZSA notes.</p>
                 </section>
             </section>
             <section id="value-commitment"><h3><span class="section-heading">Value Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#value-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
@@ -180,7 +180,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  are the values of the old and new notes of Asset Identifier
                     <span class="math">\(\mathsf{AssetId}\)</span>
                  respectively,</p>
-                <p id="value-base">
+                <p id="asset-base">
                     <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}\)</span>
                  is defined in ZIP 227 <a id="footnote-reference-31" class="footnote_reference" href="#zip-0227">6</a>, and</p>
                 <p>
@@ -218,13 +218,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </section>
             </section>
             <section id="split-notes"><h3><span class="section-heading">Split Notes</span><span class="section-anchor"> <a rel="bookmark" href="#split-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>A Split Input is an exact copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:</p>
+                <p>A Split Input is a copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:</p>
                 <ul>
                     <li>A <code>split_flag</code> boolean is set to 1.</li>
                     <li>The value of the note is replaced with the value 0 during the computation of the value commitment.</li>
                 </ul>
                 <p>Input notes are sometimes split in two (or more) output notes, as in most cases, not all the value in a single note is sent to a single output.</p>
-                <p>When the number of input notes of a particular Asset Base is smaller than the required number of output notes for the same Asset Base, the sender creates Split Inputs for the same Asset Base. Note that we do not care about whether the previously issued note copied to create a Split Input is owned by the sender, or whether it was nullified before.</p>
+                <p>When the number of input notes of a particular Asset Base is smaller than the required number of output notes for the same Asset Base, the sender creates Split Inputs of the same Asset Base as padding for the input-less Actions. Note that we do not care about whether the previously issued note copied to create a Split Input is owned by the sender, or whether it was nullified before.</p>
                 <p>Wallets and other clients have to choose from the following to ensure the Asset Base is preserved for the output note of a Split Action:</p>
                 <ol type="1">
                     <li>The Split Input note could be another note containing the same Asset Base that is being spent by this transaction (but not by this Split Input).</li>
@@ -240,9 +240,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
             <section id="circuit-statement"><h3><span class="section-heading">Circuit Statement</span><span class="section-anchor"> <a rel="bookmark" href="#circuit-statement"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>Every <em>ZSA Action statement</em> is closely similar to the Orchard Action statement <a id="footnote-reference-36" class="footnote_reference" href="#protocol-actionstatement">21</a>, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.</p>
-                <section id="asset-identifier-equality"><h4><span class="section-heading">Asset Identifier Equality</span><span class="section-anchor"> <a rel="bookmark" href="#asset-identifier-equality"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                <section id="asset-base-equality"><h4><span class="section-heading">Asset Base Equality</span><span class="section-anchor"> <a rel="bookmark" href="#asset-base-equality"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The following constraints must be added to ensure that the input and output note are of the same
-                        <span class="math">\(\mathsf{AssetId}\)</span>
+                        <span class="math">\(\mathsf{AssetBase}\)</span>
                     :</p>
                     <ul>
                         <li>The Asset Base,
@@ -266,7 +266,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>The fixed-base multiplication constraints between the value and the value base point of the value commitment,
                             <span class="math">\(\mathsf{cv}\)</span>
                         , is replaced with a variable-base multiplication between the two.</li>
-                        <li>The witness to the value base point (as defined in the <a href="#value-base">value base</a> equation) is the auxiliary input
+                        <li>The witness to the value base point (as defined in the <a href="#asset-base">asset base</a> equation) is the auxiliary input
                             <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}\)</span>
                         .</li>
                     </ul>
@@ -349,8 +349,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="burn-mechanism"><h2><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The burn mechanism may be needed for off-boarding the Wrapped Assets from the chain, or enabling advanced tokenomics on Assets. It is part of the Issuance/Burn protocol, but given that it can be seen as an extension of the Transfer protocol, we describe it here for readability.</p>
-            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be sent into “oblivion”. Our burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
+            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
             <p>The sender includes a
                 <span class="math">\(\mathsf{v^{AssetBase}}\)</span>
              variable for every Asset Identifier that is being burnt. As we will show in the <a href="#zsa-transaction-structure">ZSA Transaction Structure</a>, this is separate from the regular
@@ -370,7 +369,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
              as the value base point of the Pedersen Commitment. This is done as follows</p>
             <div class="math">\(\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
             <p>In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.</p>
-            <section id="burn-mechanism-consensus-rule-changes"><h3><span class="section-heading">Burn Mechanism Consensus Rule Changes</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rule-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+            <section id="burn-mechanism-consensus-rules"><h3><span class="section-heading">Burn Mechanism Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <ol type="1">
                     <li>We require that
                         <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\)</span>
@@ -452,7 +451,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <ul>
-                <li>The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. It will be possible to distinguish between notes generated via these two protocols. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.</li>
+                <li>The notes generated via the ZSA protocol are different from those generated via the Orchard protocol. As with any protocol upgrade, it will be possible to distinguish between notes generated by each protocol. However, all ZEC notes will be fully spendable with the ZSA protocol transaction structure due to the built-in backward compatibility.</li>
                 <li>When including new Assets we would like to maintain the amount and identifiers of Assets private, which is achieved with the design.</li>
                 <li>We prevent the "roadblock" attack on the Asset Identifier by ensuring the output notes receive an Asset Base that exists on the global state.</li>
                 <li>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets.
@@ -467,7 +466,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-41" class="footnote_reference" href="#zip-0317b">25</a>.</p>
             </section>
             <section id="backward-compatibility"><h3><span class="section-heading">Backward Compatibility</span><span class="section-anchor"> <a rel="bookmark" href="#backward-compatibility"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this: - The input notes with an Asset Base denote the Custom Assets, generating a note commitment that includes the Asset Identifier; whereas the notes without an Asset Base denote the ZEC notes from before the protocol upgrade, and generate a note commitment that does not include the Asset Base, in order to maintain the referencability to the Merkle tree - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof - The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes.</p>
+                <p>In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this: - Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the
+                    <span class="math">\(AssetBase\)</span>
+                 value as well. - The existing Orchard shielded pool will continue to be used for the new ZSA notes post the upgrade. - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof. - The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include both dummy and split input notes.</p>
             </section>
             <section id="deployment"><h3><span class="section-heading">Deployment</span><span class="section-anchor"> <a rel="bookmark" href="#deployment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The Zcash Shielded Assets protocol will be deployed in a subsequent Network Upgrade.</p>
