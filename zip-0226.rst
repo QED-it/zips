@@ -120,13 +120,14 @@ This note commitment scheme is instantiated using the Sinsemilla Commitment [#pr
     \end{align}
 
 where:
-
+    
 .. math:: \begin{align}
-    \mathsf{cm}_{\mathsf{ZSA}} &:= \mathsf{SinsemillaCommit}_{\mathsf{rcm}}( \texttt{"z.cash:ZSA-NoteCommit"}, \\
-    &\mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}}))
+    \mathsf{cm}_{\mathsf{ZSA}} :=&\ \mathsf{SinsemillaHashToPoint}( \texttt{"z.cash:ZSA-NoteCommit-M"}, \\
+    &\ \ \ \mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}})) \\
+    &\ + [\mathsf{rcm}] \mathsf{GroupHash}^{\mathbb{P}}(\texttt{"z.cash:Orchard-NoteCommit-r"},\texttt{""})
     \end{align}
 
-Note that :math:`\mathsf{repr}_{\mathbb{P}}` is as defined for the Pallas curve [#protocol-pallasandvesta]_, :math:`\ell^{\mathsf{Orchard}}_{\mathsf{base}}` is as defined in §5.3 [#protocol-constants]_, and :math:`\mathsf{I2LEBSP}` is as defined in §5.1 [#protocol-endian]_ of the Zcash protocol specification.
+Note that :math:`\mathsf{repr}_{\mathbb{P}}` and :math:`\mathsf{GroupHash}^{\mathbb{P}}` are as defined for the Pallas curve [#protocol-pallasandvesta]_, :math:`\ell^{\mathsf{Orchard}}_{\mathsf{base}}` is as defined in §5.3 [#protocol-constants]_, and :math:`\mathsf{I2LEBSP}` is as defined in §5.1 [#protocol-endian]_ of the Zcash protocol specification.
 
 The nullifier is generated in the same manner as in the Orchard protocol [#protocol-commitmentsandnullifiers]_.
 
