@@ -30,14 +30,14 @@ ZIP 224 [#zip-0224]_.
 
 We define the following additional terms:
 
-- Asset: A type of note that can be transferred on the Zcash block chain, identified by the :math:`\mathsf{AssetId}` parameter.
+- Asset: A type of note that can be transferred on the Zcash blockchain, identified by the :math:`\mathsf{AssetId}` parameter.
 
   - ZEC is the default (and currently the only defined) Asset for the Zcash mainnet.
   - TAZ is the default (and currently the only defined) Asset for the Zcash testnet.
   - We use the term "Custom Asset" to refer to any Asset other than ZEC and TAZ.
 
-- Native Asset: a Custom Asset with issuance defined on the Zcash block chain.
-- Wrapped Asset: a Custom Asset with native issuance defined outside the Zcash block chain.
+- Native Asset: a Custom Asset with issuance defined on the Zcash blockchain.
+- Wrapped Asset: a Custom Asset with native issuance defined outside the Zcash blockchain.
 - Split Input: an Action input used to ensure that the output note of that Action is of a validly issued :math:`\mathsf{AssetBase}` when there is no corresponding real input note, in situations where the number of outputs are larger than the number of inputs. See formal definition in `Split Notes`_.
 - Split Action: an Action that contains a Split Input.
 
