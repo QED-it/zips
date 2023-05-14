@@ -145,6 +145,8 @@ For every new Asset, there must be a new and unique Asset Identifier. We define 
 A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest, :math:`\mathsf{AssetDigest}`, which is simply is a :math:`\textsf{BLAKE2b-512}` hash of the Asset Identifier.
 From the Asset Digest, we derive a specific Asset Base within each such shielded protocol (for example :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}` for the Orchard-based ZSA protocol), using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.
 
+**Note:** To simplify notations, we use :math:`\mathsf{AssetBase}^{\mathsf{Protocol}}` as an alias for :math:`\mathsf{AssetBase}^{\mathsf{Protocol}}_{\mathsf{AssetId}}`. Likewise, when the protocol is clear from the context we may simply use :math:`\mathsf{AssetBase}`.
+
 Let 
 
 - :math:`\mathsf{asset\_desc}` be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
