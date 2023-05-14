@@ -334,7 +334,6 @@ Security and Privacy Considerations
 - When including new Assets we would like to maintain the amount and identifiers of Assets private, which is achieved with the design.
 - We prevent a potential malleability attack on the Asset Identifier by ensuring the output notes receive an Asset Base that exists on the global state.
 - Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets. 
-
     - One proposal for a petname system for the zcashd wallet is the use of an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.
 
 Other Considerations
@@ -349,6 +348,7 @@ Backward Compatibility
 ----------------------
 
 In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
+
 - Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the :math:`AssetBase` value as well.
 - The existing Orchard shielded pool will continue to be used for the new ZSA notes post the upgrade.
 - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof.
