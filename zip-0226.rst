@@ -71,7 +71,7 @@ The Asset Identifier (via means of the Asset Digest and Asset Base) will be used
 
 As was initially proposed by Jack Grigg and Daira Hopwood [#initial-zsa-issue]_ [#generalized-value-commitments]_, we propose to make this happen by changing the value base point, :math:`\mathcal{V}^{\mathsf{Orchard}}`, in the Homomorphic Pedersen Commitment that derives the value commitment, :math:`\mathsf{cv^{net}}`, of the *net value* in an Orchard Action.
 
-Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` an auxiliary input to the proof for each Action statement [#protocol-actionstatement]_, represented already as a point on the Pallas curve [#protocol-pallasandvesta]_. The circuit then should check that the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` is used in the old note commitment and the new note commitment [#protocol-concretesinsemillacommit]_, **and** as the base point :math:`\mathcal{V}^\mathsf{Orchard}` in the value commitment [#protocol-concretevaluecommit]_. This ensures (1) that the input and output notes are of the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.
+Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base, :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`, an auxiliary input to the proof for each Action statement [#protocol-actionstatement]_, represented already as a point on the Pallas curve [#protocol-pallasandvesta]_. The circuit then should check that the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` is used in the old note commitment and the new note commitment [#protocol-concretesinsemillacommit]_, **and** as the base point :math:`\mathcal{V}^\mathsf{Orchard}` in the value commitment [#protocol-concretevaluecommit]_. This ensures (1) that the input and output notes are of the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.
 
 In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes [#protocol-dummynotes]_ for Custom Assets, as we need to enforce that the :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` of the output note of that Split Action is the output of a valid :math:`\mathsf{ZSAValueBase^{Orchard}}` computation defined in ZIP 227 [#zip-0227]_.
 
@@ -181,11 +181,11 @@ Value Balance Verification
 In order to verify the balance of the different Assets, the verifier MUST perform exactly the same process as for the Orchard protocol [#protocol-binding]_. 
 
 For a total of :math:`n` Actions in a transfer, the prover MUST still sign the `SIGHASH` of the transaction using the binding signature key
-:math:`\mathsf{bsk} = \sum_{i}^{n} \mathsf{rcv_{i}}`.
+:math:`\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv_{i}}`.
 
 Then the verifier MUST compute
 
-.. math:: \mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} = \sum \mathsf{rcv_{i}^{net}}\mathcal{R}^{\mathsf{Orchard}}
+.. math:: \mathsf{bvk = (\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} = \sum_{i=1}^{n} \mathsf{rcv_{i}^{net}}\mathcal{R}^{\mathsf{Orchard}}
 
 and use it to verify the `bindingSignature` on the `SIGHASH` message.
 
@@ -281,9 +281,11 @@ For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` v
 
 The value balances for each Asset Identifier in :math:`\mathsf{assetBurn}` represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
 
-The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetBase}` as the value base point of the Pedersen Commitment. This is done as follows
+The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetBase}` as the value base point of the Pedersen Commitment. This is done as follows:
 
-.. math:: \mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
+.. math:: \mathsf{bvk = (\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) }
+
+.. math:: \mathsf{bvk} = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
 
 In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.
 
