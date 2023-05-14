@@ -181,7 +181,7 @@ Value Balance Verification
 In order to verify the balance of the different Assets, the verifier MUST perform exactly the same process as for the Orchard protocol [#protocol-binding]_. 
 
 For a total of :math:`n` Actions in a transfer, the prover MUST still sign the `SIGHASH` of the transaction using the binding signature key
-:math:`\mathsf{bsk} = \sum_{\mathsf{ \forall i\in \{1,...,n\}}} \mathsf{rcv_{i}}`.
+:math:`\mathsf{bsk} = \sum_{i}^{n} \mathsf{rcv_{i}}`.
 
 Then the verifier MUST compute
 
