@@ -277,13 +277,13 @@ The sender includes a :math:`\mathsf{v^{AssetBase}}` variable for every Asset Id
 
 For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` vector the tuple :math:`(\mathsf{AssetBase},\mathsf{v^{AssetBase}})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
 
-.. math:: \mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}
+.. math:: \mathsf{assetBurn} = \{ (\mathsf{v^{AssetBase}}, \mathsf{AssetBase})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}
 
 The value balances for each Asset Identifier in :math:`\mathsf{assetBurn}` represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
 
 The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective :math:`\mathsf{AssetBase}` as the value base point of the Pedersen Commitment. This is done as follows:
 
-.. math:: \mathsf{bvk = (\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) }
+.. math:: \mathsf{bvk = (\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(v^{AssetBase}, AssetBase) }
 
 .. math:: \mathsf{bvk} = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}
 
