@@ -71,7 +71,7 @@ The Asset Identifier (via means of the Asset Digest and Asset Base) will be used
 
 As was initially proposed by Jack Grigg and Daira Hopwood [#initial-zsa-issue]_ [#generalized-value-commitments]_, we propose to make this happen by changing the value base point, :math:`\mathcal{V}^{\mathsf{Orchard}}`, in the Homomorphic Pedersen Commitment that derives the value commitment, :math:`\mathsf{cv^{net}}`, of the *net value* in an Orchard Action.
 
-Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` an auxiliary input to the proof for each Action statement [#protocol-actionstatement]_, represented already as a point on the Pallas curve. The circuit then should check that the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` is used in the old note commitment and the new note commitment [#protocol-concretesinsemillacommit]_, **and** as the base point :math:`\mathcal{V}^\mathsf{Orchard}` in the value commitment [#protocol-concretevaluecommit]_. This ensures (1) that the input and output notes are of the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.
+Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` an auxiliary input to the proof for each Action statement [#protocol-actionstatement]_, represented already as a point on the Pallas curve [#protocol-pallasandvesta]_. The circuit then should check that the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` is used in the old note commitment and the new note commitment [#protocol-concretesinsemillacommit]_, **and** as the base point :math:`\mathcal{V}^\mathsf{Orchard}` in the value commitment [#protocol-concretevaluecommit]_. This ensures (1) that the input and output notes are of the same :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.
 
 In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes [#protocol-dummynotes]_ for Custom Assets, as we need to enforce that the :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` of the output note of that Split Action is the output of a valid :math:`\mathsf{ZSAValueBase^{Orchard}}` computation defined in ZIP 227 [#zip-0227]_.
 
@@ -80,7 +80,8 @@ Finally, in this ZIP we also describe the *burn* mechanism, which is a direct ex
 Specification
 =============
 
-Most of the protocol is kept the same as the Orchard protocol released with NU5, except for the following.
+Most of the protocol is kept the same as the Orchard protocol released with NU5, except for the protocol changes proposed in this ZIP.
+Unless specified otherwise, we follow the notations of the Zcash Orchard protocol specifications [#protocol-specs]_.
 
 Asset Identifiers
 -----------------
@@ -377,6 +378,7 @@ References
 .. [#zip-0224] `ZIP 224: Orchard <zip-0224.html>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.html>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <zip-0227.html>`_
+.. [#protocol-specs] `Zcash Protocol Specification, Version 2022.3.8. <protocol/protocol.pdf>`_
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2022.3.8. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-notept] `Zcash Protocol Specification, Version 2022.3.8. Section 5.5: Encodings of Note Plaintexts and Memo Fields <protocol/protocol.pdf#notept>`_
 .. [#protocol-actions] `Zcash Protocol Specification, Version 2022.3.8. Section 3.7: Action Transfers and their Descriptions <protocol/protocol.pdf#actions>`_
