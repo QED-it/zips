@@ -62,6 +62,7 @@ issuance and bridging purposes.
 
 Overview
 ========
+
 In order to be able to represent different Assets, we need to define a data field that uniquely represents the Asset in question, which we call the Asset Identifier :math:`\mathsf{AssetId}`. 
 This Asset Identifier maps to an Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` that is stored in Orchard-based ZSA notes.
 These terms are formally defined in ZIP 227 [#zip-0227]_.
@@ -173,7 +174,6 @@ The Orchard Protocol uses a Homomorphic Pedersen Commitment [#protocol-concretev
 
 The use of different value base points for different Assets enables the final balance of the transaction to be securely computed, such that each Asset Identifier is balanced independently, which is required as different Assets are not meant to be mutually fungible.
 
-
 Value Balance Verification
 --------------------------
 
@@ -194,7 +194,6 @@ Rationale for Value Balance Verification
 The main reason why no changes to the Orchard process are needed is that no Custom Assets can be unshielded, so all Custom Assets are contained within the shielded pool. This means that the net balance of the input and output values is zero, with only one Asset of value balance published, that of ZEC, :math:`\mathsf{v^{balanceOrchard}}`. No net amount of any other Asset will be revealed, and the number of Assets in the transaction is also hidden. The only exception to this is in the case that an Asset is *burnt*, as we will see below in the `burn mechanism`_.
 
 As in the Orchard protocol, the binding signature verification key, :math:`\mathsf{bvk}`, will only be valid (and hence verify the signature correctly), as long as the committed values sum to zero. In contrast, in this protocol, the committed values only sum to zero **per Asset Base**, as the Pedersen commitments add up homomorphically only with respect to the same value base point.
-
 
 Split Notes
 -----------
@@ -225,7 +224,6 @@ Therefore, for Custom Assets we enforce that *every* input note to an ZSA Action
 This ensures that the value base points of all output notes of a transfer are actual outputs of a GroupHash, as they originate in the Issuance protocol which is publicly verified.
 
 Note that the Orchard dummy note functionality remains in use for ZEC notes, and the Split Input technique is used in order to support Custom Assets.
-
 
 Circuit Statement
 -----------------
@@ -326,7 +324,6 @@ A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn ty
 | 8     | valueBurn | :math:`\{1 .. 2^{64} - 1\}` | The amount of the AssetType being burnt.                                                                                  |
 +-------+-----------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 
-
 Security and Privacy Considerations
 ===================================
 
@@ -336,7 +333,6 @@ Security and Privacy Considerations
 - Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are the use of a petname system or a list of well-known Assets. 
 
     - One proposal for a petname system for the zcashd wallet is the use of an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.
-
 
 Other Considerations
 ====================
