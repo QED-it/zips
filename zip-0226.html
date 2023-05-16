@@ -275,11 +275,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     </ul>
                 </section>
                 <section id="asset-identifier-consistency-for-split-actions"><h4><span class="section-heading">Asset Identifier Consistency for Split Actions</span><span class="section-anchor"> <a rel="bookmark" href="#asset-identifier-consistency-for-split-actions"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The following constraints must be added to prevent senders from changing the Asset Base for the output note in a Split Action:</p>
+                    <p>Senders must not be able to change the Asset Base for the output note in a Split Action. We do this via the following constraints:</p>
                     <ul>
                         <li>
                             <dl>
-                                <dt>The Value Commitment Integrity should be changed</dt>
+                                <dt>The Value Commitment Integrity should be changed:</dt>
                                 <dd>
                                     <ul>
                                         <li>Replace the input note value by a generic value,

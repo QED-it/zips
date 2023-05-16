@@ -252,9 +252,9 @@ The following constraints must be added to ensure that the value commitment is c
 Asset Identifier Consistency for Split Actions
 ''''''''''''''''''''''''''''''''''''''''''''''
 
-The following constraints must be added to prevent senders from changing the Asset Base for the output note in a Split Action:
+Senders must not be able to change the Asset Base for the output note in a Split Action. We do this via the following constraints:
 
-- The Value Commitment Integrity should be changed
+- The Value Commitment Integrity should be changed:
     - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`
 - Add a boolean ``split_flag`` variable as an auxiliary witness. This variable is to be activated ``split_flag = 1`` if the Action in question has a Split Input and ``split_flag = 0`` if the Action is actually spending an input note:
     - If ``split_flag = 1`` then set :math:`\mathsf{v}' = 0` otherwise :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
