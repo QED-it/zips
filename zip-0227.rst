@@ -463,7 +463,17 @@ The personalization field of this hash remains the same as in ZIP 244.
 
 A.4: issuance_auth_digest
 `````````````````````````
+In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the ``issueAuthSig`` field of the transaction::
 
+   A.4a: issueAuthSig            (field encoding bytes)
+
+The personalization field of this hash is set to::
+
+  "ZTxAuthIssueHash"
+
+In the case that the transaction has no Orchard Actions, ``issuance_auth_digest`` is ::
+
+  BLAKE2b-256("ZTxAuthIssueHash", [])
 
 Security and Privacy Considerations
 ===================================
