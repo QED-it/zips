@@ -462,7 +462,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-41" class="footnote_reference" href="#zip-0244">10</a> is modified by the ZSA protocol to add a new branch for issuance information, and add an additional hash for the Asset Base within the <code>orchard_digest</code>. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the ZSA protocol.</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-41" class="footnote_reference" href="#zip-0244">10</a> is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the <code>orchard_digest</code> to account for the inclusion of the Asset Base. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the ZSA protocol.</p>
             <p>The overall tree structure of the hash is as follows:</p>
             <pre>txid_digest
 ├── header_digest
@@ -506,9 +506,8 @@ T.4c: orchard_actions_noncompact_digest   (32-byte hash output)          [UPDATE
 T.4d: flagsOrchard                        (1 byte)
 T.4e: valueBalanceOrchard                 (64-bit signed little-endian)
 T.4f: anchorOrchard                       (32 bytes)</pre>
-                    <p>The value of <code>T.4a: orchard_actions_compact_digest</code> is the same as in ZIP 244 <a id="footnote-reference-43" class="footnote_reference" href="#zip-0244">10</a>.</p>
                     <section id="t-4a-orchard-actions-compact-digest"><h5><span class="section-heading">T.4a: orchard_actions_compact_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-4a-orchard-actions-compact-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>A BLAKE2b-256 hash of the subset of Orchard Action information intended to be included in an updated version of the ZIP-307 <a id="footnote-reference-44" class="footnote_reference" href="#zip-0307">11</a> <code>CompactBlock</code> format for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
+                        <p>A BLAKE2b-256 hash of the subset of Orchard Action information intended to be included in an updated version of the ZIP-307 <a id="footnote-reference-43" class="footnote_reference" href="#zip-0307">11</a> <code>CompactBlock</code> format for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
                         <pre>T.4a.i  : nullifier            (field encoding bytes)
 T.4a.ii : cmx                  (field encoding bytes)
 T.4a.iii: ephemeralKey         (field encoding bytes)
@@ -523,7 +522,7 @@ T.4a.iv : encCiphertext[..84]  (First 52 bytes of field encoding)  [UPDATED FOR 
                         <pre>"ZTxIdOrcActMHash"</pre>
                     </section>
                     <section id="t-4c-orchard-actions-noncompact-digest"><h5><span class="section-heading">T.4c: orchard_actions_noncompact_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-4c-orchard-actions-noncompact-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>A BLAKE2b-256 hash of the remaining subset of Orchard Action information <strong>not</strong> intended for inclusion in an updated version of the the ZIP 307 <a id="footnote-reference-45" class="footnote_reference" href="#zip-0307">11</a> <code>CompactBlock</code> format, for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
+                        <p>A BLAKE2b-256 hash of the remaining subset of Orchard Action information <strong>not</strong> intended for inclusion in an updated version of the the ZIP 307 <a id="footnote-reference-44" class="footnote_reference" href="#zip-0307">11</a> <code>CompactBlock</code> format, for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
                         <pre>T.4d.i  : cv                    (field encoding bytes)
 T.4d.ii : rk                    (field encoding bytes)
 T.4d.iii: encCiphertext[596..]  (post-memo suffix of field encoding)  [UPDATED FOR ZSA]
@@ -533,12 +532,12 @@ T.4d.iv : outCiphertext         (field encoding bytes)</pre>
                     </section>
                 </section>
                 <section id="t-5-issuance-digest"><h4><span class="section-heading">T.5: issuance_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-5-issuance-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The details of the computation of this value are in ZIP 227 <a id="footnote-reference-46" class="footnote_reference" href="#zip-0227-txiddigest">7</a>.</p>
+                    <p>The details of the computation of this value are in ZIP 227 <a id="footnote-reference-45" class="footnote_reference" href="#zip-0227-txiddigest">7</a>.</p>
                 </section>
             </section>
         </section>
         <section id="signature-digest-and-authorizing-data-commitment"><h2><span class="section-heading">Signature Digest and Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#signature-digest-and-authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The details of the changes to these algorithms are in ZIP 227 <a id="footnote-reference-47" class="footnote_reference" href="#zip-0227-sigdigest">8</a> <a id="footnote-reference-48" class="footnote_reference" href="#zip-0227-authcommitment">9</a>.</p>
+            <p>The details of the changes to these algorithms are in ZIP 227 <a id="footnote-reference-46" class="footnote_reference" href="#zip-0227-sigdigest">8</a> <a id="footnote-reference-47" class="footnote_reference" href="#zip-0227-authcommitment">9</a>.</p>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <ul>
@@ -554,7 +553,7 @@ T.4d.iv : outCiphertext         (field encoding bytes)</pre>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="transaction-fees"><h3><span class="section-heading">Transaction Fees</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-49" class="footnote_reference" href="#zip-0317b">30</a>.</p>
+                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-48" class="footnote_reference" href="#zip-0317b">30</a>.</p>
             </section>
             <section id="backward-compatibility"><h3><span class="section-heading">Backward Compatibility</span><span class="section-anchor"> <a rel="bookmark" href="#backward-compatibility"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this: - Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the

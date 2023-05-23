@@ -330,7 +330,8 @@ A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn ty
 TxId Digest
 ===========
 
-The transaction digest algorithm defined in ZIP 244 [#zip-0244]_ is modified by the ZSA protocol to add a new branch for issuance information, and add an additional hash for the Asset Base within the ``orchard_digest``. The details of these changes are described in this section, and highlighted using the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label. We omit the details of the sections that do not change for the ZSA protocol. 
+The transaction digest algorithm defined in ZIP 244 [#zip-0244]_ is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the ``orchard_digest`` to account for the inclusion of the Asset Base. 
+The details of these changes are described in this section, and highlighted using the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label. We omit the details of the sections that do not change for the ZSA protocol. 
 
 The overall tree structure of the hash is as follows::
 
@@ -384,8 +385,6 @@ When Orchard Actions are present in the transaction, this digest is a BLAKE2b-25
    T.4d: flagsOrchard                        (1 byte)
    T.4e: valueBalanceOrchard                 (64-bit signed little-endian)  
    T.4f: anchorOrchard                       (32 bytes)
-
-The value of ``T.4a: orchard_actions_compact_digest`` is the same as in ZIP 244 [#zip-0244]_. 
 
 T.4a: orchard_actions_compact_digest
 ''''''''''''''''''''''''''''''''''''
