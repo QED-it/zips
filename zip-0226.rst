@@ -244,7 +244,7 @@ The following constraints must be added to ensure that the input and output note
 Value Commitment Correctness
 ''''''''''''''''''''''''''''
 
-The following constraints must be added to ensure that the value commitment is computed using the witnessed Asset Base, as represented in the notes:
+The following constraints must be added to ensure that the value commitment is computed using the witnessed Asset Base:
 
 - The fixed-base multiplication constraints between the value and the value base point of the value commitment, :math:`\mathsf{cv}`, is replaced with a variable-base multiplication between the two.
 - The witness to the value base point (as defined in the `asset base`_ equation) is the auxiliary input :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}`.
