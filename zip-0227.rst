@@ -469,11 +469,11 @@ In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the
 
 The personalization field of this hash is set to::
 
-  "ZTxAuthIssueHash"
+  "ZTxAuthZSAOrHash"
 
 In the case that the transaction has no Orchard Actions, ``issuance_auth_digest`` is ::
 
-  BLAKE2b-256("ZTxAuthIssueHash", [])
+  BLAKE2b-256("ZTxAuthZSAOrHash", [])
 
 Security and Privacy Considerations
 ===================================

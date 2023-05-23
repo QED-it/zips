@@ -583,9 +583,9 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                     <p>In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the <code>issueAuthSig</code> field of the transaction:</p>
                     <pre>A.4a: issueAuthSig            (field encoding bytes)</pre>
                     <p>The personalization field of this hash is set to:</p>
-                    <pre>"ZTxAuthIssueHash"</pre>
+                    <pre>"ZTxAuthZSAOrHash"</pre>
                     <p>In the case that the transaction has no Orchard Actions, <code>issuance_auth_digest</code> is</p>
-                    <pre>BLAKE2b-256("ZTxAuthIssueHash", [])</pre>
+                    <pre>BLAKE2b-256("ZTxAuthZSAOrHash", [])</pre>
                 </section>
             </section>
         </section>
