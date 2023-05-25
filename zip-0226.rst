@@ -359,6 +359,9 @@ The overall tree structure of the hash is as follows::
     │   └── anchorOrchard
     └── issuance_digest                               [ADDED FOR ZSA]
         ├── issue_actions_digest                      [ADDED FOR ZSA]
+        │   ├── issue_notes_digest                    [ADDED FOR ZSA]
+        │   ├── assetDescription                      [ADDED FOR ZSA]
+        │   └── flagsIssuance                         [ADDED FOR ZSA]
         └── issuanceValidatingKey                     [ADDED FOR ZSA]
 
 In the specification below, nodes of the tree are presented in depth-first order.
