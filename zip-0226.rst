@@ -333,39 +333,6 @@ TxId Digest
 The transaction digest algorithm defined in ZIP 244 [#zip-0244]_ is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the ``orchard_digest`` to account for the inclusion of the Asset Base. 
 The details of these changes are described in this section, and highlighted using the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label. We omit the details of the sections that do not change for the ZSA protocol. 
 
-The overall tree structure of the hash is as follows::
-
-    txid_digest
-    ├── header_digest
-    ├── transparent_digest
-    │   ├── prevouts_digest
-    │   ├── sequence_digest
-    │   └── outputs_digest
-    ├── sapling_digest
-    │   ├── sapling_spends_digest
-    │   │   ├── sapling_spends_compact_digest
-    │   │   └── sapling_spends_noncompact_digest
-    │   ├── sapling_outputs_digest
-    │   │   ├── sapling_outputs_compact_digest
-    │   │   ├── sapling_outputs_memos_digest
-    │   │   └── sapling_outputs_noncompact_digest
-    │   └── valueBalance
-    └── orchard_digest
-    │   ├── orchard_actions_compact_digest            [UPDATED FOR ZSA]
-    │   ├── orchard_actions_memos_digest              [UPDATED FOR ZSA]
-    │   ├── orchard_actions_noncompact_digest         [UPDATED FOR ZSA]
-    │   ├── flagsOrchard
-    │   ├── valueBalanceOrchard
-    │   └── anchorOrchard
-    └── issuance_digest                               [ADDED FOR ZSA]
-        ├── issue_actions_digest                      [ADDED FOR ZSA]
-        │   ├── issue_notes_digest                    [ADDED FOR ZSA]
-        │   ├── assetDescription                      [ADDED FOR ZSA]
-        │   └── flagsIssuance                         [ADDED FOR ZSA]
-        └── issuanceValidatingKey                     [ADDED FOR ZSA]
-
-In the specification below, nodes of the tree are presented in depth-first order.
-
 txid_digest
 -----------
 A BLAKE2b-256 hash of the following values ::
@@ -400,7 +367,7 @@ in the hash::
    T.4a.i  : nullifier            (field encoding bytes)
    T.4a.ii : cmx                  (field encoding bytes)
    T.4a.iii: ephemeralKey         (field encoding bytes)
-   T.4a.iv : encCiphertext[..84]  (First 52 bytes of field encoding)  [UPDATED FOR ZSA]
+   T.4a.iv : encCiphertext[..84]  (First 84 bytes of field encoding)  [UPDATED FOR ZSA]
 
 The personalization field of this hash is the same as in ZIP 244::
 

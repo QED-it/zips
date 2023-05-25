@@ -463,36 +463,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-41" class="footnote_reference" href="#zip-0244">10</a> is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the <code>orchard_digest</code> to account for the inclusion of the Asset Base. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the ZSA protocol.</p>
-            <p>The overall tree structure of the hash is as follows:</p>
-            <pre>txid_digest
-├── header_digest
-├── transparent_digest
-│   ├── prevouts_digest
-│   ├── sequence_digest
-│   └── outputs_digest
-├── sapling_digest
-│   ├── sapling_spends_digest
-│   │   ├── sapling_spends_compact_digest
-│   │   └── sapling_spends_noncompact_digest
-│   ├── sapling_outputs_digest
-│   │   ├── sapling_outputs_compact_digest
-│   │   ├── sapling_outputs_memos_digest
-│   │   └── sapling_outputs_noncompact_digest
-│   └── valueBalance
-└── orchard_digest
-│   ├── orchard_actions_compact_digest            [UPDATED FOR ZSA]
-│   ├── orchard_actions_memos_digest              [UPDATED FOR ZSA]
-│   ├── orchard_actions_noncompact_digest         [UPDATED FOR ZSA]
-│   ├── flagsOrchard
-│   ├── valueBalanceOrchard
-│   └── anchorOrchard
-└── issuance_digest                               [ADDED FOR ZSA]
-    ├── issue_actions_digest                      [ADDED FOR ZSA]
-    │   ├── issue_notes_digest                    [ADDED FOR ZSA]
-    │   ├── assetDescription                      [ADDED FOR ZSA]
-    │   └── flagsIssuance                         [ADDED FOR ZSA]
-    └── issuanceValidatingKey                     [ADDED FOR ZSA]</pre>
-            <p>In the specification below, nodes of the tree are presented in depth-first order.</p>
             <section id="txid-digest-1"><h3><span class="section-heading">txid_digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-1"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>A BLAKE2b-256 hash of the following values</p>
                 <pre>T.1: header_digest       (32-byte hash output)
@@ -514,7 +484,7 @@ T.4f: anchorOrchard                       (32 bytes)</pre>
                         <pre>T.4a.i  : nullifier            (field encoding bytes)
 T.4a.ii : cmx                  (field encoding bytes)
 T.4a.iii: ephemeralKey         (field encoding bytes)
-T.4a.iv : encCiphertext[..84]  (First 52 bytes of field encoding)  [UPDATED FOR ZSA]</pre>
+T.4a.iv : encCiphertext[..84]  (First 84 bytes of field encoding)  [UPDATED FOR ZSA]</pre>
                         <p>The personalization field of this hash is the same as in ZIP 244:</p>
                         <pre>"ZTxIdOrcActCHash"</pre>
                     </section>
