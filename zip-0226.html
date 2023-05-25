@@ -296,11 +296,18 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                 <dt>Add a boolean <code>split_flag</code> variable as an auxiliary witness. This variable is to be activated <code>split_flag = 1</code> if the Action in question has a Split Input and <code>split_flag = 0</code> if the Action is actually spending an input note:</dt>
                                 <dd>
                                     <ul>
-                                        <li>If <code>split_flag = 1</code> then set
+                                        <li>If
+                                            <span class="math">\(\texttt{split_flag} = 1\)</span>
+                                         then constrain
                                             <span class="math">\(\mathsf{v}' = 0\)</span>
-                                         otherwise
+                                         otherwise constrain
                                             <span class="math">\(\mathsf{v}'=\mathsf{v^{old}}\)</span>
                                          from the auxiliary input.</li>
+                                        <li>If
+                                            <span class="math">\(\texttt{split_flag} = 1\)</span>
+                                         then constrain
+                                            <span class="math">\(\mathsf{v^{old}} \neq 0\)</span>
+                                        .</li>
                                     </ul>
                                 </dd>
                             </dl>

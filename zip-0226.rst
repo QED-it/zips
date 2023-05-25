@@ -233,7 +233,7 @@ Circuit Statement
 Every *ZSA Action statement* is closely similar to the Orchard Action statement [#protocol-actionstatement]_, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.
 
 Asset Base Equality
-'''''''''''''''''''''''''
+'''''''''''''''''''
 
 The following constraints must be added to ensure that the input and output note are of the same :math:`\mathsf{AssetBase}`:
 
@@ -257,7 +257,8 @@ Senders must not be able to change the Asset Base for the output note in a Split
 - The Value Commitment Integrity should be changed:
     - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`
 - Add a boolean ``split_flag`` variable as an auxiliary witness. This variable is to be activated ``split_flag = 1`` if the Action in question has a Split Input and ``split_flag = 0`` if the Action is actually spending an input note:
-    - If ``split_flag = 1`` then set :math:`\mathsf{v}' = 0` otherwise :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
+    - If :math:`\texttt{split_flag} = 1` then constrain :math:`\mathsf{v}' = 0` otherwise constrain :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
+    - If :math:`\texttt{split_flag} = 1` then constrain :math:`\mathsf{v^{old}} \neq 0`.
 - The Merkle Path Validity should check the existence of the note commitment as usual (and not like with dummy notes):
     - Check that (path, pos) is a valid Merkle path of depth :math:`\mathsf{MerkleDepth^Orchard}`, from :math:`\mathsf{cm^{old}}` to the anchor :math:`\mathsf{rt^{Orchard}}`.
 - The Nullifier Integrity will be changed to prevent the identification of notes
