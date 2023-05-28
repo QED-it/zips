@@ -171,6 +171,8 @@ The relations between the Asset Identifier, Asset Digest, and Asset Base are sho
     Diagram relating the Asset Identifier, Asset Digest, and Asset Base in the ZSA Protocol
 
 
+**Note:** To keep notations light and concise, we may omit :math:`\mathsf{AssetId}` (resp. :math:`\mathsf{Protocol}`) in the subscript (resp. superscript) when the Asset Identifier (resp. Protocol) is clear from the context.
+
 Specification: Global Issuance State
 ====================================
 
