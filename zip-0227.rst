@@ -24,12 +24,19 @@ The key word "MUST" in this document is to be interpreted as described in RFC 21
 
 The term "network upgrade" in this document is to be interpreted as described in ZIP 200 [#zip-0200]_.
 
-The term "Orchard" in this document is to be interpreted as described in ZIP 224 [#zip-0224]_.
-
-The terms "Asset", "custom Asset", and "Wrapped Asset" in this document are to be interpreted as described in ZIP 226 [#zip-0226]_.
+The terms "Orchard" and "Action" in this document are to be interpreted as described in
+ZIP 224 [#zip-0224]_.
 
 We define the following additional terms:
 
+- Asset: A type of note that can be transferred on the Zcash blockchain. Each Asset is identified by an Asset Identifier :ref:`Asset Identifier`.
+
+  - ZEC is the default (and currently the only defined) Asset for the Zcash mainnet.
+  - TAZ is the default (and currently the only defined) Asset for the Zcash testnet.
+  - We use the term "Custom Asset" to refer to any Asset other than ZEC and TAZ.
+
+- Native Asset: a Custom Asset with issuance defined on the Zcash blockchain.
+- Wrapped Asset: a Custom Asset with native issuance defined outside the Zcash blockchain.
 - Issuance Action: an instance of a single issuance of a Zcash Shielded Asset. It defines the issuance of a single Asset Identifier.
 - Issuance Bundle: the bundle in the transaction that contains all the issuance actions of that transaction.
 
@@ -136,6 +143,8 @@ The issuance authorizing key and issuance validating key are derived from the is
 .. math:: \mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{isk})
 
 This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 [#zip-0032]_. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.
+
+.. _Asset Identifier:
 
 Specification: Asset Identifier
 ===============================
