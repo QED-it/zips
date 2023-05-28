@@ -153,12 +153,12 @@ Let
 Define :math:`\mathsf{AssetDigest_{\mathsf{AssetId}}} := \textsf{BLAKE2b-512}(\texttt{"ZSA-Asset-Digest"},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))`,
 where
 
-- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}(\mathsf{ik}, \mathsf{asset\_desc}) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!`.
+- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!`.
 
 Define :math:`\mathsf{AssetBase^{Protocol}_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase^{Protocol}}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`,
 where
 
-In the case of Orchard, we define :math:`\mathsf{ZSAValueBase^{Orchard}}(\mathsf{asset\_digest}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{asset\_digest})`
+In the case of Orchard, we define :math:`\mathsf{ZSAValueBase^{Orchard}}(\mathsf{AssetDigest}_{\mathsf{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest}_{\mathsf{AssetId}})`
 where :math:`\mathsf{GroupHash}^\mathbb{P}` is defined as in [#protocol-concretegrouphashpallasandvesta]_.
 
 The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:
