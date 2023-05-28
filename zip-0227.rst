@@ -237,7 +237,7 @@ For all actions `IssueAction`:
 - encode :math:`\mathsf{asset\_desc}` as a UTF-8 byte string of size up to 512.
 - compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as decribed in the `Specification: Asset Identifier`_ section.
 - compute :math:`\mathsf{AssetBase^{Protocol}}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
-- set the ``finalize`` boolean as desired (if more more issuance actions are to be created for this Asset Identifier, set ``finalize = 0``, otherwise set ``finalize = 1``)
+- set the ``finalize`` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set ``finalize = 0``, otherwise set ``finalize = 1``)
 - For each recipient :math:`i`:
 
     - generate a ZSA output note that includes the Asset Base. For an Orchard-based ZSA note this is :math:`\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d},i}, \mathsf{v}_i, \rho_i, \psi_i, \mathsf{AssetBase^{Orchard}}, \mathsf{rcm}_i)\!`.
@@ -251,7 +251,7 @@ For the `IssueBundle`:
 - sign the `SIGHASH` of the transaction with the issuance authorizing key, :math:`\mathsf{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
 
 
-NOTE that the commitment is not included in the `IssuanceAction` itself. As explained below, it is later computed by the validators and added to the `NoteCommitmentTree`.
+**Note:** that the commitment is not included in the `IssuanceAction` itself. As explained below, it is computed later by the validators and added to the `NoteCommitmentTree`.
 
 
 Specification: Consensus Rule Changes
