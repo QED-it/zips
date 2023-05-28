@@ -210,10 +210,11 @@ Bytes              Name                            Data Type                  De
 2           assetDescSize  byte                       The length of the asset\_desc string in bytes
 Varies      asset\_desc    byte                       UTF-8 encoded string, of size assetDescSize bytes
 Varies            nNotes                          compactSize                The number of notes in the issuance action
-TBD         noteSize       byte                   The size, in bytes, of a Note
 noteSize * nNotes vNotes                          Note[nNotes]               A sequence of note descriptions within the issuance action
 1            ``flagsIssuance``               byte                       An 8-bit value with the ``finalize`` boolean value as the LSB, and the other bits set to 0.
 ================= =============================== ========================== ===========================================================================================
+
+, where noteSize is the size, in bytes, of a Note.
 
 We note that the output note commitment of the recipient's notes are not included in the actual transaction, but when added to the global state of the chain, they will be added to the `NoteCommitmentTree` as a shielded note. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.
 
@@ -231,12 +232,13 @@ The issuance bundle is then added within the transaction format as a new bundle.
 ======= ==================== ========================== ==========================================================================================================================
 Bytes              Name               Data Type                  Description
 ======= ==================== ========================== ==========================================================================================================================
-Varies  nIssueActions        compactSize                The number of issuance actions in the bundle
-TBD     IssueActionSize      byte                       The size, in bytes, of an IssueAction description
+Varies     nIssueActions        compactSize                The number of issuance actions in the bundle
 IssueActionSize *  nIssueActions vIssueActions        IssueAction[nIssueActions] A sequence of issuance actions descriptions
 32      ik                   byte[32]                   The issuance validating key of the issuer, used to validate the signature
 64      issueAuthSig         byte[64]                   The signature of the transaction SIGHASH, signed by the issuer, validated as in `Issuance Authorization Signature Scheme`_
 ======= ==================== ========================== ==========================================================================================================================
+
+, where IssueActionSize is the size, in bytes, of an IssueAction description.
 
 Issuance Protocol
 -----------------
