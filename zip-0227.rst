@@ -45,7 +45,7 @@ This ZIP is a supporting ZIP for ZIP 226 [#zip-0226]_, which lays out its motiva
 
 This ZIP enables only *transparent* issuance, since as a first step, transparency will allow for proper testing of the applications that will be most used in the Zcash ecosystem, and will enable the supply of Assets to be tracked. 
 
-The issuance mechanism described in this ZIP is broad enough for issuers to either create Assets on Zcash (i.e. Assets that originate on the Zcash block chain), as well as for institutions to create bridges from other chains and import "wrapped" Assets. This enables what we hope will be a useful set of applications.
+The issuance mechanism described in this ZIP is broad enough for issuers to either create Assets on Zcash (i.e. Assets that originate on the Zcash blockchain), as well as for institutions to create bridges from other chains and import "wrapped" Assets. This enables what we hope will be a useful set of applications.
 
 
 Use Cases
@@ -63,8 +63,8 @@ See the `Concrete Applications`_ section for more details.
 Requirements
 ============
 
-- Any user of the Zcash block chain can issue custom Assets on chain.
-- The issuance mechanism should enable public tracking of the supply of the Assets on the Zcash block chain.
+- Any user of the Zcash blockchain can issue custom Assets on chain.
+- The issuance mechanism should enable public tracking of the supply of the Assets on the Zcash blockchain.
 - Issuing or changing the attributes of a specific Asset should require cryptographic authorization.
 - The Asset identification should be unique (among all shielded pools) and different issuer public keys should not be able to generate the same Asset Identifier.
 - An issuer should be able to issue different Assets in the same transaction. In other words, in a single "issuance bundle", the issuer should be able publish many "issuance actions", potentially creating multiple Custom Assets.
@@ -80,7 +80,7 @@ The ZSA Protocol adds the following three keys to the key components [#protocol-
 
 2. The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as :math:`\mathsf{isk}`. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
 
-3. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all block chain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
+3. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
 
 The relations between these keys are shown in the following diagram:
 
