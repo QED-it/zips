@@ -488,7 +488,7 @@ References
 .. [#protocol-concretevaluecommit] `Zcash Protocol Specification, Version 2022.3.8. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard) <protocol/protocol.pdf#concretevaluecommit>`_
 .. [#protocol-dummynotes] `Zcash Protocol Specification, Version 2022.3.8. Section 4.8.3: Dummy Notes (Orchard) <protocol/protocol.pdf#>`_
 .. [#protocol-actionstatement] `Zcash Protocol Specification, Version 2022.3.8. Section 4.17.4: Action Statement (Orchard) <protocol/protocol.pdf#actionstatement>`_
-.. [#protocol-transactionstructure] `Zcash Protocol Specification, Version 2022.3.8. Section 7.1: Transaction Encoding and Consensus (Transaction Version 5)  <protocol/protocol.pdf#>`_
+.. [#protocol-transactionstructure] `Zcash Protocol Specification, Version 2022.3.8. Section 7.1: Transaction Encoding and Consensus (Transaction Version 5)  <protocol/protocol.pdf#txnencodingandconsensus>`_
 .. [#initial-zsa-issue] `User-Defined Assets and Wrapped Assets <https://github.com/str4d/zips/blob/zip-udas/drafts/zip-user-defined-assets.rst>`_
 .. [#generalized-value-commitments] `Comment on Generalized Value Commitments <https://github.com/zcash/zcash/issues/2277#issuecomment-321106819>`_
 .. [#zip-0317b] `ZIP 317: Proportional Transfer Fee Mechanism - Pull Request #667 for ZSA Protocol ZIPs <https://github.com/zcash/zips/pull/667>`_
