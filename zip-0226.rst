@@ -314,36 +314,36 @@ For brevity, we omit the descriptions from the table below unless they differ fr
 +=============================+==========================+===========================================+=====================================================================+
 | **Orchard Transaction Fields**                                                                                                                                           |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``nActionsOrchard``       |``compactSize``                            |The number of Orchard Action descriptions in                         |
-|                             |                          |                                           |``vActionsOrchard``.                                                 |
+|``varies``                   |``nActionsOrchard``       |``compactSize``                            |                                                                     |
+|                             |                          |                                           |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``852 * nActionsOrchard``    |``vActionsOrchard``       |``ZSAOrchardAction[nActionsOrchard]``      |A sequence of ZSA Orchard Action descriptions, encoded per           |
 |                             |                          |                                           |the `ZSA Orchard Action Description Encoding`_. **[UPDATED FOR ZSA]**|
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``1``                        |``flagsOrchard``          |``byte``                                   |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
-|                             |                          |                                           | * ``enableSpendsOrchard``                                           |
-|                             |                          |                                           | * ``enableOutputsOrchard``                                          |
-|                             |                          |                                           | * The remaining bits are set to ``0``.                              |
+|``1``                        |``flagsOrchard``          |``byte``                                   |                                                                     |
+|                             |                          |                                           |                                                                     |
+|                             |                          |                                           |                                                                     |
+|                             |                          |                                           |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``8``                        |``valueBalanceOrchard``   |``int64``                                  |The net value of Orchard spends minus outputs.                       |
+|``8``                        |``valueBalanceOrchard``   |``int64``                                  |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``32``                       |``anchorOrchard``         |``byte[32]``                               |A root of the Orchard note commitment tree at some block             |
-|                             |                          |                                           |height in the past.                                                  |
+|``32``                       |``anchorOrchard``         |``byte[32]``                               |                                                                     |
+|                             |                          |                                           |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``sizeProofsOrchard``     |``compactSize``                            |Length in bytes of ``proofsOrchard``. Value is                       |
-|                             |                          |                                           |:math:`2720 + 2272 \cdot \mathtt{nActionsOrchard}`.                  |
+|``varies``                   |``sizeProofsOrchard``     |``compactSize``                            |                                                                     |
+|                             |                          |                                           |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``sizeProofsOrchard``        |``proofsOrchard``         |``byte[sizeProofsOrchard]``                |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
+|``sizeProofsOrchard``        |``proofsOrchard``         |``byte[sizeProofsOrchard]``                |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``64 * nActionsOrchard``     |``vSpendAuthSigsOrchard`` |``byte[64 * nActionsOrchard]``             |Authorizing signatures for each Orchard Action.                      |
+|``64 * nActionsOrchard``     |``vSpendAuthSigsOrchard`` |``byte[64 * nActionsOrchard]``             |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``64``                       |``bindingSigOrchard``     |``byte[64]``                               |An Orchard binding signature on the SIGHASH transaction hash.        |
+|``64``                       |``bindingSigOrchard``     |``byte[64]``                               |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 | **ZSA Burn Fields**                                                                                                                                                      |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-| varies                      | nAssetBurn               | compactSize                               | The number of Assets burnt.                                         |
+| ``varies``                  | ``nAssetBurn``           | ``compactSize``                           | The number of Assets burnt.                                         |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-| 40*nAssetBurn               | vAssetBurn               | AssetBurn[nAssetBurn]                     | A sequence of Asset Burn descriptions,                              |
+| ``40 * nAssetBurn``         | ``vAssetBurn``           | ``AssetBurn[nAssetBurn]``                 | A sequence of Asset Burn descriptions,                              |
 |                             |                          |                                           | encoded per `ZSA Asset Burn Description`_.                          |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 

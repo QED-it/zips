@@ -419,7 +419,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <td><code>varies</code></td>
                         <td><code>nActionsOrchard</code></td>
                         <td><code>compactSize</code></td>
-                        <td>The number of Orchard Action descriptions in <code>vActionsOrchard</code>.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>852 * nActionsOrchard</code></td>
@@ -431,70 +431,57 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <td><code>1</code></td>
                         <td><code>flagsOrchard</code></td>
                         <td><code>byte</code></td>
-                        <td>
-                            <dl>
-                                <dt>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</dt>
-                                <dd>
-                                    <ul>
-                                        <li><code>enableSpendsOrchard</code></li>
-                                        <li><code>enableOutputsOrchard</code></li>
-                                        <li>The remaining bits are set to <code>0</code>.</li>
-                                    </ul>
-                                </dd>
-                            </dl>
-                        </td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>8</code></td>
                         <td><code>valueBalanceOrchard</code></td>
                         <td><code>int64</code></td>
-                        <td>The net value of Orchard spends minus outputs.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>32</code></td>
                         <td><code>anchorOrchard</code></td>
                         <td><code>byte[32]</code></td>
-                        <td>A root of the Orchard note commitment tree at some block height in the past.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>varies</code></td>
                         <td><code>sizeProofsOrchard</code></td>
                         <td><code>compactSize</code></td>
-                        <td>Length in bytes of <code>proofsOrchard</code>. Value is
-                            <span class="math">\(2720 + 2272 \cdot \mathtt{nActionsOrchard}\)</span>
-                        .</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>sizeProofsOrchard</code></td>
                         <td><code>proofsOrchard</code></td>
                         <td><code>byte[sizeProofsOrchard]</code></td>
-                        <td>Encoding of aggregated zk-SNARK proofs for Orchard Actions.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>64 * nActionsOrchard</code></td>
                         <td><code>vSpendAuthSigsOrchard</code></td>
                         <td><code>byte[64 * nActionsOrchard]</code></td>
-                        <td>Authorizing signatures for each Orchard Action.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td><code>64</code></td>
                         <td><code>bindingSigOrchard</code></td>
                         <td><code>byte[64]</code></td>
-                        <td>An Orchard binding signature on the SIGHASH transaction hash.</td>
+                        <td></td>
                     </tr>
                     <tr>
                         <td colspan="4"><strong>ZSA Burn Fields</strong></td>
                     </tr>
                     <tr>
-                        <td>varies</td>
-                        <td>nAssetBurn</td>
-                        <td>compactSize</td>
+                        <td><code>varies</code></td>
+                        <td><code>nAssetBurn</code></td>
+                        <td><code>compactSize</code></td>
                         <td>The number of Assets burnt.</td>
                     </tr>
                     <tr>
-                        <td>40*nAssetBurn</td>
-                        <td>vAssetBurn</td>
-                        <td>AssetBurn[nAssetBurn]</td>
+                        <td><code>40 * nAssetBurn</code></td>
+                        <td><code>vAssetBurn</code></td>
+                        <td><code>AssetBurn[nAssetBurn]</code></td>
                         <td>A sequence of Asset Burn descriptions, encoded per <a href="#zsa-asset-burn-description">ZSA Asset Burn Description</a>.</td>
                     </tr>
                 </tbody>
