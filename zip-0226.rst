@@ -350,8 +350,10 @@ For brevity, we omit the descriptions from the table below unless they differ fr
 ZSA Orchard Action Description Encoding
 ---------------------------------------
 
-The ZSA Orchard Action size differs from the Orchard Action size by 32 bytes. This implies that the size goes from 820 bytes in the Orchard Action to 852 bytes in the ZSA Orchard Action.
+The ZSA Orchard Action size differs from the Orchard Action size by 32 bytes. 
+This means that the size goes from 820 bytes in the Orchard Action to 852 bytes in the ZSA Orchard Action.
 We omit the descriptions from the table below since they are identical to the descriptions in §7.5 of the Zcash specification [#protocol-actionencodingandconsensus]_.
+A ZSA Orchard Action description is encoded in a transaction as an instance of an ``ZSAOrchardAction`` type:
 
 +-------+-------------------+---------------+----------------------+
 | Bytes | Name              | Data Type     |                      |
@@ -375,7 +377,7 @@ We omit the descriptions from the table below since they are identical to the de
 ZSA Asset Burn Description
 --------------------------
 
-A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn type:
+A ZSA Asset Burn description is encoded in a transaction as an instance of an ``AssetBurn`` type:
 
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | Bytes | Name          | Data Type                   | Description                                                                                                               |

@@ -487,7 +487,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </tbody>
             </table>
             <section id="zsa-orchard-action-description-encoding"><h3><span class="section-heading">ZSA Orchard Action Description Encoding</span><span class="section-anchor"> <a rel="bookmark" href="#zsa-orchard-action-description-encoding"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The ZSA Orchard Action size differs from the Orchard Action size by 32 bytes. This implies that the size goes from 820 bytes in the Orchard Action to 852 bytes in the ZSA Orchard Action. We omit the descriptions from the table below since they are identical to the descriptions in §7.5 of the Zcash specification <a id="footnote-reference-42" class="footnote_reference" href="#protocol-actionencodingandconsensus">28</a>.</p>
+                <p>The ZSA Orchard Action size differs from the Orchard Action size by 32 bytes. This means that the size goes from 820 bytes in the Orchard Action to 852 bytes in the ZSA Orchard Action. We omit the descriptions from the table below since they are identical to the descriptions in §7.5 of the Zcash specification <a id="footnote-reference-42" class="footnote_reference" href="#protocol-actionencodingandconsensus">28</a>. A ZSA Orchard Action description is encoded in a transaction as an instance of an <code>ZSAOrchardAction</code> type:</p>
                 <table>
                     <thead>
                         <tr>
@@ -544,7 +544,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </table>
             </section>
             <section id="zsa-asset-burn-description"><h3><span class="section-heading">ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>A ZSA Asset Burn description is encoded in a transaction as an of a AssetBurn type:</p>
+                <p>A ZSA Asset Burn description is encoded in a transaction as an instance of an <code>AssetBurn</code> type:</p>
                 <table>
                     <thead>
                         <tr>
