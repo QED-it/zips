@@ -206,10 +206,10 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>For a total of
                     <span class="math">\(n\)</span>
                  Actions in a transfer, the prover MUST still sign the <cite>SIGHASH</cite> of the transaction using the binding signature key
-                    <span class="math">\(\mathsf{bsk} = \sum_{\mathsf{ \forall i\in \{1,...,n\}}} \mathsf{rcv_{i}}\)</span>
+                    <span class="math">\(\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv_{i}}\)</span>
                 .</p>
                 <p>Then the verifier MUST compute</p>
-                <div class="math">\(\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} = \sum \mathsf{rcv_{i}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
+                <div class="math">\(\mathsf{bvk = (\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} = \sum_{i=1}^{n} \mathsf{rcv_{i}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
                 <p>and use it to verify the <cite>bindingSignature</cite> on the <cite>SIGHASH</cite> message.</p>
                 <section id="rationale-for-value-balance-verification"><h4><span class="section-heading">Rationale for Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The main reason why no changes to the Orchard process are needed is that no Custom Assets can be unshielded, so all Custom Assets are contained within the shielded pool. This means that the net balance of the input and output values is zero, with only one Asset of value balance published, that of ZEC,
@@ -379,7 +379,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective
                 <span class="math">\(\mathsf{AssetBase}\)</span>
              as the value base point of the Pedersen Commitment. This is done as follows</p>
-            <div class="math">\(\mathsf{bvk = (\sum cv_i^{net})}  - \mathsf{ ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase}) } = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
+            <div class="math">\(\mathsf{bvk} = \mathsf{(\sum cv_i^{net})}  - \mathsf{ValueCommit_0^{Orchard}(v^{balanceOrchard})} - \sum_{\mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}(AssetBase, v^{AssetBase})}\)</div>
+            <div class="math">\(\mathsf{bvk} = \sum \mathsf{rcv_{i,j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</div>
             <p>In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.</p>
             <section id="burn-mechanism-consensus-rules"><h3><span class="section-heading">Burn Mechanism Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <ol type="1">
