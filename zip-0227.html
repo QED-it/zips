@@ -76,12 +76,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>The issuance master key, denoted as
                     <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
                 , as the name suggests, is the master key that is used to derive the other two keys.</li>
-                <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as
-                    <span class="math">\(\mathsf{isk}\)</span>
-                . This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
-                <li>The issuance validating key, denoted as
-                    <span class="math">\(\mathsf{ik}\)</span>
-                , is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.</li>
+                <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as <code>isk</code>. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
+                <li>The issuance validating key, denoted as <code>ik</code>, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.</li>
             </ol>
             <p>The relations between these keys are shown in the following diagram:</p>
             <figure class="align-center" align="center">
@@ -156,13 +152,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
                         , as a private signature key:</li>
                     </ul>
-                    <div class="math">\(\mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{sk}_{\mathsf{iss}} )\)</div>
+                    <div class="math">\(\mathtt{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{sk}_{\mathsf{iss}} )\)</div>
                     <ul>
                         <li>The issuance validating key is derived from the issuance authorizing key,
-                            <span class="math">\(\mathsf{isk}\)</span>
+                            <span class="math">\(\mathtt{isk}\)</span>
                         , as a public verification key:</li>
                     </ul>
-                    <div class="math">\(\mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{isk})\)</div>
+                    <div class="math">\(\mathtt{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathtt{isk})\)</div>
                     <p>This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0032">11</a>. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.</p>
                 </section>
             </section>
@@ -171,12 +167,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>For every new Asset, there must be a new and unique Asset Identifier, denoted
                 <span class="math">\(\mathsf{AssetId}\)</span>
             . We define this to be a globally unique pair
-                <span class="math">\(\mathsf{AssetId} := (\mathsf{ik}, \mathsf{asset\_desc})\)</span>
-            , where
-                <span class="math">\(\mathsf{ik}\)</span>
-             is the issuance key and
-                <span class="math">\(\mathsf{asset\_desc}\)</span>
-             is a byte string.</p>
+                <span class="math">\(\mathsf{AssetId} := (\mathtt{ik}, \mathtt{assetDesc})\)</span>
+            , where <code>ik</code> is the issuance key and <code>assetDesc</code> is a byte string.</p>
             <p>A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest,
                 <span class="math">\(\mathsf{AssetDigest}\)</span>
             , which is simply is a
@@ -186,19 +178,15 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
              for the Orchard-based ZSA protocol), using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.</p>
             <p>Let</p>
             <ul>
-                <li>
-                    <span class="math">\(\mathsf{asset\_desc}\)</span>
-                 be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
-                <li>
-                    <span class="math">\(\mathsf{ik}\)</span>
-                 be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
+                <li><code>assetDesc</code> be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
+                <li><code>ik</code> be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
             </ul>
             <p>Define
                 <span class="math">\(\mathsf{AssetDigest_{\mathsf{AssetId}}} := \textsf{BLAKE2b-512}(\texttt{"ZSA-Asset-Digest"},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))\)</span>
             , where</p>
             <ul>
                 <li>
-                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!\)</span>
+                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathtt{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathtt{ik}) || \mathtt{assetDesc}\!\)</span>
                 .</li>
             </ul>
             <p>Define
@@ -310,7 +298,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      is properly associated with the issuer.</li>
                     <li><code>vIssueActions</code>: an array of issuance actions, of type <cite>IssueAction</cite>.</li>
                     <li><code>issueAuthSig</code>: the signature of the transaction SIGHASH, signed by the issuance authorizing key,
-                        <span class="math">\(\mathsf{isk}\)</span>
+                        <span class="math">\(\mathtt{isk}\)</span>
                     , that validates the issuance .</li>
                 </ul>
                 <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-20" class="footnote_reference" href="#protocol-transactionstructure">23</a>.</p>
@@ -381,7 +369,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li>encode the <code>vIssueActions</code> vector.</li>
                     <li>encode the <code>ik</code> as 32 byte-string.</li>
                     <li>sign the <code>SIGHASH</code> of the transaction with the issuance authorizing key,
-                        <span class="math">\(\mathsf{isk}\)</span>
+                        <span class="math">\(\mathtt{isk}\)</span>
                     , using the
                         <span class="math">\(\mathsf{IssueAuthSig}\)</span>
                      signature scheme. The signature is then added to the issuance bundle.</li>
@@ -439,9 +427,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.</li>
                 <li>The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.</li>
-                <li>The
-                    <span class="math">\(\mathsf{asset\_desc}\)</span>
-                 is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
+                <li>The <code>assetDesc</code> is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
                     <ul>
                         <li>links for storage such as for NFTs.</li>
                         <li>metadata for Assets, encoded in any format.</li>
@@ -618,9 +604,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                 <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317b <a id="footnote-reference-30" class="footnote_reference" href="#zip-0317b">10</a>.</p>
             </section>
             <section id="future-work"><h3><span class="section-heading">Future Work</span><span class="section-anchor"> <a rel="bookmark" href="#future-work"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying
-                    <span class="math">\(\mathsf{ik}\)</span>
-                 of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.</p>
+                <p>In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying <code>ik</code> of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.</p>
             </section>
         </section>
         <section id="test-vectors"><h2><span class="section-heading">Test Vectors</span><span class="section-anchor"> <a rel="bookmark" href="#test-vectors"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>

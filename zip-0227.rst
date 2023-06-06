@@ -84,9 +84,9 @@ The ZSA Protocol adds the following three keys to the key components [#protocol-
 
 1. The issuance master key, denoted as :math:`\mathsf{sk}_{\mathsf{iss}}`, as the name suggests, is the master key that is used to derive the other two keys.
 
-2. The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as :math:`\mathsf{isk}`. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
+2. The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as ``isk``. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
 
-3. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
+3. The issuance validating key, denoted as ``ik``, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
 
 The relations between these keys are shown in the following diagram:
 
@@ -135,31 +135,31 @@ The issuance authorizing key and issuance validating key are derived from the is
 
 - The issuance authorizing key is derived from the issuance master key, :math:`\mathsf{sk}_{\mathsf{iss}}`, as a private signature key:
 
-.. math:: \mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{sk}_{\mathsf{iss}} )
+.. math:: \mathtt{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{sk}_{\mathsf{iss}} )
 
-- The issuance validating key is derived from the issuance authorizing key, :math:`\mathsf{isk}`, as a public verification key:
+- The issuance validating key is derived from the issuance authorizing key, :math:`\mathtt{isk}`, as a public verification key:
 
-.. math:: \mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{isk})
+.. math:: \mathtt{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathtt{isk})
 
 This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 [#zip-0032]_. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.
 
 Specification: Asset Identifier
 ===============================
 
-For every new Asset, there must be a new and unique Asset Identifier, denoted :math:`\mathsf{AssetId}`. We define this to be a globally unique pair :math:`\mathsf{AssetId} := (\mathsf{ik}, \mathsf{asset\_desc})`, where :math:`\mathsf{ik}` is the issuance key and :math:`\mathsf{asset\_desc}` is a byte string.
+For every new Asset, there must be a new and unique Asset Identifier, denoted :math:`\mathsf{AssetId}`. We define this to be a globally unique pair :math:`\mathsf{AssetId} := (\mathtt{ik}, \mathtt{assetDesc})`, where ``ik`` is the issuance key and ``assetDesc`` is a byte string.
 
 A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest, :math:`\mathsf{AssetDigest}`, which is simply is a :math:`\textsf{BLAKE2b-512}` hash of the Asset Identifier.
 From the Asset Digest, we derive a specific Asset Base within each such shielded protocol (for example :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}` for the Orchard-based ZSA protocol), using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.
 
 Let 
 
-- :math:`\mathsf{asset\_desc}` be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
-- :math:`\mathsf{ik}` be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.
+- ``assetDesc`` be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
+- ``ik`` be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.
 
 Define :math:`\mathsf{AssetDigest_{\mathsf{AssetId}}} := \textsf{BLAKE2b-512}(\texttt{"ZSA-Asset-Digest"},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))`,
 where
 
-- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!`.
+- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathtt{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathtt{ik}) || \mathtt{assetDesc}\!`.
 
 Define :math:`\mathsf{AssetBase^{Protocol}_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase^{Protocol}}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`,
 where
@@ -236,7 +236,7 @@ It contains the following fields:
 
 - ``ik``: the issuance validating key, that allows the validators to verify that the :math:`\mathsf{AssetId}` is properly associated with the issuer.
 - ``vIssueActions``: an array of issuance actions, of type `IssueAction`.
-- ``issueAuthSig``: the signature of the transaction SIGHASH, signed by the issuance authorizing key, :math:`\mathsf{isk}`, that validates the issuance .
+- ``issueAuthSig``: the signature of the transaction SIGHASH, signed by the issuance authorizing key, :math:`\mathtt{isk}`, that validates the issuance .
 
 The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format [#protocol-transactionstructure]_.
 
@@ -274,7 +274,7 @@ For the ``IssueBundle``:
 
 - encode the ``vIssueActions`` vector.
 - encode the ``ik`` as 32 byte-string.
-- sign the ``SIGHASH`` of the transaction with the issuance authorizing key, :math:`\mathsf{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
+- sign the ``SIGHASH`` of the transaction with the issuance authorizing key, :math:`\mathtt{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
 
 
 **Note:** that the commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
@@ -311,7 +311,7 @@ The following is a list of rationale for different decisions made in the proposa
 
 - The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.
 - The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.
-- The :math:`\mathsf{asset\_desc}` is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
+- The ``assetDesc`` is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
 
     - links for storage such as for NFTs.
     - metadata for Assets, encoded in any format.
@@ -538,7 +538,7 @@ The fee mechanism described in this ZIP will follow the mechanism described in Z
 Future Work
 -----------
 
-In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying :math:`\mathsf{ik}` of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.
+In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying ``ik`` of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.
 
 Test Vectors
 ============
