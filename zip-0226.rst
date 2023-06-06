@@ -320,9 +320,11 @@ For brevity, we omit the descriptions from the table below unless they differ fr
 |``852 * nActionsOrchard``    |``vActionsOrchard``       |``ZSAOrchardAction[nActionsOrchard]``      |A sequence of ZSA Orchard Action descriptions, encoded per           |
 |                             |                          |                                           |the `ZSA Orchard Action Description Encoding`_. **[UPDATED FOR ZSA]**|
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``1``                        |``flagsFinalize``         |``byte``                                   |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
+|                             |                          |                                           | * ``finalize``                                                      |
+|                             |                          |                                           | * The remaining bits are set to ``0``.                              |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``1``                        |``flagsOrchard``          |``byte``                                   |                                                                     |
-|                             |                          |                                           |                                                                     |
-|                             |                          |                                           |                                                                     |
 |                             |                          |                                           |                                                                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``8``                        |``valueBalanceOrchard``   |``int64``                                  |                                                                     |
