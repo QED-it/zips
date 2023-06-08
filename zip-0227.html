@@ -211,7 +211,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         <section id="specification-global-issuance-state"><h2><span class="section-heading">Specification: Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>Issuance requires the following additions to the global state defined at block boundaries:</p>
             <ul>
-                <li><code>previously_finalized</code>, a set of
+                <li><code>finalized_assets</code>, a set of
                     <span class="math">\(\mathsf{AssetId}\)</span>
                  that have been finalized (i.e.: the <code>finalize</code> flag has been set to <code>1</code> in some issuance transaction preceding the block boundary).</li>
             </ul>
@@ -231,10 +231,10 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </ul>
                 <p>An asset's
                     <span class="math">\(\mathsf{AssetId}\)</span>
-                 is added to the <code>previously_finalized</code> set after a block that contains any issuance transaction for that asset with <code>finalize = 1</code>. It then cannot be removed from this set. For Assets with
-                    <span class="math">\(\mathsf{AssetId} \in \mathtt{previously\_finalized}\)</span>
+                 is added to the <code>finalized_assets</code> set after a block that contains any issuance transaction for that asset with <code>finalize = 1</code>. It then cannot be removed from this set. For Assets with
+                    <span class="math">\(\mathsf{AssetId} \in \mathtt{finalized\_assets}\)</span>
                 , no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with
-                    <span class="math">\(\mathsf{AssetId} \not\in \mathtt{previously\_finalized}\)</span>
+                    <span class="math">\(\mathsf{AssetId} \not\in \mathtt{finalized\_assets}\)</span>
                 , new issuance actions can be issued in future transactions. These must use the same Asset description, <code>assetDesc</code>, and can either maintain <code>finalize = 0</code> or change it to <code>finalize = 1</code>, denoting that this Custom Asset cannot be issued after the containing block.</p>
                 <table>
                     <thead>
@@ -401,7 +401,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  is derived from the issuance validating key <code>ik</code> and <code>assetDesc</code> as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                 <li>check that the
                     <span class="math">\(\mathsf{AssetId}\)</span>
-                 does not exist in the <code>previously_finalized</code> set in the global state.</li>
+                 does not exist in the <code>finalized_assets</code> set in the global state.</li>
                 <li>check that every note in the <code>IssueAction</code> contains the same
                     <span class="math">\(\mathsf{AssetBase}\)</span>
                  and is properly constructed as
@@ -418,7 +418,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  to the Merkle tree of note commitments.</li>
                 <li>If <code>finalize = 1</code>, add
                     <span class="math">\(\mathsf{AssetId}\)</span>
-                 to the <code>previously_finalized</code> set immediately after the block in which this transaction occurs.</li>
+                 to the <code>finalized_assets</code> set immediately after the block in which this transaction occurs.</li>
                 <li>(Replay Protection) If issue bundle is present, the fees MUST be greater than zero.</li>
             </ul>
         </section>
@@ -435,7 +435,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>information to be committed by the issuer, though not enforceable by the protocol.</li>
                     </ul>
                 </li>
-                <li>We require a check whether the <code>finalize</code> flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the <code>previously_finalized</code> set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
+                <li>We require a check whether the <code>finalize</code> flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the <code>finalized_assets</code> set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
                 <li>We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the <code>SIGHASH</code> would be computed solely based on the issue bundle. A duplicate bundle would have the same <code>SIGHASH</code>, potentially allowing for a replay attack.</li>
             </ul>
             <section id="concrete-applications"><h3><span class="section-heading">Concrete Applications</span><span class="section-anchor"> <a rel="bookmark" href="#concrete-applications"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>

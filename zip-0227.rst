@@ -184,7 +184,7 @@ Specification: Global Issuance State
 
 Issuance requires the following additions to the global state defined at block boundaries:
 
-- ``previously_finalized``, a set of :math:`\mathsf{AssetId}` that have been finalized (i.e.: the ``finalize`` flag has been set to ``1`` in some issuance transaction preceding the block boundary).
+- ``finalized_assets``, a set of :math:`\mathsf{AssetId}` that have been finalized (i.e.: the ``finalize`` flag has been set to ``1`` in some issuance transaction preceding the block boundary).
 
 
 Specification: Issuance Action, Issuance Bundle and Issuance Protocol
@@ -200,9 +200,9 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific custo
 - ``vNotes``: an array of ``Note`` containing the unencrypted output notes of the recipients of the Asset.
 - ``flagsIssuance``: a byte that stores the ``finalize`` boolean that defines whether the issuance of that specific Custom Asset is finalized or not
 
-An asset's :math:`\mathsf{AssetId}` is added to the ``previously_finalized`` set after a block that contains any issuance transaction for that asset with ``finalize = 1``. It then cannot be removed from this set. 
-For Assets with :math:`\mathsf{AssetId} \in \mathtt{previously\_finalized}`, no further tokens can be issued, so as seen below, the validators will reject the transaction. 
-For Assets with :math:`\mathsf{AssetId} \not\in \mathtt{previously\_finalized}`, new issuance actions can be issued in future transactions. 
+An asset's :math:`\mathsf{AssetId}` is added to the ``finalized_assets`` set after a block that contains any issuance transaction for that asset with ``finalize = 1``. It then cannot be removed from this set. 
+For Assets with :math:`\mathsf{AssetId} \in \mathtt{finalized\_assets}`, no further tokens can be issued, so as seen below, the validators will reject the transaction. 
+For Assets with :math:`\mathsf{AssetId} \not\in \mathtt{finalized\_assets}`, new issuance actions can be issued in future transactions. 
 These must use the same Asset description, ``assetDesc``, and can either maintain ``finalize = 0`` or change it to ``finalize = 1``, denoting that this Custom Asset cannot be issued after the containing block.
 
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
@@ -293,14 +293,14 @@ For each ``IssueAction`` in ``IssueBundle``:
 - check that :math:`\mathtt{assetDesc}` is a string of length :math:`\mathtt{assetDescSize}` bytes.
 
 - retrieve :math:`\mathsf{AssetBase}` from the first note in the sequence and check that :math:`\mathsf{AssetBase}` is derived from the issuance validating key ``ik`` and ``assetDesc`` as described in the `Specification: Asset Identifier`_ section.
-- check that the :math:`\mathsf{AssetId}` does not exist in the ``previously_finalized`` set in the global state.
+- check that the :math:`\mathsf{AssetId}` does not exist in the ``finalized_assets`` set in the global state.
 - check that every note in the ``IssueAction`` contains the same :math:`\mathsf{AssetBase}` and is properly constructed as :math:`\mathsf{note} = (\mathsf{g_d, pk_d, v, \rho, rseed, AssetBase})`.
 
 If all of the above checks pass, do the following:
 
 - For each note, compute the note commitment as :math:`\mathsf{cm} = \mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, AssetBase)}` as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-notestructure]_ and
 - Add :math:`\mathsf{cm}` to the Merkle tree of note commitments.
-- If ``finalize = 1``, add :math:`\mathsf{AssetId}` to the ``previously_finalized`` set immediately after the block in which this transaction occurs.
+- If ``finalize = 1``, add :math:`\mathsf{AssetId}` to the ``finalized_assets`` set immediately after the block in which this transaction occurs.
 - (Replay Protection) If issue bundle is present, the fees MUST be greater than zero.
 
 
@@ -318,7 +318,7 @@ The following is a list of rationale for different decisions made in the proposa
     - bridging information for Wrapped Assets (chain of origin, issuer name, etc)
     - information to be committed by the issuer, though not enforceable by the protocol.
 
-- We require a check whether the ``finalize`` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the ``previously_finalized`` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
+- We require a check whether the ``finalize`` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the ``finalized_assets`` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
 - We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the ``SIGHASH`` would be computed solely based on the issue bundle. A duplicate bundle would have the same ``SIGHASH``, potentially allowing for a replay attack. 
 
 Concrete Applications
