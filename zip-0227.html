@@ -212,7 +212,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>Issuance requires the following additions to the global state defined at block boundaries:</p>
             <ul>
                 <li><code>finalized_assets</code>, a set of
-                    <span class="math">\(\mathsf{AssetId}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest}\)</span>
                  that have been finalized (i.e.: the <code>finalize</code> flag has been set to <code>1</code> in some issuance transaction preceding the block boundary).</li>
             </ul>
         </section>
@@ -230,11 +230,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li><code>flagsIssuance</code>: a byte that stores the <code>finalize</code> boolean that defines whether the issuance of that specific Custom Asset is finalized or not</li>
                 </ul>
                 <p>An asset's
-                    <span class="math">\(\mathsf{AssetId}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest}\)</span>
                  is added to the <code>finalized_assets</code> set after a block that contains any issuance transaction for that asset with <code>finalize = 1</code>. It then cannot be removed from this set. For Assets with
-                    <span class="math">\(\mathsf{AssetId} \in \mathtt{finalized\_assets}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest} \in \mathtt{finalized\_assets}\)</span>
                 , no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with
-                    <span class="math">\(\mathsf{AssetId} \not\in \mathtt{finalized\_assets}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest} \not\in \mathtt{finalized\_assets}\)</span>
                 , new issuance actions can be issued in future transactions. These must use the same Asset description, <code>assetDesc</code>, and can either maintain <code>finalize = 0</code> or change it to <code>finalize = 1</code>, denoting that this Custom Asset cannot be issued after the containing block.</p>
                 <table>
                     <thead>
@@ -400,7 +400,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{AssetBase}\)</span>
                  is derived from the issuance validating key <code>ik</code> and <code>assetDesc</code> as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                 <li>check that the
-                    <span class="math">\(\mathsf{AssetId}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest}\)</span>
                  does not exist in the <code>finalized_assets</code> set in the global state.</li>
                 <li>check that every note in the <code>IssueAction</code> contains the same
                     <span class="math">\(\mathsf{AssetBase}\)</span>
@@ -417,7 +417,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{cm}\)</span>
                  to the Merkle tree of note commitments.</li>
                 <li>If <code>finalize = 1</code>, add
-                    <span class="math">\(\mathsf{AssetId}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest}\)</span>
                  to the <code>finalized_assets</code> set immediately after the block in which this transaction occurs.</li>
                 <li>(Replay Protection) If issue bundle is present, the fees MUST be greater than zero.</li>
             </ul>
