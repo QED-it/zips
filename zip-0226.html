@@ -223,30 +223,25 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      Actions in a transfer. Out of these
                         <span class="math">\(n\)</span>
                      Actions, we further distinguish (for the sake of verbosity and clarity) between Actions related to ZEC and Actions related to Custom Assets. We assume
-                        <span class="math">\(l\)</span>
+                        <span class="math">\(m\)</span>
                      Actions related to ZEC and
-                        <span class="math">\(n-l\)</span>
+                        <span class="math">\(n-m\)</span>
                      actions related to Custom Assets, where
-                        <span class="math">\(l \in [0,n]\)</span>
+                        <span class="math">\(m \in [0,n]\)</span>
                     .</p>
                     <p>The value balance verification is equivalent to:</p>
-                    <div class="math">\(\mathsf{bvk} = \mathsf{(\sum_{i=1}^{l} cv_i^{net}) + (\sum_{j=l+1}^{n} cv_i^{net})} - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}\)</div>
-                    <div class="math">\(\mathsf{bvk} = [\mathsf{(\sum_{i=1}^{l} cv_i^{net})} - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}] + \mathsf{(\sum_{j=l+1}^{n} cv_i^{net})}\)</div>
-                    <p>The first term of this equation gives the balance check of the Orchard protocol <a id="footnote-reference-36" class="footnote_reference" href="#protocol-binding">16</a>. For a correctly constructed transaction, we get
-                        <span class="math">\(\mathsf{(\sum_{i=1}^{l} v_i^{net}) = v^{balanceOrchard}}\)</span>
-                    , which means that
-                        <span class="math">\(\mathsf{(\sum_{i=1}^{l} cv_i^{net})} - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}\)</span>
-                     MUST be equal to
-                        <span class="math">\(\mathsf{\sum_{i=1}^{l} rcv_{i}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</span>
-                    . With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get
-                        <span class="math">\(\mathsf{(\sum_{j=l+1}^{n} v_i^{net}) = 0}\)</span>
-                    , and thus
-                        <span class="math">\(\mathsf{\sum_{j=l+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</span>
-                    , where
-                        <span class="math">\(\sum_{j=l+1}^{n} x_j\)</span>
-                     gives the identity element of the group, if
-                        <span class="math">\(l+1 &gt; n\)</span>
-                    .</p>
+                    <div class="math">\(\mathsf{bvk} = \mathsf{(\sum_{i=1}^{m} cv_i^{net}) + (\sum_{j=m+1}^{n} cv_j^{net})} - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}\)</div>
+                    <p>This equation contains the balance check of the Orchard protocol <a id="footnote-reference-36" class="footnote_reference" href="#protocol-binding">16</a>. With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get
+                        <span class="math">\(\mathsf{(\sum_{j=m+1}^{n} v_j^{net}) = 0}\)</span>
+                    , and thus be left with
+                        <span class="math">\(\mathsf{\sum_{j=m+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</span>
+                     in the expression. If
+                        <span class="math">\(m=n\)</span>
+                     (i.e. all Actions relate to ZEC), then
+                        <span class="math">\(m+1&gt;n\)</span>
+                    , and thus the sum
+                        <span class="math">\(\sum_{j=m+1}^{n}\)</span>
+                     returns the identity element of the group.</p>
                     <p>So, the main reason why no changes to the Orchard process are needed is that no Custom Assets can be unshielded, so all Custom Assets are contained within the shielded pool. This means that the net balance of the input and output values is zero, with only one Asset of value balance published, that of ZEC,
                         <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
                     . No net amount of any other Asset will be revealed, and the number of Assets in the transaction is also hidden. The only exception to this is in the case that an Asset is <em>burnt</em>, as we will see below in the <a href="#burn-mechanism">burn mechanism</a>.</p>
@@ -408,8 +403,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\((\mathsf{AssetBase},\mathsf{v^{AssetBase}})\)</span>
              such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.</p>
             <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}\)</div>
-            <p>We denote
-                <span class="math">\(|\mathsf{assetBurn}|\)</span>
+            <p>We denote by
+                <span class="math">\(\mathsf{L}\)</span>
              the cardinality of the
                 <span class="math">\(\mathsf{assetBurn}\)</span>
              set.</p>
@@ -420,7 +415,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{AssetBase}\)</span>
              as the value base point of the Pedersen Commitment.</p>
             <p>This is done as follows:</p>
-            <div class="math">\(\mathsf{bvk} = \mathsf{(\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v^{balanceOrchard}}, \mathcal{V}^{\mathsf{Orchard}}) - \mathsf{\sum_{k=1}^{|assetBurn|} ValueCommit_0^{OrchardZSA}(v_{k}^{AssetBase}, AssetBase_{k})}\)</div>
+            <div class="math">\(\mathsf{bvk} = \mathsf{(\sum_{i=1}^{n} cv_i^{net})}  - \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v^{balanceOrchard}}, \mathcal{V}^{\mathsf{Orchard}}) - \mathsf{\sum_{k=1}^{L} ValueCommit_0^{OrchardZSA}(v_{k}, AssetBase_{k})}\)</div>
             <p>After computing
                 <span class="math">\(\mathsf{bvk}\)</span>
             , the verifier MUST use it to verify the <cite>bindingSignature</cite> on the <cite>SIGHASH</cite> message.</p>
@@ -446,33 +441,21 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <p>As for the value balance verification, we assume
                         <span class="math">\(n\)</span>
                      Actions,
-                        <span class="math">\(l\)</span>
+                        <span class="math">\(m\)</span>
                      of which are related to ZEC and the remaining
-                        <span class="math">\(n-l\)</span>
+                        <span class="math">\(n-m\)</span>
                      Actions related to Custom Assets.</p>
                     <p>The burn mechanism verification is equivalent to:</p>
-                    <div class="math">\(\mathsf{bvk} = (\mathsf{(\sum_{i=1}^{l} cv_i^{net})} + \mathsf{(\sum_{j=l+1}^{n} cv_i^{net})}) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{|\mathsf{assetBurn}|} [\mathsf{v_{k}^{AssetBase}}]\mathsf{AssetBase_{k}} + [0]\mathcal{R}^{\mathsf{Orchard}})\)</div>
-                    <p>Removing the points at infinity (i.e. identity elements in the group) and unrolling the
-                        <span class="math">\(cv_i\)</span>
-                    's:</p>
-                    <div class="math">\(\mathsf{bvk} = ((\sum_{i=1}^{l} [\mathsf{v_i^{net}}]\mathcal{V}^{\mathsf{Orchard}} + [\mathsf{rcv_i}]\mathcal{R}^{\mathsf{Orchard}}) + (\sum_{j=l+1}^{n} \mathsf{[v_j^{net}]\mathsf{AssetBase}_j} + [\mathsf{rcv_j}]\mathcal{R}^{\mathsf{Orchard}})) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}}) - (\sum_{k=1}^{|\mathsf{assetBurn}|} [\mathsf{v_{k}^{AssetBase}}]\mathsf{AssetBase_{k}})\)</div>
-                    <p>Rearranging</p>
-                    <div class="math">\(\mathsf{bvk} = [(\sum_{i=1}^{l} [\mathsf{v_i^{net}}]\mathcal{V}^{\mathsf{Orchard}} + [\mathsf{rcv_i}]\mathcal{R}^{\mathsf{Orchard}}) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}})] + [(\sum_{j=l+1}^{n} \mathsf{[v_j^{net}]\mathsf{AssetBase}_j} + [\mathsf{rcv_j}]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{|\mathsf{assetBurn}|} [\mathsf{v_{k}^{AssetBase}}]\mathsf{AssetBase_{k}})]\)</div>
-                    <p>So, we see that the transaction is balanced, only if</p>
-                    <ol type="1">
-                        <li>
-                            <span class="math">\(\mathsf{\sum_{i=1}^{l} v_i^{net} = v^{balanceOrchard}}\)</span>
-                        , in which case the first half of the equation becomes
-                            <span class="math">\(\mathsf{\sum_{i=1}^{l} rcv_i^{net}}\)</span>
-                        .</li>
-                        <li>
-                            <span class="math">\(\mathsf{\sum_{j=l+1}^{n} v_j^{net} = \sum_{k=1}^{|\mathsf{assetBurn}|} v_k^{AssetBase}}\)</span>
-                        , for matching asset bases, i.e.
-                            <span class="math">\(\sum\limits_{\substack{j=l+1 \\ \mathsf{AssetBase}_j = \mathsf{AssetBase}_k}}^{n} \mathsf{[v_j^{net}]\mathsf{AssetBase}_j} = \sum_{k=1}^{|\mathsf{assetBurn}|} [\mathsf{v_{k}^{AssetBase}}]\mathsf{AssetBase_{k}}\)</span>
-                        , in which case the second half of the equation becomes
-                            <span class="math">\(\mathsf{\sum_{j=l+1}^{n} rcv_i^{net}}\)</span>
-                        .</li>
-                    </ol>
+                    <div class="math">\(\mathsf{bvk} = (\mathsf{(\sum_{i=1}^{m} cv_i^{net})} + \mathsf{(\sum_{j=m+1}^{n} cv_j^{net})}) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\mathsf{\sum_{k=1}^{L}} [\mathsf{v_{k}}]\mathsf{AssetBase_{k}} + [0]\mathcal{R}^{\mathsf{Orchard}})\)</div>
+                    <p>So, we see that the relationship between
+                        <span class="math">\(\mathsf{bvk}\)</span>
+                     and
+                        <span class="math">\(\mathsf{bsk}\)</span>
+                     holds only if the sum of the net values of the Actions equals the sum of
+                        <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
+                     and the
+                        <span class="math">\(\mathsf{v_k}\)</span>
+                    's, across base points (i.e. Asset Base).</p>
                 </section>
             </section>
         </section>

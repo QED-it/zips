@@ -197,7 +197,7 @@ The value balance verification is equivalent to:
 
 .. math:: \mathsf{bvk} = \mathsf{(\sum_{i=1}^{m} cv_i^{net}) + (\sum_{j=m+1}^{n} cv_j^{net})} - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}
     
-This equation contains the balance check of the Orchard protocol [#protocol-binding]_. With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get :math:`\mathsf{(\sum_{j=m+1}^{n} v_i^{net}) = 0}`, and thus :math:`\mathsf{\sum_{j=m+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}`. If :math:`m=n` (i.e. all Actions relate to ZEC), then :math:`m+1>n`, and thus the sum :math:`\sum_{j=m+1}^{n}` returns the identity element of the group.
+This equation contains the balance check of the Orchard protocol [#protocol-binding]_. With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get :math:`\mathsf{(\sum_{j=m+1}^{n} v_j^{net}) = 0}`, and thus be left with :math:`\mathsf{\sum_{j=m+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}` in the expression. If :math:`m=n` (i.e. all Actions relate to ZEC), then :math:`m+1>n`, and thus the sum :math:`\sum_{j=m+1}^{n}` returns the identity element of the group.
 
 So, the main reason why no changes to the Orchard process are needed is that no Custom Assets can be unshielded, so all Custom Assets are contained within the shielded pool. This means that the net balance of the input and output values is zero, with only one Asset of value balance published, that of ZEC, :math:`\mathsf{v^{balanceOrchard}}`. No net amount of any other Asset will be revealed, and the number of Assets in the transaction is also hidden. The only exception to this is in the case that an Asset is *burnt*, as we will see below in the `burn mechanism`_.
 
@@ -319,9 +319,9 @@ As for the value balance verification, we assume :math:`n` Actions, :math:`m` of
 
 The burn mechanism verification is equivalent to:
 
-.. math:: \mathsf{bvk} = (\mathsf{(\sum_{i=1}^{m} cv_i^{net})} + \mathsf{(\sum_{j=m+1}^{n} cv_j^{net})}) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{L} [\mathsf{v_{k}}]\mathsf{AssetBase_{k}} + [0]\mathcal{R}^{\mathsf{Orchard}})
+.. math:: \mathsf{bvk} = (\mathsf{(\sum_{i=1}^{m} cv_i^{net})} + \mathsf{(\sum_{j=m+1}^{n} cv_j^{net})}) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\mathsf{\sum_{k=1}^{L}} [\mathsf{v_{k}}]\mathsf{AssetBase_{k}} + [0]\mathcal{R}^{\mathsf{Orchard}})
 
-So, we see that the relationship between :math:`\mathsf{bvk}` and :math:`\mathsf{bsk}` holds only if the sum of the net values of the Actions equals the sum of :math:`\mathsf{v^{balanceOrchard}}` and the :math:`\mathsf{v_k}`'s.
+So, we see that the relationship between :math:`\mathsf{bvk}` and :math:`\mathsf{bsk}` holds only if the sum of the net values of the Actions equals the sum of :math:`\mathsf{v^{balanceOrchard}}` and the :math:`\mathsf{v_k}`'s, across base points (i.e. Asset Base).
 
 ZSA Transaction Structure
 =========================
