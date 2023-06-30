@@ -196,14 +196,14 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>In order to verify the balance of the different Assets, the verifier MUST perform exactly the same process as for the Orchard protocol <a id="footnote-reference-38" class="footnote_reference" href="#protocol-binding">17</a>.</p>
                 <p>For a total of
                     <span class="math">\(n\)</span>
-                 Actions in a transfer, the prover MUST still sign the <cite>SIGHASH</cite> of the transaction using the binding signature key
+                 Actions in a transfer, the prover MUST still sign the SIGHASH transaction hash using the binding signature key
                     <span class="math">\(\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_{i}\)</span>
                 .</p>
-                <p>Then the verifier MUST compute</p>
+                <p>The verifier MUST compute</p>
                 <div class="math">\(\mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}\)</div>
                 <p>After computing
                     <span class="math">\(\mathsf{bvk}\)</span>
-                , the verifier MUST use it to verify the <cite>bindingSignature</cite> on the <cite>SIGHASH</cite> message.</p>
+                , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
                 <section id="rationale-for-value-balance-verification"><h4><span class="section-heading">Rationale for Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>We assume
                         <span class="math">\(n\)</span>
@@ -415,7 +415,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <div class="math">\(\mathsf{bvk} = (\sum_{i=1}^{n} \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v^{balanceOrchard}}, \mathcal{V}^{\mathsf{Orchard}}) - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})\)</div>
             <p>After computing
                 <span class="math">\(\mathsf{bvk}\)</span>
-            , the verifier MUST use it to verify the <cite>bindingSignature</cite> on the <cite>SIGHASH</cite> message.</p>
+            , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
             <p>In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.</p>
             <section id="burn-mechanism-consensus-rules"><h3><span class="section-heading">Burn Mechanism Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <ol type="1">

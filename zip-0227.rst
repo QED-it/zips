@@ -272,9 +272,9 @@ For all actions ``IssueAction``:
 
 For the ``IssueBundle``:
 
-- encode the ``vIssueActions`` vector.
-- encode the ``ik`` as 32 byte-string.
-- sign the ``SIGHASH`` of the transaction with the issuance authorizing key, :math:`\mathtt{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
+- encode the ``vIssueActions`` vector
+- encode the :math:`\mathsf{ik}` as 32 byte-string
+- sign the SIGHASH transaction hash with the issuance authorizing key, :math:`\mathsf{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
 
 
 **Note:** that the commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
@@ -285,7 +285,7 @@ Specification: Consensus Rule Changes
 
 For the ``IssueBundle``:
 
-- Verify the RedPallas-based issuance authorization signature on ``SIGHASH``, ``issueAuthSig``, is verified by invoking :math:`\mathsf{issueAuthSig.VerifySig}(\mathtt{ik}, \mathtt{SIGHASH})`.
+- Verify the RedPallas-based issuance authorization signature on the SIGHASH transaction hash, :math:`\mathsf{SigHash}`, :math:`\mathsf{issueAuthSig}`, is verified by invoking :math:`\mathsf{issueAuthSig.VerifySig(ik, SigHash)}`
 
 For each ``IssueAction`` in ``IssueBundle``:
 
@@ -319,7 +319,7 @@ The following is a list of rationale for different decisions made in the proposa
     - information to be committed by the issuer, though not enforceable by the protocol.
 
 - We require a check whether the ``finalize`` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the ``finalized_assets`` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
-- We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the ``SIGHASH`` would be computed solely based on the issue bundle. A duplicate bundle would have the same ``SIGHASH``, potentially allowing for a replay attack. 
+- We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack. 
 
 Concrete Applications
 ---------------------
