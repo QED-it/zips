@@ -88,7 +88,7 @@ Let :math:`\mathsf{Note^{OrchardZSA}}` be the type of a ZSA note, i.e.
 A ZSA note differs from an Orchard note [#protocol-notes]_ by additionally including the Asset Base, :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`. So a ZSA note is a tuple :math:`(\mathsf{g_d, pk_d, v, \rho, \psi, \mathsf{AssetBase}^{\mathsf{Orchard}}})`,
 where 
 
-- :math:`\mathsf{AssetBase}^{\mathsf{Orchard}} : \mathbb{P}*` is the unique element of the Pallas group [#protocol-pallasandvesta]_ that identifies each Asset in the Orchard protocol, defined as the Asset Base in ZIP 227 [#zip-0227]_, a valid non-bottom group element that is not the identity. The byte representation of the Asset Base is defined as :math:`\mathsf{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]} := \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}})`.
+- :math:`\mathsf{AssetBase}^{\mathsf{Orchard}} : \mathbb{P}*` is the unique element of the Pallas group [#protocol-pallasandvesta]_ that identifies each Asset in the Orchard protocol, defined as the Asset Base in ZIP 227 [#zip-0227]_, a valid non-bottom group element that is not the identity. The byte representation of the Asset Base is defined as :math:`\mathtt{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]} := \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}})`.
 
 Specifically, we define the note commitment scheme :math:`\mathsf{NoteCommit^{OrchardZSA}_{rcm}}` as follows:
 
@@ -109,7 +109,7 @@ where:
     
 .. math:: \begin{align}
     \mathsf{cm}_{\mathsf{ZSA}} :=&\ \mathsf{SinsemillaHashToPoint}( \texttt{"z.cash:ZSA-NoteCommit-M"}, \\
-    &\ \ \ \mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}^{\mathsf{Orchard}})) \\
+    &\ \ \ \mathsf{g_{d}*}\; \| \; \mathsf{pk_{d}*}\; \| \; \mathsf{I2LEBSP_{64}(v)}\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\rho)\; \| \; \mathsf{I2LEBSP}_{\ell^{\mathsf{Orchard}}_{\mathsf{base}}}(\psi)\; \| \; \mathtt{asset\_base}) \\
     &\ + [\mathsf{rcm}] \mathsf{GroupHash}^{\mathbb{P}}(\texttt{"z.cash:Orchard-NoteCommit-r"},\texttt{""})
     \end{align}
 
@@ -120,7 +120,7 @@ The nullifier is generated in the same manner as in the Orchard protocol [#proto
 The ZSA note plaintext also includes the Asset Base in addition to the components in the Orchard note plaintext [#protocol-notept]_.
 It consists of 
 
-.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
+.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathtt{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
 
 Rationale for Note Commitment
 `````````````````````````````
