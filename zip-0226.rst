@@ -195,7 +195,7 @@ Split Notes
 
 A Split Input is a copy of a previously issued input note (that is, a note that has previously been included in the Merkle tree), with the following changes:
 
-- A ``split_flag`` boolean is set to 1.
+- A :math:`\mathsf{split\_flag}` boolean is set to 1.
 - The value of the note is replaced with the value 0 during the computation of the value commitment.
 
 Input notes are sometimes split in two (or more) output notes, as in most cases, not all the value in a single note is sent to a single output.
@@ -215,7 +215,7 @@ In the Orchard protocol, since each Action represents an input and an output, th
 
 The Orchard technique requires modification for the ZSA protocol with multiple Asset Identifiers, as the output note of the split Actions *cannot* contain *any* Asset Base. We must enforce it to be an actual output of a GroupHash computation (in fact, we want it to be of the same Asset Base as the original input note, but the binding signature takes care that the proper balancing is performed). Without this enforcement the prover could input a multiple (or linear combination) of an existing Asset Base, and thereby attack the network by overflowing the ZEC value balance and hence counterfeiting ZEC funds.
 
-Therefore, for Custom Assets we enforce that *every* input note to an ZSA Action must be proven to exist in the set of note commitments in the note commitment tree. We then enforce this real note to be “unspendable” in the sense that its value will be zeroed in split Actions and the nullifier will be randomized, making the note not spendable in the specific Action. Then, the proof itself ensures that the output note is of the same Asset Base as the input note. In the circuit, the split note functionality will be activated by a boolean private input to the proof (aka the ``split_flag`` boolean).
+Therefore, for Custom Assets we enforce that *every* input note to an ZSA Action must be proven to exist in the set of note commitments in the note commitment tree. We then enforce this real note to be “unspendable” in the sense that its value will be zeroed in split Actions and the nullifier will be randomized, making the note not spendable in the specific Action. Then, the proof itself ensures that the output note is of the same Asset Base as the input note. In the circuit, the split note functionality will be activated by a boolean private input to the proof (aka the :math:`\mathsf{split\_flag}` boolean).
 This ensures that the value base points of all output notes of a transfer are actual outputs of a GroupHash, as they originate in the Issuance protocol which is publicly verified.
 
 Note that the Orchard dummy note functionality remains in use for ZEC notes, and the Split Input technique is used in order to support Custom Assets.
@@ -250,14 +250,14 @@ Senders must not be able to change the Asset Base for the output note in a Split
 
 - The Value Commitment Integrity should be changed:
     - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`
-- Add a boolean ``split_flag`` variable as an auxiliary witness. This variable is to be activated ``split_flag = 1`` if the Action in question has a Split Input and ``split_flag = 0`` if the Action is actually spending an input note:
-    - If :math:`\texttt{split_flag} = 1` then constrain :math:`\mathsf{v}' = 0` otherwise constrain :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
-    - If :math:`\texttt{split_flag} = 1` then constrain :math:`\mathsf{v^{old}} \neq 0`.
+- Add a boolean :math:`\mathsf{split\_flag}` variable as an auxiliary witness. This variable is to be activated :math:`\mathsf{split\_flag} = 1` if the Action in question has a Split Input and :math:`\mathsf{split\_flag} = 0` if the Action is actually spending an input note:
+    - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{v}' = 0` otherwise constrain :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
+    - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{v^{old}} \neq 0`.
 - The Merkle Path Validity should check the existence of the note commitment as usual (and not like with dummy notes):
     - Check that (path, pos) is a valid Merkle path of depth :math:`\mathsf{MerkleDepth^Orchard}`, from :math:`\mathsf{cm^{old}}` to the anchor :math:`\mathsf{rt^{Orchard}}`.
 - The Nullifier Integrity will be changed to prevent the identification of notes
     - Replace the :math:`\psi_{old}` value with a generic :math:`\psi'` as :math:`\mathsf{nf_{old}} = \mathsf{DeriveNullifier_{nk}}(\rho^\mathsf{old}, \psi', \mathsf{cm^{old}})`
-    - if :math:`\mathtt{split\_flag} = 0` then constrain :math:`\psi' = \psi^{old}`. (Otherwise :math:`\psi'` should be sampled uniformly at random on :math:`\mathbb{F}_{q_{\mathbb{P}}}`.) 
+    - if :math:`\mathsf{split\_flag} = 0` then constrain :math:`\psi' = \psi^{old}`. (Otherwise :math:`\psi'` should be sampled uniformly at random on :math:`\mathbb{F}_{q_{\mathbb{P}}}`.) 
 
 Backwards Compatibility with ZEC Notes
 ``````````````````````````````````````
