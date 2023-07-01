@@ -505,7 +505,8 @@ Backward Compatibility
 ----------------------
 
 In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:
-- Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the :math:`AssetBase` value as well.
+
+- Note commitments for ZEC notes will remain the same, while note commitments for Custom Assets will be computed taking into account the :math:`\mathsf{AssetBase}` value as well.
 - The existing Orchard shielded pool will continue to be used for the new ZSA notes post the upgrade.
 - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof.
 - The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include both dummy and split input notes.
