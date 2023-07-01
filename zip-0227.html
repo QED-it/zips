@@ -67,17 +67,23 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>Issuing or changing the attributes of a specific Asset should require cryptographic authorization.</li>
                 <li>The Asset identification should be unique (among all shielded pools) and different issuer public keys should not be able to generate the same Asset Identifier.</li>
                 <li>An issuer should be able to issue different Assets in the same transaction. In other words, in a single "issuance bundle", the issuer should be able publish many "issuance actions", potentially creating multiple Custom Assets.</li>
-                <li>Every "issuance action" should contain a <code>finalize</code> boolean that defines whether the specific Custom Asset can have further tokens issued or not.</li>
+                <li>Every "issuance action" should contain a
+                    <span class="math">\(\mathsf{finalize}\)</span>
+                 boolean that defines whether the specific Custom Asset can have further tokens issued or not.</li>
             </ul>
         </section>
         <section id="specification-issuance-keys-and-issuance-authorization-signature-scheme"><h2><span class="section-heading">Specification: Issuance Keys and Issuance Authorization Signature Scheme</span><span class="section-anchor"> <a rel="bookmark" href="#specification-issuance-keys-and-issuance-authorization-signature-scheme"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The ZSA Protocol adds the following three keys to the key components <a id="footnote-reference-9" class="footnote_reference" href="#protocol-addressesandkeys">17</a>:</p>
             <ol type="1">
-                <li>The issuance master key, denoted as
+                <li>The issuance derivation key, denoted as
                     <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
-                , as the name suggests, is the master key that is used to derive the other two keys.</li>
-                <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as <code>isk</code>. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
-                <li>The issuance validating key, denoted as <code>ik</code>, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.</li>
+                , as the name suggests, is the key that is used to derive the other two keys.</li>
+                <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as
+                    <span class="math">\(\mathsf{isk}\)</span>
+                . This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
+                <li>The issuance validating key, denoted as
+                    <span class="math">\(\mathsf{ik}\)</span>
+                , is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.</li>
             </ol>
             <p>The relations between these keys are shown in the following diagram:</p>
             <figure class="align-center" align="center">
@@ -89,7 +95,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{IssueAuthSig}\)</span>
                  similar to
                     <span class="math">\(\mathsf{SpendAuthSig}^{\mathsf{Orchard}}\)</span>
-                , the Orchard spend authorization signature scheme <a id="footnote-reference-10" class="footnote_reference" href="#protocol-concretespendauthsig">21</a>. Specifically, we instantiate
+                , the Orchard spend authorization signature scheme <a id="footnote-reference-10" class="footnote_reference" href="#protocol-concretespendauthsig">22</a>. Specifically, we instantiate
                     <span class="math">\(\mathsf{IssueAuthSig}\)</span>
                  as
                     <span class="math">\(\mathsf{RedPallas}\)</span>
@@ -100,20 +106,20 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  is defined as in the Zcash protocol specification <a id="footnote-reference-11" class="footnote_reference" href="#protocol-concretegrouphashpallasandvesta">18</a>.</p>
             </section>
             <section id="issuance-key-derivation"><h3><span class="section-heading">Issuance Key Derivation</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-derivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The issuance master key is generated by choosing a bit sequence uniformly at random from
+                <p>The issuance derivation key is generated by choosing a bit sequence uniformly at random from
                     <span class="math">\(\mathbb{B}^{\mathbb{Y}[32]}\)</span>
-                , like the Orchard spending key <a id="footnote-reference-12" class="footnote_reference" href="#protocol-orchardkeycomponents">19</a>.</p>
-                <section id="issuance-master-key-derivation-for-hierarchical-deterministic-wallets"><h4><span class="section-heading">Issuance master key derivation for hierarchical deterministic wallets</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-master-key-derivation-for-hierarchical-deterministic-wallets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The issuance master key is derived using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-13" class="footnote_reference" href="#zip-0032-orchard-master">12</a>. We reuse the functions defined there in what follows in this section.</p>
+                , like the Orchard spending key <a id="footnote-reference-12" class="footnote_reference" href="#protocol-orchardkeycomponents">20</a>.</p>
+                <section id="issuance-derivation-key-generation-for-hierarchical-deterministic-wallets"><h4><span class="section-heading">Issuance derivation key generation for hierarchical deterministic wallets</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-derivation-key-generation-for-hierarchical-deterministic-wallets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>The issuance derivation key is generated using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-13" class="footnote_reference" href="#zip-0032-orchard-master">12</a>. We reuse the functions defined there in what follows in this section.</p>
                     <p>Let
                         <span class="math">\(S\)</span>
                      be a seed byte sequence of a chosen length, which MUST be at least 32 and at most 252 bytes. We define the master extended issuance key
                         <span class="math">\(m_{\mathsf{Issuance}} := \mathsf{MasterKeyGen}(\texttt{"ZIP32ZSAIssue_V1"}, S)\)</span>
                     .</p>
-                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-14" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">13</a>, we only use hardened child key derivation for the issuance master key. We reuse the
+                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-14" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">13</a>, we only use hardened child key derivation for the issuance derivation key. We reuse the
                         <span class="math">\(\mathsf{CDKsk}\)</span>
                      function for Orchard child key derivation from ZIP 32.</p>
-                    <p>We use the notation of ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-orchard-key-path">15</a> for shielded HD paths, and define the issuance master key path as
+                    <p>We use the notation of ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-orchard-key-path">15</a> for shielded HD paths, and define the issuance derivation key path as
                         <span class="math">\(m_\mathsf{Issuance} / purpose' / coin\_type' / account'\)</span>
                     . We fix the path levels as follows:</p>
                     <ul>
@@ -139,27 +145,29 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <span class="math">\(0\)</span>
                         .</li>
                     </ul>
-                    <p>Given the <em>extended issuance master key</em>
+                    <p>From the generated
                         <span class="math">\((\mathsf{sk}, \mathsf{c})\)</span>
-                    , we set the issuance master key to be
+                    , we set the issuance derivation key to be
                         <span class="math">\(\mathsf{sk_{iss}} := \mathsf{sk}\)</span>
                     .</p>
                 </section>
                 <section id="derivation-of-issuance-authorizing-key-and-issuance-validating-key"><h4><span class="section-heading">Derivation of issuance authorizing key and issuance validating key</span><span class="section-anchor"> <a rel="bookmark" href="#derivation-of-issuance-authorizing-key-and-issuance-validating-key"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The issuance authorizing key and issuance validating key are derived from the issuance master key in an analogous manner to the derivation of the Orchard spend authorizing key and Orchard spend validating key from the Orchard spending key <a id="footnote-reference-17" class="footnote_reference" href="#protocol-orchardkeycomponents">19</a>, as described below.</p>
+                    <p>The issuance authorizing key and issuance validating key are derived from the issuance derivation key in an analogous manner to the derivation of the Orchard spend authorizing key and Orchard spend validating key from the Orchard spending key <a id="footnote-reference-17" class="footnote_reference" href="#protocol-orchardkeycomponents">20</a>, as described below.</p>
                     <ul>
-                        <li>The issuance authorizing key is derived from the issuance master key,
+                        <li>The issuance authorizing key is derived from the issuance derivation key,
                             <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
-                        , as a private signature key:</li>
+                        , as a private signature key. The function
+                            <span class="math">\(\mathsf{PRF^{expand}_{sk}}\)</span>
+                         is as defined in the Zcash protocol specification <a id="footnote-reference-18" class="footnote_reference" href="#protocol-abstractprfs">19</a>:</li>
                     </ul>
-                    <div class="math">\(\mathtt{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{sk}_{\mathsf{iss}} )\)</div>
+                    <div class="math">\(\mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{sk_{iss}}}([\mathtt{0x0a}]) )\)</div>
                     <ul>
                         <li>The issuance validating key is derived from the issuance authorizing key,
-                            <span class="math">\(\mathtt{isk}\)</span>
+                            <span class="math">\(\mathsf{isk}\)</span>
                         , as a public verification key:</li>
                     </ul>
-                    <div class="math">\(\mathtt{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathtt{isk})\)</div>
-                    <p>This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0032">11</a>. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.</p>
+                    <div class="math">\(\mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{isk})\)</div>
+                    <p>This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0032">11</a>. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.</p>
                 </section>
             </section>
         </section>
@@ -167,8 +175,10 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>For every new Asset, there must be a new and unique Asset Identifier, denoted
                 <span class="math">\(\mathsf{AssetId}\)</span>
             . We define this to be a globally unique pair
-                <span class="math">\(\mathsf{AssetId} := (\mathtt{ik}, \mathtt{assetDesc})\)</span>
-            , where <code>ik</code> is the issuance key and <code>assetDesc</code> is a byte string.</p>
+                <span class="math">\(\mathsf{AssetId} := (\mathsf{ik}, \mathtt{assetDesc})\)</span>
+            , where
+                <span class="math">\(\mathsf{ik}\)</span>
+             is the issuance key and <code>assetDesc</code> is a byte string.</p>
             <p>A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest,
                 <span class="math">\(\mathsf{AssetDigest}\)</span>
             , which is simply is a
@@ -179,14 +189,16 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>Let</p>
             <ul>
                 <li><code>assetDesc</code> be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
-                <li><code>ik</code> be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
+                <li>
+                    <span class="math">\(\mathsf{ik}\)</span>
+                 be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
             </ul>
             <p>Define
                 <span class="math">\(\mathsf{AssetDigest_{\mathsf{AssetId}}} := \textsf{BLAKE2b-512}(\texttt{"ZSA-Asset-Digest"},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))\)</span>
             , where</p>
             <ul>
                 <li>
-                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathtt{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathtt{ik}) || \mathtt{assetDesc}\!\)</span>
+                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathtt{assetDesc}\!\)</span>
                 .</li>
             </ul>
             <p>Define
@@ -196,7 +208,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{ZSAValueBase^{Orchard}}(\mathsf{AssetDigest}_{\mathsf{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest}_{\mathsf{AssetId}})\)</span>
              where
                 <span class="math">\(\mathsf{GroupHash}^\mathbb{P}\)</span>
-             is defined as in <a id="footnote-reference-19" class="footnote_reference" href="#protocol-concretegrouphashpallasandvesta">18</a>.</p>
+             is defined as in <a id="footnote-reference-20" class="footnote_reference" href="#protocol-concretegrouphashpallasandvesta">18</a>.</p>
             <p>The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:</p>
             <figure class="align-center" align="center">
                 <img width="600" src="zip-0227-asset-identifier-relation.png" alt="" />
@@ -299,15 +311,17 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <section id="issuance-bundle"><h3><span class="section-heading">Issuance Bundle</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-bundle"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance bundle, <code>IssueBundle</code>, is the aggregate of all the issuance-related information. Specifically, contains all the issuance actions and the issuer signature on the transaction SIGHASH that validates the issuance itself. It contains the following fields:</p>
                 <ul>
-                    <li><code>ik</code>: the issuance validating key, that allows the validators to verify that the
+                    <li>
+                        <span class="math">\(\mathsf{ik}\)</span>
+                    : the issuance validating key, that allows the validators to verify that the
                         <span class="math">\(\mathsf{AssetId}\)</span>
                      is properly associated with the issuer.</li>
                     <li><code>vIssueActions</code>: an array of issuance actions, of type <cite>IssueAction</cite>.</li>
                     <li><code>issueAuthSig</code>: the signature of the transaction SIGHASH, signed by the issuance authorizing key,
-                        <span class="math">\(\mathtt{isk}\)</span>
+                        <span class="math">\(\mathsf{isk}\)</span>
                     , that validates the issuance .</li>
                 </ul>
-                <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-20" class="footnote_reference" href="#protocol-transactionstructure">23</a>.</p>
+                <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-21" class="footnote_reference" href="#protocol-transactionstructure">24</a>.</p>
                 <table>
                     <thead>
                         <tr>
@@ -352,7 +366,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li>encode <code>assetDesc</code> as a UTF-8 byte string of size up to 512.</li>
                     <li>compute
                         <span class="math">\(\mathsf{AssetDigest}\)</span>
-                     from the issuance validating key <code>ik</code> and <code>assetDesc</code> as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                     from the issuance validating key
+                        <span class="math">\(\mathsf{ik}\)</span>
+                     and <code>assetDesc</code> as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                     <li>compute
                         <span class="math">\(\mathsf{AssetBase^{Protocol}}\)</span>
                      from
@@ -410,7 +426,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{AssetBase}\)</span>
                  from the first note in the sequence and check that
                     <span class="math">\(\mathsf{AssetBase}\)</span>
-                 is derived from the issuance validating key <code>ik</code> and <code>assetDesc</code> as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                 is derived from the issuance validating key
+                    <span class="math">\(\mathsf{ik}\)</span>
+                 and <code>assetDesc</code> as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                 <li>check that the
                     <span class="math">\(\mathsf{AssetDigest}\)</span>
                  does not exist in the <code>finalized_assets</code> set in the global state.</li>
@@ -424,7 +442,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>For each note, compute the note commitment as
                     <span class="math">\(\mathsf{cm} = \mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, AssetBase)}\)</span>
-                 as defined in the Note Structure and Commitment section of ZIP 226 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0226-notestructure">5</a> and</li>
+                 as defined in the Note Structure and Commitment section of ZIP 226 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226-notestructure">5</a> and</li>
                 <li>Add
                     <span class="math">\(\mathsf{cm}\)</span>
                  to the Merkle tree of note commitments.</li>
@@ -453,7 +471,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <section id="concrete-applications"><h3><span class="section-heading">Concrete Applications</span><span class="section-anchor"> <a rel="bookmark" href="#concrete-applications"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p><strong>Asset Features</strong></p>
                 <ul>
-                    <li>By using the <code>finalize</code> boolean and the burning mechanism defined in <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
+                    <li>By using the <code>finalize</code> boolean and the burning mechanism defined in <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
                         <ul>
                             <li>by setting <code>finalize = 1</code> from the first issuance action for that Asset Identifier, the issuer is in essence creating a one-time issuance transaction. This is useful when the max supply is capped from the beginning and the distribution is known in advance. All tokens are issued at once and distributed as needed.</li>
                         </ul>
@@ -477,7 +495,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="txid-digest-issuance"><h2><span class="section-heading">TxId Digest - Issuance</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-issuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the ZSA protocol can be found in ZIP 226 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226-txiddigest">6</a>. As in ZIP 244 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0244">7</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
+            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the ZSA protocol can be found in ZIP 226 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0226-txiddigest">6</a>. As in ZIP 244 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0244">7</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
             <p>A new issuance transaction digest algorithm is defined that constructs the subtree of the transaction digest tree of hashes for the issuance portion of a transaction. Each branch of the subtree will correspond to a specific subset of issuance transaction data. The overall structure of the hash is as follows; each name referenced here will be described in detail below:</p>
             <pre>issuance_digest
 ├── issue_actions_digest
@@ -511,7 +529,7 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
                         <p>The personalization field of this hash is set to:</p>
                         <pre>"ZTxIdIAcNoteHash"</pre>
                         <section id="t-5a-i-1-recipient"><h6><span class="section-heading">T.5a.i.1: recipient</span><span class="section-anchor"> <a rel="bookmark" href="#t-5a-i-1-recipient"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
-                            <p>This is the raw encoding of an Orchard shielded payment address as defined in the protocol specification <a id="footnote-reference-25" class="footnote_reference" href="#protocol-orchardpaymentaddrencoding">22</a>.</p>
+                            <p>This is the raw encoding of an Orchard shielded payment address as defined in the protocol specification <a id="footnote-reference-26" class="footnote_reference" href="#protocol-orchardpaymentaddrencoding">23</a>.</p>
                         </section>
                         <section id="t-5a-i-2-value"><h6><span class="section-heading">T.5a.i.2: value</span><span class="section-anchor"> <a rel="bookmark" href="#t-5a-i-2-value"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
                             <p>Note value encoded as little-endian 8-byte representation of 64-bit unsigned integer (e.g. u64 in Rust) raw value.</p>
@@ -543,7 +561,7 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
             </section>
         </section>
         <section id="signature-digest"><h2><span class="section-heading">Signature Digest</span><span class="section-anchor"> <a rel="bookmark" href="#signature-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-26" class="footnote_reference" href="#zip-0244-sigdigest">8</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
+            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-27" class="footnote_reference" href="#zip-0244-sigdigest">8</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
             <p>The overall structure of the hash is as follows. We highlight the changes for the ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the ZSA protocol:</p>
             <pre>signature_digest
 ├── header_digest
@@ -558,14 +576,14 @@ S.2: transparent_sig_digest (32-byte hash output)
 S.3: sapling_digest         (32-byte hash output)
 S.4: orchard_digest         (32-byte hash output)
 S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
-                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-27" class="footnote_reference" href="#zip-0244">7</a>.</p>
+                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-28" class="footnote_reference" href="#zip-0244">7</a>.</p>
                 <section id="s-5-issuance-digest"><h4><span class="section-heading">S.5: issuance_digest</span><span class="section-anchor"> <a rel="bookmark" href="#s-5-issuance-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>Identical to that specified for the transaction identifier.</p>
                 </section>
             </section>
         </section>
         <section id="authorizing-data-commitment"><h2><span class="section-heading">Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-28" class="footnote_reference" href="#zip-0244-authcommitment">9</a> which commits to the authorizing data of a transaction is modified by the ZSA protocol to have the following structure. We highlight the changes for the ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the ZSA protocol:</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0244-authcommitment">9</a> which commits to the authorizing data of a transaction is modified by the ZSA protocol to have the following structure. We highlight the changes for the ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the ZSA protocol:</p>
             <pre>auth_digest
 ├── transparent_scripts_digest
 ├── sapling_auth_digest
@@ -601,7 +619,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                 </ul>
             </section>
             <section id="bridging-assets"><h3><span class="section-heading">Bridging Assets</span><span class="section-anchor"> <a rel="bookmark" href="#bridging-assets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>For bridging purposes, the secure method of off-boarding Assets is to burn an Asset with the burning mechanism in ZIP 226 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0226">4</a>. Users should be aware of issuers that demand the Assets be sent to a specific address on the Zcash chain to be redeemed elsewhere, as this may not reflect the real reserve value of the specific Wrapped Asset.</p>
+                <p>For bridging purposes, the secure method of off-boarding Assets is to burn an Asset with the burning mechanism in ZIP 226 <a id="footnote-reference-30" class="footnote_reference" href="#zip-0226">4</a>. Users should be aware of issuers that demand the Assets be sent to a specific address on the Zcash chain to be redeemed elsewhere, as this may not reflect the real reserve value of the specific Wrapped Asset.</p>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -613,10 +631,12 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                  in order to properly keep track of the total supply for different Asset Identifiers. This is useful for wallets and other applications that need to keep track of the total supply of Assets.</p>
             </section>
             <section id="fee-structures"><h3><span class="section-heading">Fee Structures</span><span class="section-anchor"> <a rel="bookmark" href="#fee-structures"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317b <a id="footnote-reference-30" class="footnote_reference" href="#zip-0317b">10</a>.</p>
+                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317b <a id="footnote-reference-31" class="footnote_reference" href="#zip-0317b">10</a>.</p>
             </section>
             <section id="future-work"><h3><span class="section-heading">Future Work</span><span class="section-anchor"> <a rel="bookmark" href="#future-work"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying <code>ik</code> of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.</p>
+                <p>In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying
+                    <span class="math">\(\mathsf{ik}\)</span>
+                 of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.</p>
             </section>
         </section>
         <section id="test-vectors"><h2><span class="section-heading">Test Vectors</span><span class="section-anchor"> <a rel="bookmark" href="#test-vectors"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -778,10 +798,18 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                     </tr>
                 </tbody>
             </table>
-            <table id="protocol-orchardkeycomponents" class="footnote">
+            <table id="protocol-abstractprfs" class="footnote">
                 <tbody>
                     <tr>
                         <th>19</th>
+                        <td><a href="protocol/protocol.pdf#abstractprfs">Zcash Protocol Specification, Version 2022.3.8. Section 4.1.2: Pseudo Random Functions</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-orchardkeycomponents" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>20</th>
                         <td><a href="protocol/protocol.pdf#orchardkeycomponents">Zcash Protocol Specification, Version 2022.3.8. Section 4.2.3: Orchard Key Components</a></td>
                     </tr>
                 </tbody>
@@ -789,7 +817,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="protocol-spendauthsig" class="footnote">
                 <tbody>
                     <tr>
-                        <th>20</th>
+                        <th>21</th>
                         <td><a href="protocol/protocol.pdf#spendauthsig">Zcash Protocol Specification, Version 2022.3.8. Section 4.15: Spend Authorization Signature (Sapling and Orchard)</a></td>
                     </tr>
                 </tbody>
@@ -797,7 +825,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="protocol-concretespendauthsig" class="footnote">
                 <tbody>
                     <tr>
-                        <th>21</th>
+                        <th>22</th>
                         <td><a href="protocol/protocol.pdf#concretespendauthsig">Zcash Protocol Specification, Version 2022.3.8. Section 5.4.7.1: Spend Authorization Signature (Sapling and Orchard)</a></td>
                     </tr>
                 </tbody>
@@ -805,7 +833,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="protocol-orchardpaymentaddrencoding" class="footnote">
                 <tbody>
                     <tr>
-                        <th>22</th>
+                        <th>23</th>
                         <td><a href="protocol/protocol.pdf#orchardpaymentaddrencoding">Zcash Protocol Specification, Version 2022.3.8. Section 5.6.4.2: Orchard Raw Payment Addresses</a></td>
                     </tr>
                 </tbody>
@@ -813,7 +841,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="protocol-transactionstructure" class="footnote">
                 <tbody>
                     <tr>
-                        <th>23</th>
+                        <th>24</th>
                         <td><a href="protocol/protocol.pdf#">Zcash Protocol Specification, Version 2022.3.8. Section 7.1: Transaction Encoding and Consensus (Transaction Version 5)</a></td>
                     </tr>
                 </tbody>
