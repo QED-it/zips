@@ -43,10 +43,10 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </ul>
         </section>
         <section id="abstract"><h2><span class="section-heading">Abstract</span><span class="section-anchor"> <a rel="bookmark" href="#abstract"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This ZIP (ZIP 227) proposes the Zcash Shielded Assets (ZSA) protocol, in conjunction with ZIP 226 <a id="footnote-reference-4" class="footnote_reference" href="#zip-0226">4</a>. This protocol is an extension of the Orchard protocol that enables the creation, transfer and burn of custom Assets on the Zcash chain. The creation of such Assets is defined in this ZIP (ZIP 227), while the transfer and burn of such Assets is defined in ZIP 226 <a id="footnote-reference-5" class="footnote_reference" href="#zip-0226">4</a>. This ZIP must only be implemented in conjuction with ZIP 226 <a id="footnote-reference-6" class="footnote_reference" href="#zip-0226">4</a>. The proposed issuance mechanism is only valid for the ZSA transfer protocol, because it produces notes that can only be transferred under ZSA.</p>
+            <p>This ZIP (ZIP 227) proposes the Zcash Shielded Assets (ZSA) protocol, in conjunction with ZIP 226 <a id="footnote-reference-4" class="footnote_reference" href="#zip-0226">4</a>. This protocol is an extension of the Orchard protocol that enables the creation, transfer and burn of Custom Assets on the Zcash chain. The creation of such Assets is defined in this ZIP (ZIP 227), while the transfer and burn of such Assets is defined in ZIP 226 <a id="footnote-reference-5" class="footnote_reference" href="#zip-0226">4</a>. This ZIP must only be implemented in conjuction with ZIP 226 <a id="footnote-reference-6" class="footnote_reference" href="#zip-0226">4</a>. The proposed issuance mechanism is only valid for the ZSA transfer protocol, because it produces notes that can only be transferred under ZSA.</p>
         </section>
         <section id="motivation"><h2><span class="section-heading">Motivation</span><span class="section-anchor"> <a rel="bookmark" href="#motivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This ZIP introduces the issuance mechanism for custom Assets on the Zcash chain. While originally part of a same ZSA ZIP (ZIP 226 <a id="footnote-reference-7" class="footnote_reference" href="#zip-0226">4</a>) the issuance mechanism turned out to be substantial enough to stand on its own and justify the creation of this supporting ZIP for ZIP 226 <a id="footnote-reference-8" class="footnote_reference" href="#zip-0226">4</a>.</p>
+            <p>This ZIP introduces the issuance mechanism for Custom Assets on the Zcash chain. While originally part of a same ZSA ZIP (ZIP 226 <a id="footnote-reference-7" class="footnote_reference" href="#zip-0226">4</a>) the issuance mechanism turned out to be substantial enough to stand on its own and justify the creation of this supporting ZIP for ZIP 226 <a id="footnote-reference-8" class="footnote_reference" href="#zip-0226">4</a>.</p>
             <p>This ZIP only enables <em>transparent</em> issuance. As a first step, transparency will allow for proper testing of the applications that will be most used in the Zcash ecosystem, and will enable the supply of Assets to be tracked.</p>
             <p>The issuance mechanism described in this ZIP is broad enough for issuers to either create Assets on Zcash (i.e. Assets that originate on the Zcash blockchain), as well as for institutions to create bridges from other chains and import Wrapped Assets. This enables what we hope will be a useful set of applications.</p>
         </section>
@@ -62,7 +62,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="requirements"><h2><span class="section-heading">Requirements</span><span class="section-anchor"> <a rel="bookmark" href="#requirements"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <ul>
-                <li>Any user of the Zcash blockchain can issue custom Assets on chain.</li>
+                <li>Any user of the Zcash blockchain can issue Custom Assets on chain.</li>
                 <li>The issuance mechanism should enable public tracking of the supply of the Assets on the Zcash blockchain.</li>
                 <li>Issuing or changing the attributes of a specific Asset should require cryptographic authorization.</li>
                 <li>The Asset identification should be unique (among all shielded pools) and different issuer public keys should not be able to generate the same Asset Identifier.</li>
@@ -218,14 +218,18 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="specification-issuance-action-issuance-bundle-and-issuance-protocol"><h2><span class="section-heading">Specification: Issuance Action, Issuance Bundle and Issuance Protocol</span><span class="section-anchor"> <a rel="bookmark" href="#specification-issuance-action-issuance-bundle-and-issuance-protocol"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="issuance-action-description"><h3><span class="section-heading">Issuance Action Description</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific custom Asset, and contains the following fields:</p>
+                <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
                 <ul>
-                    <li><code>assetDescSize</code>: the size of the Asset description, a number between
+                    <li>
+                        <span class="math">\(\mathsf{assetDescSize}\)</span>
+                    : the size of the Asset description, a number between
                         <span class="math">\(0\)</span>
                      and
                         <span class="math">\(512\)</span>
                     , stored in two bytes.</li>
-                    <li><code>assetDesc</code>: the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                    <li>
+                        <span class="math">\(\mathsf{asset\_desc}\)</span>
+                    : the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                     <li><code>vNotes</code>: an array of <code>Note</code> containing the unencrypted output notes of the recipients of the Asset.</li>
                     <li><code>flagsIssuance</code>: a byte that stores the <code>finalize</code> boolean that defines whether the issuance of that specific Custom Asset is finalized or not</li>
                 </ul>
@@ -235,7 +239,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{AssetDigest} \in \mathtt{finalized\_assets}\)</span>
                 , no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with
                     <span class="math">\(\mathsf{AssetDigest} \not\in \mathtt{finalized\_assets}\)</span>
-                , new issuance actions can be issued in future transactions. These must use the same Asset description, <code>assetDesc</code>, and can either maintain <code>finalize = 0</code> or change it to <code>finalize = 1</code>, denoting that this Custom Asset cannot be issued after the containing block.</p>
+                , new issuance actions can be issued in future transactions. These must use the same Asset description,
+                    <span class="math">\(\mathsf{asset\_desc}\)</span>
+                , and can either maintain <code>finalize = 0</code> or change it to <code>finalize = 1</code>, denoting that this Custom Asset cannot be issued after the containing block.</p>
                 <table>
                     <thead>
                         <tr>
