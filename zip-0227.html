@@ -671,7 +671,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="issuance-key-compromise"><h3><span class="section-heading">Issuance Key Compromise</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-compromise"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The design of this protocol does not currently allow for a rotation of the issuance validating key that would allow for replacing the key of a specific Asset (see <a href="#future-work">Future Work</a>). In case of compromise, the following actions are recommended:</p>
+                <p>The design of this protocol does not currently allow for rotation of the issuance validating key that would allow for replacing the key of a specific Asset. In case of compromise, the following actions are recommended:</p>
                 <ul>
                     <li>If an issuance validating key is compromised, the
                         <span class="math">\(\mathsf{finalize}\)</span>
@@ -696,11 +696,6 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             </section>
             <section id="fee-structures"><h3><span class="section-heading">Fee Structures</span><span class="section-anchor"> <a rel="bookmark" href="#fee-structures"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317b <a id="footnote-reference-31" class="footnote_reference" href="#zip-0317b">10</a>.</p>
-            </section>
-            <section id="future-work"><h3><span class="section-heading">Future Work</span><span class="section-anchor"> <a rel="bookmark" href="#future-work"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying
-                    <span class="math">\(\mathsf{ik}\)</span>
-                 of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.</p>
             </section>
         </section>
         <section id="test-vectors"><h2><span class="section-heading">Test Vectors</span><span class="section-anchor"> <a rel="bookmark" href="#test-vectors"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>

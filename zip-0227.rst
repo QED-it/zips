@@ -511,7 +511,7 @@ Security and Privacy Considerations
 Issuance Key Compromise
 -----------------------
 
-The design of this protocol does not currently allow for a rotation of the issuance validating key that would allow for replacing the key of a specific Asset (see `Future Work`_). In case of compromise, the following actions are recommended:
+The design of this protocol does not currently allow for rotation of the issuance validating key that would allow for replacing the key of a specific Asset. In case of compromise, the following actions are recommended:
 
 - If an issuance validating key is compromised, the :math:`\mathsf{finalize}` boolean for all the Assets issued with that key should be set to :math:`1` and the issuer should change to a new issuance authorizing key, and issue new Assets, each with a new :math:`\mathsf{AssetId}`.
 
@@ -533,10 +533,6 @@ Fee Structures
 
 The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317b [#zip-0317b]_.
 
-Future Work
------------
-
-In future versions of this ZIP, the protocol may also include a "key rotation" mechanism. This would allow an issuer to change the underlying :math:`\mathsf{ik}` of a given Asset, in case the original one was compromised, without having to change the Asset Identifier altogether.
 
 Test Vectors
 ============
