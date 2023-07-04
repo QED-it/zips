@@ -223,9 +223,15 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         <section id="specification-global-issuance-state"><h2><span class="section-heading">Specification: Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>Issuance requires the following additions to the global state defined at block boundaries:</p>
             <ul>
-                <li><code>finalized_assets</code>, a set of
-                    <span class="math">\(\mathsf{AssetDigest}\)</span>
-                 that have been finalized (i.e.: the <code>finalize</code> flag has been set to <code>1</code> in some issuance transaction preceding the block boundary).</li>
+                <li>
+                    <span class="math">\(\mathsf{previously\_finalized}\)</span>
+                , a set of
+                    <span class="math">\(\mathsf{AssetId}\)</span>
+                 that have been finalized (i.e.: the
+                    <span class="math">\(\mathsf{finalize}\)</span>
+                 flag has been set to
+                    <span class="math">\(1\)</span>
+                 in some issuance transaction preceding the block boundary).</li>
             </ul>
         </section>
         <section id="specification-issuance-action-issuance-bundle-and-issuance-protocol"><h2><span class="section-heading">Specification: Issuance Action, Issuance Bundle and Issuance Protocol</span><span class="section-anchor"> <a rel="bookmark" href="#specification-issuance-action-issuance-bundle-and-issuance-protocol"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -243,17 +249,27 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{asset\_desc}\)</span>
                     : the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                     <li><code>vNotes</code>: an array of <code>Note</code> containing the unencrypted output notes of the recipients of the Asset.</li>
-                    <li><code>flagsIssuance</code>: a byte that stores the <code>finalize</code> boolean that defines whether the issuance of that specific Custom Asset is finalized or not</li>
+                    <li><code>flagsIssuance</code>: a byte that stores the
+                        <span class="math">\(\mathsf{finalize}\)</span>
+                     boolean that defines whether the issuance of that specific Custom Asset is finalized or not.</li>
                 </ul>
                 <p>An asset's
                     <span class="math">\(\mathsf{AssetDigest}\)</span>
-                 is added to the <code>finalized_assets</code> set after a block that contains any issuance transaction for that asset with <code>finalize = 1</code>. It then cannot be removed from this set. For Assets with
-                    <span class="math">\(\mathsf{AssetDigest} \in \mathtt{finalized\_assets}\)</span>
+                 is added to the
+                    <span class="math">\(\mathsf{previously\_finalized}\)</span>
+                 set after a block that contains any issuance transaction for that asset with
+                    <span class="math">\(\mathsf{finalize} = 1\)</span>
+                . It then cannot be removed from this set. For Assets with
+                    <span class="math">\(\mathsf{AssetDigest} \in \mathsf{previously\_finalized}\)</span>
                 , no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with
-                    <span class="math">\(\mathsf{AssetDigest} \not\in \mathtt{finalized\_assets}\)</span>
+                    <span class="math">\(\mathsf{AssetDigest} \not\in \mathsf{previously\_finalized}\)</span>
                 , new issuance actions can be issued in future transactions. These must use the same Asset description,
                     <span class="math">\(\mathsf{asset\_desc}\)</span>
-                , and can either maintain <code>finalize = 0</code> or change it to <code>finalize = 1</code>, denoting that this Custom Asset cannot be issued after the containing block.</p>
+                , and can either maintain
+                    <span class="math">\(\mathsf{finalize} = 0\)</span>
+                 or change it to
+                    <span class="math">\(\mathsf{finalize} = 1\)</span>
+                , denoting that this Custom Asset cannot be issued after the containing block.</p>
                 <table>
                     <thead>
                         <tr>
@@ -297,7 +313,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                     <dt>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</dt>
                                     <dd>
                                         <ul>
-                                            <li><code>finalize</code></li>
+                                            <li>
+                                                <span class="math">\(\mathsf{finalize}\)</span>
+                                            </li>
                                             <li>The remaining bits are set to <code>0</code>.</li>
                                         </ul>
                                     </dd>
@@ -374,7 +392,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      from
                         <span class="math">\(\mathsf{AssetDigest}\)</span>
                      as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
-                    <li>set the <code>finalize</code> boolean as desired (if more issuance actions are to be created for this Asset Identifier, set <code>finalize = 0</code>, otherwise set <code>finalize = 1</code>).</li>
+                    <li>set the
+                        <span class="math">\(\mathsf{finalize}\)</span>
+                     boolean as desired (if more issuance actions are to be created for this Asset Identifier, set
+                        <span class="math">\(\mathsf{finalize} = 0\)</span>
+                    , otherwise set
+                        <span class="math">\(\mathsf{finalize} = 1\)</span>
+                    )</li>
                     <li>For each recipient
                         <span class="math">\(i\)</span>
                     :
@@ -428,10 +452,14 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{AssetBase}\)</span>
                  is derived from the issuance validating key
                     <span class="math">\(\mathsf{ik}\)</span>
-                 and <code>assetDesc</code> as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                 and
+                    <span class="math">\(\mathsf{asset\_desc}\)</span>
+                 as described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                 <li>check that the
                     <span class="math">\(\mathsf{AssetDigest}\)</span>
-                 does not exist in the <code>finalized_assets</code> set in the global state.</li>
+                 does not exist in the
+                    <span class="math">\(\mathsf{previously\_finalized}\)</span>
+                 set in the global state.</li>
                 <li>check that every note in the <code>IssueAction</code> contains the same
                     <span class="math">\(\mathsf{AssetBase}\)</span>
                  and is properly constructed as
@@ -446,9 +474,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>Add
                     <span class="math">\(\mathsf{cm}\)</span>
                  to the Merkle tree of note commitments.</li>
-                <li>If <code>finalize = 1</code>, add
+                <li>If
+                    <span class="math">\(\mathsf{finalize} = 1\)</span>
+                , add
                     <span class="math">\(\mathsf{AssetDigest}\)</span>
-                 to the <code>finalized_assets</code> set immediately after the block in which this transaction occurs.</li>
+                 to the
+                    <span class="math">\(\mathsf{previously\_finalized}\)</span>
+                 set immediately after the block in which this transaction occurs.</li>
                 <li>(Replay Protection) If issue bundle is present, the fees MUST be greater than zero.</li>
             </ul>
         </section>
@@ -465,32 +497,46 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>information to be committed by the issuer, though not enforceable by the protocol.</li>
                     </ul>
                 </li>
-                <li>We require a check whether the <code>finalize</code> flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the <code>finalized_assets</code> set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
+                <li>We require a check whether the
+                    <span class="math">\(\mathsf{finalize}\)</span>
+                 flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the
+                    <span class="math">\(\mathsf{previously\_finalized}`\)</span>
+                 set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
                 <li>We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.</li>
             </ul>
             <section id="concrete-applications"><h3><span class="section-heading">Concrete Applications</span><span class="section-anchor"> <a rel="bookmark" href="#concrete-applications"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p><strong>Asset Features</strong></p>
                 <ul>
-                    <li>By using the <code>finalize</code> boolean and the burning mechanism defined in <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
+                    <li>By using the
+                        <span class="math">\(\mathsf{finalize}\)</span>
+                     boolean and the burning mechanism defined in <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
                         <ul>
-                            <li>by setting <code>finalize = 1</code> from the first issuance action for that Asset Identifier, the issuer is in essence creating a one-time issuance transaction. This is useful when the max supply is capped from the beginning and the distribution is known in advance. All tokens are issued at once and distributed as needed.</li>
+                            <li>by setting
+                                <span class="math">\(\mathsf{finalize} = 1\)</span>
+                             from the first issuance action for that Asset Identifier, the issuer is in essence creating a one-time issuance transaction. This is useful when the max supply is capped from the beginning and the distribution is known in advance. All tokens are issued at once and distributed as needed.</li>
                         </ul>
                     </li>
                     <li>Issuers can also stop the existing supply production of any Asset associated to their issuer keys. This could be done by
                         <ul>
                             <li>issuing a last set of tokens of that specific
                                 <span class="math">\(\mathsf{AssetId}\)</span>
-                            , for which <code>finalize = 1</code>, or by</li>
+                            , for which
+                                <span class="math">\(\mathsf{finalize} = 1\)</span>
+                            , or by</li>
                             <li>issuing a transaction with a single note in the issuance action pertaining to that
                                 <span class="math">\(\mathsf{AssetId}\)</span>
                             , where the note will contain a <code>value = 0</code>. This can be used for application-specific purposes (NFT collections) or for security purposes to revoke the Asset issuance (see Security and Privacy Considerations).</li>
-                            <li>Note in the above cases, that the setting of the <code>finalize</code> flag will take effect at the block boundary, that is, after all the transactions in the block.</li>
+                            <li>Note in the above cases, that the setting of the
+                                <span class="math">\(\mathsf{finalize}\)</span>
+                             flag will take effect at the block boundary, that is, after all the transactions in the block.</li>
                         </ul>
                     </li>
                     <li>The issuance and burn mechanisms can be used in conjunction to determine the supply of Assets on the Zcash ecosystem. This allows for the bridging of Assets defined on other chains.</li>
                     <li>Furthermore, NFT issuance is enabled by issuing in a single bundle several issuance actions, where each
                         <span class="math">\(\mathsf{AssetId}\)</span>
-                     corresponds to <code>value = 1</code> at the fundamental unit level. Issuers and users should make sure that <code>finalize = 1</code> for each of the actions in this scenario.</li>
+                     corresponds to <code>value = 1</code> at the fundamental unit level. Issuers and users should make sure that
+                        <span class="math">\(\mathsf{finalize} = 1\)</span>
+                     for each of the actions in this scenario.</li>
                 </ul>
             </section>
         </section>
@@ -550,7 +596,9 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
                     <section id="t-5a-iii-flagsissuance"><h5><span class="section-heading">T.5a.iii: flagsIssuance</span><span class="section-anchor"> <a rel="bookmark" href="#t-5a-iii-flagsissuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
                         <p>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</p>
                         <ul>
-                            <li><code>finalize</code></li>
+                            <li>
+                                <span class="math">\(\mathsf{finalize}\)</span>
+                            </li>
                             <li>The remaining bits are set to <cite>0</cite>.</li>
                         </ul>
                     </section>
@@ -611,7 +659,9 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <section id="issuance-key-compromise"><h3><span class="section-heading">Issuance Key Compromise</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-compromise"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The design of this protocol does not currently allow for a rotation of the issuance validating key that would allow for replacing the key of a specific Asset (see <a href="#future-work">Future Work</a>). In case of compromise, the following actions are recommended:</p>
                 <ul>
-                    <li>If an issuance validating key is compromised, the <code>finalize</code> boolean for all the Assets issued with that key should be set to
+                    <li>If an issuance validating key is compromised, the
+                        <span class="math">\(\mathsf{finalize}\)</span>
+                     boolean for all the Assets issued with that key should be set to
                         <span class="math">\(1\)</span>
                      and the issuer should change to a new issuance authorizing key, and issue new Assets, each with a new
                         <span class="math">\(\mathsf{AssetId}\)</span>
