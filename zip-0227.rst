@@ -233,8 +233,8 @@ Specifically, contains all the issuance actions and the issuer signature on the 
 It contains the following fields:
 
 - :math:`\mathsf{ik}`: the issuance validating key, that allows the validators to verify that the :math:`\mathsf{AssetId}` is properly associated with the issuer.
-- ``vIssueActions``: an array of issuance actions, of type `IssueAction`.
-- ``issueAuthSig``: the signature of the transaction SIGHASH, signed by the issuance authorizing key, :math:`\mathsf{isk}`, that validates the issuance .
+- ``vIssueActions``: an array of issuance actions, of type ``IssueAction``.
+- :math:`\mathsf{issueAuthSig}`: the signature of the transaction SIGHASH, signed by the issuance authorizing key, :math:`\mathsf{isk}`, that validates the issuance .
 
 The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format [#protocol-transactionstructure]_.
 

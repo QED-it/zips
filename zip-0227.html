@@ -340,8 +340,10 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     : the issuance validating key, that allows the validators to verify that the
                         <span class="math">\(\mathsf{AssetId}\)</span>
                      is properly associated with the issuer.</li>
-                    <li><code>vIssueActions</code>: an array of issuance actions, of type <cite>IssueAction</cite>.</li>
-                    <li><code>issueAuthSig</code>: the signature of the transaction SIGHASH, signed by the issuance authorizing key,
+                    <li><code>vIssueActions</code>: an array of issuance actions, of type <code>IssueAction</code>.</li>
+                    <li>
+                        <span class="math">\(\mathsf{issueAuthSig}\)</span>
+                    : the signature of the transaction SIGHASH, signed by the issuance authorizing key,
                         <span class="math">\(\mathsf{isk}\)</span>
                     , that validates the issuance .</li>
                 </ul>
