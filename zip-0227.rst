@@ -146,20 +146,20 @@ This allows the issuer to use the same wallet it usually uses to transfer Assets
 Specification: Asset Identifier
 ===============================
 
-For every new Asset, there must be a new and unique Asset Identifier, denoted :math:`\mathsf{AssetId}`. We define this to be a globally unique pair :math:`\mathsf{AssetId} := (\mathsf{ik}, \mathtt{assetDesc})`, where :math:`\mathsf{ik}` is the issuance key and ``assetDesc`` is a byte string.
+For every new Asset, there must be a new and unique Asset Identifier, denoted :math:`\mathsf{AssetId}`. We define this to be a globally unique pair :math:`\mathsf{AssetId} := (\mathsf{ik}, \mathsf{asset\_desc})`, where :math:`\mathsf{ik}` is the issuance key and :math:`\mathsf{asset\_desc}` is a byte string.
 
 A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest, :math:`\mathsf{AssetDigest}`, which is simply is a :math:`\textsf{BLAKE2b-512}` hash of the Asset Identifier.
 From the Asset Digest, we derive a specific Asset Base within each such shielded protocol (for example :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}` for the Orchard-based ZSA protocol), using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.
 
 Let 
 
-- ``assetDesc`` be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
+- :math:`\mathsf{asset\_desc}` be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
 - :math:`\mathsf{ik}` be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.
 
 Define :math:`\mathsf{AssetDigest_{\mathsf{AssetId}}} := \textsf{BLAKE2b-512}(\texttt{"ZSA-Asset-Digest"},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))`,
 where
 
-- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathtt{assetDesc}\!`.
+- :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!`.
 
 Define :math:`\mathsf{AssetBase^{Protocol}_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase^{Protocol}}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`,
 where
@@ -206,9 +206,9 @@ An asset's :math:`\mathsf{AssetDigest}` is added to the :math:`\mathsf{previousl
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                                 | Description                                                         |
 +=============================+==========================+===========================================+=====================================================================+
-|``2``                        |``assetDescSize``         |``byte``                                   |The length of the ``assetDesc`` string in bytes.                     |  
+|``2``                        |``assetDescSize``         |``byte``                                   |The length of the :math:`\mathsf{asset\_desc}` string in bytes.      |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``assetDescSize``            |``assetDesc``             |``byte[assetDescSize]``                    |A byte sequence of length ``assetDescSize`` bytes which SHOULD be a  |
+|``assetDescSize``            |``asset_desc``            |``byte[assetDescSize]``                    |A byte sequence of length ``assetDescSize`` bytes which SHOULD be a  |
 |                             |                          |                                           |well-formed UTF-8 code unit sequence according to Unicode 15.0.0     |
 |                             |                          |                                           |or later.                                                            |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
@@ -258,8 +258,8 @@ The issuer program performs the following operations
 
 For all actions ``IssueAction``:
 
-- encode ``assetDesc`` as a UTF-8 byte string of size up to 512.
-- compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and ``assetDesc`` as decribed in the `Specification: Asset Identifier`_ section.
+- encode :math:`\mathsf{asset\_desc}` as a UTF-8 byte string of size up to 512.
+- compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as decribed in the `Specification: Asset Identifier`_ section.
 - compute :math:`\mathsf{AssetBase^{Protocol}}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
 - set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`)
 - For each recipient :math:`i`:
@@ -288,7 +288,7 @@ For the ``IssueBundle``:
 For each ``IssueAction`` in ``IssueBundle``:
 
 - check that :math:`0 < \mathtt{assetDescSize} <= 512`.
-- check that :math:`\mathtt{assetDesc}` is a string of length :math:`\mathtt{assetDescSize}` bytes.
+- check that :math:`\mathsf{asset\_desc}` is a string of length :math:`\mathtt{assetDescSize}` bytes.
 
 - retrieve :math:`\mathsf{AssetBase}` from the first note in the sequence and check that :math:`\mathsf{AssetBase}` is derived from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as described in the `Specification: Asset Identifier`_ section.
 - check that the :math:`\mathsf{AssetDigest}` does not exist in the :math:`\mathsf{previously\_finalized}` set in the global state.
@@ -309,7 +309,7 @@ The following is a list of rationale for different decisions made in the proposa
 
 - The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.
 - The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.
-- The ``assetDesc`` is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
+- The :math:`\mathsf{asset\_desc}` is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
 
     - links for storage such as for NFTs.
     - metadata for Assets, encoded in any format.

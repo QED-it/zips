@@ -175,10 +175,12 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>For every new Asset, there must be a new and unique Asset Identifier, denoted
                 <span class="math">\(\mathsf{AssetId}\)</span>
             . We define this to be a globally unique pair
-                <span class="math">\(\mathsf{AssetId} := (\mathsf{ik}, \mathtt{assetDesc})\)</span>
+                <span class="math">\(\mathsf{AssetId} := (\mathsf{ik}, \mathsf{asset\_desc})\)</span>
             , where
                 <span class="math">\(\mathsf{ik}\)</span>
-             is the issuance key and <code>assetDesc</code> is a byte string.</p>
+             is the issuance key and
+                <span class="math">\(\mathsf{asset\_desc}\)</span>
+             is a byte string.</p>
             <p>A given Asset Identifier is used across all Zcash protocols that support ZSAs -- that is, the Orchard-based ZSA protocol and potentially future Zcash shielded protocols. For this Asset Identifier, we derive an Asset Digest,
                 <span class="math">\(\mathsf{AssetDigest}\)</span>
             , which is simply is a
@@ -188,7 +190,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
              for the Orchard-based ZSA protocol), using the applicable hash-to-curve algorithm. This Asset Base is included in shielded notes.</p>
             <p>Let</p>
             <ul>
-                <li><code>assetDesc</code> be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
+                <li>
+                    <span class="math">\(\mathsf{asset\_desc}\)</span>
+                 be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
                 <li>
                     <span class="math">\(\mathsf{ik}\)</span>
                  be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
@@ -198,7 +202,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             , where</p>
             <ul>
                 <li>
-                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathtt{assetDesc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathtt{assetDesc}\!\)</span>
+                    <span class="math">\(\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!\)</span>
                 .</li>
             </ul>
             <p>Define
@@ -284,11 +288,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <td><code>2</code></td>
                             <td><code>assetDescSize</code></td>
                             <td><code>byte</code></td>
-                            <td>The length of the <code>assetDesc</code> string in bytes.</td>
+                            <td>The length of the
+                                <span class="math">\(\mathsf{asset\_desc}\)</span>
+                             string in bytes.</td>
                         </tr>
                         <tr>
                             <td><code>assetDescSize</code></td>
-                            <td><code>assetDesc</code></td>
+                            <td><code>asset_desc</code></td>
                             <td><code>byte[assetDescSize]</code></td>
                             <td>A byte sequence of length <code>assetDescSize</code> bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</td>
                         </tr>
@@ -381,12 +387,16 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>The issuer program performs the following operations</p>
                 <p>For all actions <code>IssueAction</code>:</p>
                 <ul>
-                    <li>encode <code>assetDesc</code> as a UTF-8 byte string of size up to 512.</li>
+                    <li>encode
+                        <span class="math">\(\mathsf{asset\_desc}\)</span>
+                     as a UTF-8 byte string of size up to 512.</li>
                     <li>compute
                         <span class="math">\(\mathsf{AssetDigest}\)</span>
                      from the issuance validating key
                         <span class="math">\(\mathsf{ik}\)</span>
-                     and <code>assetDesc</code> as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                     and
+                        <span class="math">\(\mathsf{asset\_desc}\)</span>
+                     as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
                     <li>compute
                         <span class="math">\(\mathsf{AssetBase^{Protocol}}\)</span>
                      from
@@ -442,7 +452,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(0 &lt; \mathtt{assetDescSize} &lt;= 512\)</span>
                 .</li>
                 <li>check that
-                    <span class="math">\(\mathtt{assetDesc}\)</span>
+                    <span class="math">\(\mathsf{asset\_desc}\)</span>
                  is a string of length
                     <span class="math">\(\mathtt{assetDescSize}\)</span>
                  bytes.</li>
@@ -489,7 +499,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.</li>
                 <li>The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.</li>
-                <li>The <code>assetDesc</code> is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
+                <li>The
+                    <span class="math">\(\mathsf{asset\_desc}\)</span>
+                 is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
                     <ul>
                         <li>links for storage such as for NFTs.</li>
                         <li>metadata for Assets, encoded in any format.</li>
