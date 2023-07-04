@@ -307,7 +307,7 @@ The burn mechanism verification is equivalent to:
 
 .. math:: \mathsf{bvk} = ((\sum_{i=1}^{m} \mathsf{cv^{net}}_{i}) + (\sum_{j=m+1}^{n} \mathsf{cv^{net}}_{j})) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{L} [\mathsf{v}_{k}]\mathsf{AssetBase}_{k} + [0]\mathcal{R}^{\mathsf{Orchard}})
 
-The relationship between :math:`\mathsf{bvk}` and :math:`\mathsf{bsk}` will hold only if the sum of the net values of the Actions equals the sum of :math:`\mathsf{v^{balanceOrchard}}` and the :math:`\mathsf{v_k}` values, across base points (i.e. Asset Base).
+The relationship between :math:`\mathsf{bvk}` and :math:`\mathsf{bsk}` will hold only if the sum of the net values of the Actions equals the sum of :math:`\mathsf{v^{balanceOrchard}}` and the :math:`\mathsf{v}_k` values, across base points (i.e. Asset Base).
 
 ZSA Transaction Structure
 =========================
