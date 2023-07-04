@@ -76,7 +76,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>The ZSA Protocol adds the following three keys to the key components <a id="footnote-reference-9" class="footnote_reference" href="#protocol-addressesandkeys">17</a>:</p>
             <ol type="1">
                 <li>The issuance derivation key, denoted as
-                    <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
+                    <span class="math">\(\mathsf{idk}\)</span>
                 , as the name suggests, is the key that is used to derive the other two keys.</li>
                 <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as
                     <span class="math">\(\mathsf{isk}\)</span>
@@ -148,19 +148,19 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <p>From the generated
                         <span class="math">\((\mathsf{sk}, \mathsf{c})\)</span>
                     , we set the issuance derivation key to be
-                        <span class="math">\(\mathsf{sk_{iss}} := \mathsf{sk}\)</span>
+                        <span class="math">\(\mathsf{idk} := \mathsf{sk}\)</span>
                     .</p>
                 </section>
                 <section id="derivation-of-issuance-authorizing-key-and-issuance-validating-key"><h4><span class="section-heading">Derivation of issuance authorizing key and issuance validating key</span><span class="section-anchor"> <a rel="bookmark" href="#derivation-of-issuance-authorizing-key-and-issuance-validating-key"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The issuance authorizing key and issuance validating key are derived from the issuance derivation key in an analogous manner to the derivation of the Orchard spend authorizing key and Orchard spend validating key from the Orchard spending key <a id="footnote-reference-17" class="footnote_reference" href="#protocol-orchardkeycomponents">20</a>, as described below.</p>
                     <ul>
                         <li>The issuance authorizing key is derived from the issuance derivation key,
-                            <span class="math">\(\mathsf{sk}_{\mathsf{iss}}\)</span>
+                            <span class="math">\(\mathsf{idk}\)</span>
                         , as a private signature key. The function
-                            <span class="math">\(\mathsf{PRF^{expand}_{sk}}\)</span>
+                            <span class="math">\(\mathsf{PRF^{expand}_{idk}}\)</span>
                          is as defined in the Zcash protocol specification <a id="footnote-reference-18" class="footnote_reference" href="#protocol-abstractprfs">19</a>:</li>
                     </ul>
-                    <div class="math">\(\mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{sk_{iss}}}([\mathtt{0x0a}]) )\)</div>
+                    <div class="math">\(\mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{idk}}([\mathtt{0x0a}]) )\)</div>
                     <ul>
                         <li>The issuance validating key is derived from the issuance authorizing key,
                             <span class="math">\(\mathsf{isk}\)</span>

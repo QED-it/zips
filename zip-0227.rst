@@ -82,7 +82,7 @@ Specification: Issuance Keys and Issuance Authorization Signature Scheme
 
 The ZSA Protocol adds the following three keys to the key components [#protocol-addressesandkeys]_:
 
-1. The issuance derivation key, denoted as :math:`\mathsf{sk}_{\mathsf{iss}}`, as the name suggests, is the key that is used to derive the other two keys.
+1. The issuance derivation key, denoted as :math:`\mathsf{idk}`, as the name suggests, is the key that is used to derive the other two keys.
 
 2. The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as :math:`\mathsf{isk}`. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
 
@@ -126,16 +126,16 @@ We use the notation of ZIP 32 [#zip-0032-orchard-key-path]_ for shielded HD path
 - :math:`coin\_type`: Defined as in ZIP 32 [#zip-0032-key-path-levels]_.
 - :math:`account`: fixed to index :math:`0`.
 
-From the generated :math:`(\mathsf{sk}, \mathsf{c})`, we set the issuance derivation key to be :math:`\mathsf{sk_{iss}} := \mathsf{sk}`.
+From the generated :math:`(\mathsf{sk}, \mathsf{c})`, we set the issuance derivation key to be :math:`\mathsf{idk} := \mathsf{sk}`.
 
 Derivation of issuance authorizing key and issuance validating key
 ``````````````````````````````````````````````````````````````````
 
 The issuance authorizing key and issuance validating key are derived from the issuance derivation key in an analogous manner to the derivation of the Orchard spend authorizing key and Orchard spend validating key from the Orchard spending key [#protocol-orchardkeycomponents]_, as described below.
 
-- The issuance authorizing key is derived from the issuance derivation key, :math:`\mathsf{sk}_{\mathsf{iss}}`, as a private signature key. The function :math:`\mathsf{PRF^{expand}_{sk}}` is as defined in the Zcash protocol specification [#protocol-abstractprfs]_:
+- The issuance authorizing key is derived from the issuance derivation key, :math:`\mathsf{idk}`, as a private signature key. The function :math:`\mathsf{PRF^{expand}_{idk}}` is as defined in the Zcash protocol specification [#protocol-abstractprfs]_:
 
-.. math:: \mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{sk_{iss}}}([\mathtt{0x0a}]) )
+.. math:: \mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{idk}}([\mathtt{0x0a}]) )
 
 - The issuance validating key is derived from the issuance authorizing key, :math:`\mathsf{isk}`, as a public verification key:
 
