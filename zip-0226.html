@@ -62,9 +62,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
              an auxiliary input to the proof for each Action statement <a id="footnote-reference-14" class="footnote_reference" href="#protocol-actionstatement">27</a>, represented already as a point on the Pallas curve. The circuit then should check that the same
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
-             is used in the old note commitment and the new note commitment <a id="footnote-reference-15" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a>, <strong>and</strong> as the base point
-                <span class="math">\(\mathcal{V}^\mathsf{Orchard}\)</span>
-             in the value commitment <a id="footnote-reference-16" class="footnote_reference" href="#protocol-concretevaluecommit">25</a>. This ensures (1) that the input and output notes are of the same
+             is used in the old note commitment and the new note commitment <a id="footnote-reference-15" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a>, <strong>and</strong> as the base point <cite>mathcal{V}^mathsf{Orchard}</cite> in the value commitment <a id="footnote-reference-16" class="footnote_reference" href="#protocol-concretevaluecommit">25</a>. This ensures (1) that the input and output notes are of the same
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
             , and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.</p>
             <p>In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes <a id="footnote-reference-17" class="footnote_reference" href="#protocol-dummynotes">26</a> for Custom Assets, as we need to enforce that the
@@ -154,7 +152,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm}}\)</span>
                     , differs from the Orchard note commitment
                         <span class="math">\(\mathsf{NoteCommit^{Orchard}_{rcm}}\)</span>
-                     in that for Custom Assets, the Asset Base will be added as an input to the commitment computation. In the case where the Asset is the ZEC Asset, the commitment is computed identically to the Orchard note commitment, without making use of the ZEC Asset Base as an input. As we will see, the nested structure of the Sinsemilla-based commitment <a id="footnote-reference-32" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a> allows us to add the Asset Base as a final recursive step, and hence keep a single instance of the Sinsemilla hash function in the circuit for the note commitment verification.</p>
+                     in that for Custom Assets, the Asset Base will be added as an input to the commitment computation. In the case where the Asset is the ZEC Asset, the commitment is computed identically to the Orchard note commitment, without making use of the ZEC Asset Base as an input. As we will see, the nested structure of the Sinsemilla-based commitment <a id="footnote-reference-32" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a> allows us to add the Asset Base as a final recursive step.</p>
                     <p>The note commitment output is still indistinguishable from the original Orchard ZEC note commitments, by definition of the Sinsemilla hash function <a id="footnote-reference-33" class="footnote_reference" href="#protocol-concretesinsemillahash">23</a>. ZSA note commitments will therefore be added to the same Orchard Note Commitment Tree. In essence, we have:</p>
                     <div class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, \mathsf{AssetBase}^{\mathsf{Orchard}})} \in \mathsf{NoteCommit^{Orchard}.Output}\)</div>
                     <p>This definition can be viewed as a generalization of the Orchard note commitment, and will allow maintaining a single commitment instance for the note commitment, which will be used both for pre-ZSA Orchard and ZSA notes.</p>
@@ -265,6 +263,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li>The Split Input note could be a different unspent note containing the same Asset Base (note that the note will not actually be spent).</li>
                     <li>The Split Input note could be an already spent note containing the same Asset Base (note that by zeroing the value in the circuit, we prevent double spending).</li>
                 </ol>
+                <p>For Split Notes, the nullifier is generated as follows</p>
+                <div class="math">\(\mathsf{nf_{old}} = \mathsf{Extract}_{\mathbb{P}} ([(\mathsf{PRF^{nfOrchard}_{nk}} (\rho^{\mathsf{old}}) + \psi') \bmod q_{\mathbb{P}}] \mathcal{K}^\mathsf{Orchard} + \mathsf{cm^{old}} + \mathcal{L}^\mathsf{Orchard})\)</div>
+                <p>where
+                    <span class="math">\(\psi'\)</span>
+                 is sampled uniformly at random on
+                    <span class="math">\(\mathbb{F}_{q_{\mathbb{P}}}\)</span>
+                .</p>
                 <section id="rationale-for-split-notes"><h4><span class="section-heading">Rationale for Split Notes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-split-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>In the Orchard protocol, since each Action represents an input and an output, the transaction that wants to send one input to multiple outputs must have multiple inputs. The Orchard protocol gives <em>dummy spend notes</em> <a id="footnote-reference-40" class="footnote_reference" href="#protocol-dummynotes">26</a> to the Actions that have not been assigned input notes.</p>
                     <p>The Orchard technique requires modification for the ZSA protocol with multiple Asset Identifiers, as the output note of the split Actions <em>cannot</em> contain <em>any</em> Asset Base. We must enforce it to be an actual output of a GroupHash computation (in fact, we want it to be of the same Asset Base as the original input note, but the binding signature takes care that the proper balancing is performed). Without this enforcement the prover could input a multiple (or linear combination) of an existing Asset Base, and thereby attack the network by overflowing the ZEC value balance and hence counterfeiting ZEC funds.</p>
@@ -295,6 +300,17 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <span class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm^{new}}(repr_{\mathbb{P}}(g_d^{new}), repr_{\mathbb{P}}(pk_d^{new}), v^{new}, \rho^{new}, \psi^{new}, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}\)</span>
                         .</li>
                     </ul>
+                    <p>To make easier evaluation of note commitments, we add a boolean
+                        <span class="math">\(\mathsf{is\_native\_asset}\)</span>
+                     as an auxiliary witness. We also add some constraints to verify that this variable is activated
+                        <span class="math">\(\mathsf{is\_native\_asset} = 1\)</span>
+                     if the Asset Base is equal to
+                        <span class="math">\(\mathcal{V}^\mathsf{Orchard}\)</span>
+                     and this variable is not activated
+                        <span class="math">\(\mathsf{is\_native\_asset} = 0\)</span>
+                     if the Asset Base is not equal to
+                        <span class="math">\(\mathcal{V}^\mathsf{Orchard}\)</span>
+                    </p>
                 </section>
                 <section id="value-commitment-correctness"><h4><span class="section-heading">Value Commitment Correctness</span><span class="section-anchor"> <a rel="bookmark" href="#value-commitment-correctness"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The following constraints must be added to ensure that the value commitment is computed using the witnessed Asset Base:</p>
@@ -345,8 +361,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                         <li>If
                                             <span class="math">\(\mathsf{split\_flag} = 1\)</span>
                                          then constrain
-                                            <span class="math">\(\mathsf{v^{old}} \neq 0\)</span>
-                                        .</li>
+                                            <span class="math">\(\mathsf{is\_native\_asset}' = 0\)</span>
+                                         because split notes are only available for Custom Assets.</li>
                                     </ul>
                                 </dd>
                             </dl>
@@ -356,7 +372,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                 <dt>The Merkle Path Validity should check the existence of the note commitment as usual (and not like with dummy notes):</dt>
                                 <dd>
                                     <ul>
-                                        <li>Check that (path, pos) is a valid Merkle path of depth
+                                        <li>Check for all notes except dummy notes that (path, pos) is a valid Merkle path of depth
                                             <span class="math">\(\mathsf{MerkleDepth^Orchard}\)</span>
                                         , from
                                             <span class="math">\(\mathsf{cm^{old}}\)</span>
@@ -367,31 +383,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                 </dd>
                             </dl>
                         </li>
-                        <li>
-                            <dl>
-                                <dt>The Nullifier Integrity will be changed to prevent the identification of notes</dt>
-                                <dd>
-                                    <ul>
-                                        <li>Replace the
-                                            <span class="math">\(\psi_{old}\)</span>
-                                         value with a generic
-                                            <span class="math">\(\psi'\)</span>
-                                         as
-                                            <span class="math">\(\mathsf{nf_{old}} = \mathsf{DeriveNullifier_{nk}}(\rho^\mathsf{old}, \psi', \mathsf{cm^{old}})\)</span>
-                                        </li>
-                                        <li>if
-                                            <span class="math">\(\mathsf{split\_flag} = 0\)</span>
-                                         then constrain
-                                            <span class="math">\(\psi' = \psi^{old}\)</span>
-                                        . (Otherwise
-                                            <span class="math">\(\psi'\)</span>
-                                         should be sampled uniformly at random on
-                                            <span class="math">\(\mathbb{F}_{q_{\mathbb{P}}}\)</span>
-                                        .)</li>
-                                    </ul>
-                                </dd>
-                            </dl>
-                        </li>
+                        <li>The Nullifier Integrity will be changed to prevent the identification of notes as defined in the <a href="#split-notes">Split Notes</a> section.</li>
                     </ul>
                 </section>
                 <section id="backwards-compatibility-with-zec-notes"><h4><span class="section-heading">Backwards Compatibility with ZEC Notes</span><span class="section-anchor"> <a rel="bookmark" href="#backwards-compatibility-with-zec-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
@@ -718,7 +710,7 @@ T.4d.iv : outCiphertext         (field encoding bytes)</pre>
                      value as well.</li>
                     <li>The existing Orchard shielded pool will continue to be used for the new ZSA notes post the upgrade.</li>
                     <li>The value commitment is abstracted to allow for the value base-point as a variable private input to the proof.</li>
-                    <li>The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include both dummy and split input notes.</li>
+                    <li>The ZEC-based Actions will still include dummy input notes, whereas the ZSA-based Actions will include split input notes and will not include dummy input notes.</li>
                 </ul>
             </section>
             <section id="deployment"><h3><span class="section-heading">Deployment</span><span class="section-anchor"> <a rel="bookmark" href="#deployment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
