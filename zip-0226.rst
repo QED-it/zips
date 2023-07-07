@@ -232,6 +232,8 @@ Circuit Statement
 
 Every *ZSA Action statement* is closely similar to the Orchard Action statement [#protocol-actionstatement]_, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.
 
+All modifications in the Circuit are detailed in [#circuit-modifications]_.
+
 Asset Base Equality
 ```````````````````
 
@@ -569,3 +571,5 @@ References
 .. [#initial-zsa-issue] `User-Defined Assets and Wrapped Assets <https://github.com/str4d/zips/blob/zip-udas/drafts/zip-user-defined-assets.rst>`_
 .. [#generalized-value-commitments] `Comment on Generalized Value Commitments <https://github.com/zcash/zcash/issues/2277#issuecomment-321106819>`_
 .. [#zip-0317b] `ZIP 317: Proportional Transfer Fee Mechanism - Pull Request #667 for ZSA Protocol ZIPs <https://github.com/zcash/zips/pull/667>`_
+.. [#circuit-modifications] `Modifications in the Orchard circuit for ZSA <https://docs.google.com/document/d/1DzXBqZl_l3aIs_gcelw3OuZz2OVMnYk6Xe_1lBsTji8/edit?usp=sharing>`_
+
