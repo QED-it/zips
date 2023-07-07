@@ -62,7 +62,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
              an auxiliary input to the proof for each Action statement <a id="footnote-reference-14" class="footnote_reference" href="#protocol-actionstatement">27</a>, represented already as a point on the Pallas curve. The circuit then should check that the same
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
-             is used in the old note commitment and the new note commitment <a id="footnote-reference-15" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a>, <strong>and</strong> as the base point <cite>mathcal{V}^mathsf{Orchard}</cite> in the value commitment <a id="footnote-reference-16" class="footnote_reference" href="#protocol-concretevaluecommit">25</a>. This ensures (1) that the input and output notes are of the same
+             is used in the old note commitment and the new note commitment <a id="footnote-reference-15" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a>, <strong>and</strong> as the base point
+                <span class="math">\(\mathcal{V}^\mathsf{Orchard}\)</span>
+             in the value commitment <a id="footnote-reference-16" class="footnote_reference" href="#protocol-concretevaluecommit">25</a>. This ensures (1) that the input and output notes are of the same
                 <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
             , and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.</p>
             <p>In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes <a id="footnote-reference-17" class="footnote_reference" href="#protocol-dummynotes">26</a> for Custom Assets, as we need to enforce that the
