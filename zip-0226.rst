@@ -262,9 +262,10 @@ Senders must not be able to change the Asset Base for the output note in a Split
     - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`
 - Add a boolean :math:`\mathsf{split\_flag}` variable as an auxiliary witness. This variable is to be activated :math:`\mathsf{split\_flag} = 1` if the Action in question has a Split Input and :math:`\mathsf{split\_flag} = 0` if the Action is actually spending an input note:
     - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{v}' = 0` otherwise constrain :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
-    - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{is\_native\_asset}' = 0` because split notes are only available for Custom Assets.
+    - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{is\_native\_asset} = 0` because split notes are only available for Custom Assets.
 - The Merkle Path Validity should check the existence of the note commitment as usual (and not like with dummy notes):
     - Check for all notes except dummy notes that (path, pos) is a valid Merkle path of depth :math:`\mathsf{MerkleDepth^Orchard}`, from :math:`\mathsf{cm^{old}}` to the anchor :math:`\mathsf{rt^{Orchard}}`.
+    - The new constraint is :math:`\underbrace{(\mathsf{v^{old}} = 0 \land \mathsf{is\_native\_asset} = 1)}_\text{It is a dummy note} \lor \underbrace{(\mathsf{Valid\,Merkle\,Path})}_\text{The Merkle Path is valid}`.
 - The Nullifier Integrity will be changed to prevent the identification of notes as defined in the `Split Notes`_ section.
 
 Backwards Compatibility with ZEC Notes

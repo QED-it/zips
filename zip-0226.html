@@ -368,7 +368,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                         <li>If
                                             <span class="math">\(\mathsf{split\_flag} = 1\)</span>
                                          then constrain
-                                            <span class="math">\(\mathsf{is\_native\_asset}' = 0\)</span>
+                                            <span class="math">\(\mathsf{is\_native\_asset} = 0\)</span>
                                          because split notes are only available for Custom Assets.</li>
                                     </ul>
                                 </dd>
@@ -385,6 +385,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                             <span class="math">\(\mathsf{cm^{old}}\)</span>
                                          to the anchor
                                             <span class="math">\(\mathsf{rt^{Orchard}}\)</span>
+                                        .</li>
+                                        <li>The new constraint is
+                                            <span class="math">\(\underbrace{(\mathsf{v^{old}} = 0 \land \mathsf{is\_native\_asset} = 1)}_\text{It is a dummy note} \lor \underbrace{(\mathsf{Valid\,Merkle\,Path})}_\text{The Merkle Path is valid}\)</span>
                                         .</li>
                                     </ul>
                                 </dd>
