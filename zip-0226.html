@@ -194,59 +194,107 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <p>The use of different value base points for different Assets enables the final balance of the transaction to be securely computed, such that each Asset Identifier is balanced independently, which is required as different Assets are not meant to be mutually fungible.</p>
                 </section>
             </section>
-            <section id="value-balance-verification"><h3><span class="section-heading">Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In order to verify the balance of the different Assets, the verifier MUST perform exactly the same process as for the Orchard protocol <a id="footnote-reference-38" class="footnote_reference" href="#protocol-binding">17</a>.</p>
-                <p>For a total of
-                    <span class="math">\(n\)</span>
-                 Actions in a transfer, the prover MUST still sign the SIGHASH transaction hash using the binding signature key
-                    <span class="math">\(\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_{i}\)</span>
-                .</p>
-                <p>The verifier MUST compute</p>
-                <div class="math">\(\mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})}\)</div>
-                <p>After computing
-                    <span class="math">\(\mathsf{bvk}\)</span>
-                , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
-                <section id="rationale-for-value-balance-verification"><h4><span class="section-heading">Rationale for Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>We assume
+            <section id="burn-mechanism"><h3><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
+                <p>The sender includes a
+                    <span class="math">\(\mathsf{v^{AssetBase}}\)</span>
+                 variable for every Asset Identifier that is being burnt, which represents the amount of that Asset being burnt. As described in the <a href="#zsa-transaction-structure">ZSA Transaction Structure</a>, this is separate from the regular
+                    <span class="math">\(\mathsf{valueBalance^Orchard}\)</span>
+                 that is the default transparent value for the ZEC Asset, and represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).</p>
+                <p>For every Custom Asset that is burnt, we add to the
+                    <span class="math">\(\mathsf{assetBurn}\)</span>
+                 vector the tuple
+                    <span class="math">\((\mathsf{AssetBase},\mathsf{v^{AssetBase}})\)</span>
+                 such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.</p>
+                <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}\)</div>
+                <p>We denote by
+                    <span class="math">\(L\)</span>
+                 the cardinality of the
+                    <span class="math">\(\mathsf{assetBurn}\)</span>
+                 set.</p>
+                <section id="value-balance-verification"><h4><span class="section-heading">Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>In order to verify the balance of the different Assets, the verifier MUST perform a similar process as for the Orchard protocol <a id="footnote-reference-38" class="footnote_reference" href="#protocol-binding">17</a>, with the addition of the burn information.</p>
+                    <p>For a total of
                         <span class="math">\(n\)</span>
-                     Actions in a transfer. Out of these
-                        <span class="math">\(n\)</span>
-                     Actions, we further distinguish (for the sake of clarity) between Actions related to ZEC and Actions related to Custom Assets. We assume
-                        <span class="math">\(m\)</span>
-                     Actions related to ZEC and
-                        <span class="math">\(n-m\)</span>
-                     Actions related to Custom Assets, where
-                        <span class="math">\(m \in [0,n]\)</span>
-                    . Furthermore, we assume for simplicity that given a tuple of
-                        <span class="math">\(n\)</span>
-                     Actions in a transfer, the
-                        <span class="math">\(m\)</span>
-                     Actions related to ZEC are first (in practice Actions could be in whatever order).</p>
-                    <p>The value balance verification is equivalent to:</p>
-                    <div class="math">\(\mathsf{bvk} = (\sum_{i=1}^{m} \mathsf{cv^{net}}_{i}) + (\sum_{j=m+1}^{n} \mathsf{cv^{net}}_j) - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{Orchard})}\)</div>
-                    <p>This equation contains the balance check of the Orchard protocol <a id="footnote-reference-39" class="footnote_reference" href="#protocol-binding">17</a>. With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get
-                        <span class="math">\(\mathsf{(\sum_{j=m+1}^{n} v_j^{net}) = 0}\)</span>
-                    , and thus be left with
-                        <span class="math">\(\mathsf{\sum_{j=m+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</span>
-                     in the expression. If
-                        <span class="math">\(m=n\)</span>
-                     (resp.
-                        <span class="math">\(m=0\)</span>
-                    ), i.e. all Actions relate to ZEC (resp. Custom Assets), then
-                        <span class="math">\(m+1&gt;n\)</span>
-                     (resp.
-                        <span class="math">\(1&gt;m\)</span>
-                    ), and thus the sum
-                        <span class="math">\(\sum_{j=m+1}^{n}\)</span>
-                     (resp.
-                        <span class="math">\(\sum_{i=1}^{m}\)</span>
-                    ) returns the identity element of the group.</p>
-                    <p>Thus, the main reason why no changes to the Orchard process are needed is that no Custom Assets can be unshielded within a regular transaction (as opposed to a <em>burn</em>, covered below in the <a href="#burn-mechanism">burn mechanism</a>). All Custom Assets are contained within the shielded pool. This means that the net balance of the input and output values is zero, with only one value balance published, which corresponds to the ZEC value balance
-                        <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
-                    . No net amount of any other Asset will be revealed, and the number of Assets in the transaction is also hidden.</p>
-                    <p>As in the Orchard protocol, the binding signature verification key,
+                     Actions in a transfer, the prover MUST still sign the SIGHASH transaction hash using the binding signature key
+                        <span class="math">\(\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_{i}\)</span>
+                    .</p>
+                    <p>The verifier MUST compute</p>
+                    <div class="math">\(\mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})\)</div>
+                    <p>After computing
                         <span class="math">\(\mathsf{bvk}\)</span>
-                    , will only be valid (and hence verify the signature correctly), as long as the committed values sum to zero. In contrast, in this protocol, the committed values only sum to zero <strong>per Asset Base</strong>, as the Pedersen commitments add up homomorphically only with respect to the same value base point.</p>
+                    , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
+                    <section id="rationale-for-value-balance-verification"><h5><span class="section-heading">Rationale for Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>We assume
+                            <span class="math">\(n\)</span>
+                         Actions in a transfer. Out of these
+                            <span class="math">\(n\)</span>
+                         Actions, we further distinguish (for the sake of clarity) between Actions related to ZEC and Actions related to Custom Assets. We assume
+                            <span class="math">\(m\)</span>
+                         Actions related to ZEC and
+                            <span class="math">\(n-m\)</span>
+                         Actions related to Custom Assets, where
+                            <span class="math">\(m \in [0,n]\)</span>
+                        . Furthermore, we assume for simplicity that given a tuple of
+                            <span class="math">\(n\)</span>
+                         Actions in a transfer, the
+                            <span class="math">\(m\)</span>
+                         Actions related to ZEC are first (in practice Actions could be in whatever order).</p>
+                        <p>The right hand side of the value balance verification can be expanded to:</p>
+                        <div class="math">\(((\sum_{i=1}^{m} \mathsf{cv^{net}}_{i}) + (\sum_{j=m+1}^{n} \mathsf{cv^{net}}_{j})) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{L} [\mathsf{v}_{k}]\mathsf{AssetBase}_{k} + [0]\mathcal{R}^{\mathsf{Orchard}})\)</div>
+                        <p>This equation contains the balance check of the Orchard protocol <a id="footnote-reference-39" class="footnote_reference" href="#protocol-binding">17</a>. With ZSA, transfer Actions for Custom Assets MUST also be balanced across asset bases. As such, for a correctly constructed transaction, we MUST get
+                            <span class="math">\(\mathsf{(\sum_{j=m+1}^{n} v_j^{net}) = 0}\)</span>
+                        , and thus be left with
+                            <span class="math">\(\mathsf{\sum_{j=m+1}^{n} rcv_{j}^{net}}\mathcal{R}^{\mathsf{Orchard}}\)</span>
+                         in the expression. If
+                            <span class="math">\(m=n\)</span>
+                         (resp.
+                            <span class="math">\(m=0\)</span>
+                        ), i.e. all Actions relate to ZEC (resp. Custom Assets), then
+                            <span class="math">\(m+1&gt;n\)</span>
+                         (resp.
+                            <span class="math">\(1&gt;m\)</span>
+                        ), and thus the sum
+                            <span class="math">\(\sum_{j=m+1}^{n}\)</span>
+                         (resp.
+                            <span class="math">\(\sum_{i=1}^{m}\)</span>
+                        ) returns the identity element of the group.</p>
+                        <p>The relationship between
+                            <span class="math">\(\mathsf{bvk}\)</span>
+                         and
+                            <span class="math">\(\mathsf{bsk}\)</span>
+                         will hold only if the sum of the net values of the Actions equals the sum of
+                            <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
+                         and the
+                            <span class="math">\(\mathsf{v}_k\)</span>
+                         values, across base points (i.e. Asset Base).</p>
+                        <p>We point out that Custom Assets cannot be unshielded within a regular transfer, while the burn mechanism reveals the amount and identifier of the Asset being burnt. All Custom Assets are contained within the shielded pool. When the Asset is not being burnt, the net balance of the input and output values is zero, and there will be no addition to the
+                            <span class="math">\(\mathsf{assetBurn}\)</span>
+                         vector. The only value balance published corresponds to the ZEC value balance
+                            <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
+                        . No net amount of any other Asset will be revealed, and the number of Assets in the transaction is also hidden, except in the case where an Asset is burnt.</p>
+                        <p>As in the Orchard protocol, the binding signature verification key,
+                            <span class="math">\(\mathsf{bvk}\)</span>
+                        , will only be valid (and hence verify the signature correctly), as long as the committed values sum to zero. In contrast, in this protocol, the committed values only sum to zero <strong>per Asset Base</strong>, as the Pedersen commitments add up homomorphically only with respect to the same value base point.</p>
+                    </section>
+                </section>
+                <section id="additional-consensus-rules"><h4><span class="section-heading">Additional Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#additional-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <ol type="1">
+                        <li>We require that
+                            <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\)</span>
+                        . That is, ZEC or TAZ is not allowed to be burnt.</li>
+                        <li>We require that for every
+                            <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0\)</span>
+                        .</li>
+                        <li>We require that there be no duplication of Custom Assets in the
+                            <span class="math">\(\mathsf{assetBurn}\)</span>
+                         set. That is, every
+                            <span class="math">\(\mathsf{AssetBase}\)</span>
+                         has at most one entry in
+                            <span class="math">\(\mathsf{assetBurn}\)</span>
+                        .</li>
+                    </ol>
+                    <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
                 </section>
             </section>
             <section id="split-notes"><h3><span class="section-heading">Split Notes</span><span class="section-anchor"> <a rel="bookmark" href="#split-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
@@ -398,75 +446,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </section>
                 <section id="backwards-compatibility-with-zec-notes"><h4><span class="section-heading">Backwards Compatibility with ZEC Notes</span><span class="section-anchor"> <a rel="bookmark" href="#backwards-compatibility-with-zec-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The input note in the old note commitment integrity check must either include an Asset Base (ZSA note) or not (pre-ZSA Orchard note). If the note is a pre-ZSA Orchard note, the note commitment is computed in the original Orchard fashion <a id="footnote-reference-46" class="footnote_reference" href="#protocol-abstractcommit">16</a>. If the note is a ZSA note, the note commitment is computed as defined in the <a href="#note-structure-commitment">Note Structure &amp; Commitment</a> section.</p>
-                </section>
-            </section>
-        </section>
-        <section id="burn-mechanism"><h2><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.</p>
-            <p>The sender includes a
-                <span class="math">\(\mathsf{v^{AssetBase}}\)</span>
-             variable for every Asset Identifier that is being burnt. As we will show in the <a href="#zsa-transaction-structure">ZSA Transaction Structure</a>, this is separate from the regular
-                <span class="math">\(\mathsf{valueBalance^Orchard}\)</span>
-             that is the default transparent value for the ZEC Asset.</p>
-            <p>For every Custom Asset that is burnt, we add to the
-                <span class="math">\(\mathsf{assetBurn}\)</span>
-             vector the tuple
-                <span class="math">\((\mathsf{AssetBase},\mathsf{v^{AssetBase}})\)</span>
-             such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.</p>
-            <div class="math">\(\mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}\)</div>
-            <p>We denote by
-                <span class="math">\(L\)</span>
-             the cardinality of the
-                <span class="math">\(\mathsf{assetBurn}\)</span>
-             set.</p>
-            <p>The value balances for each Asset Identifier in
-                <span class="math">\(\mathsf{assetBurn}\)</span>
-             represents the amount of that Asset that is being burnt. In the case of ZEC, the value balance represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).</p>
-            <p>The validator needs to verify the Balance and Binding Signature by adding the value balances for all Assets, as committed using their respective
-                <span class="math">\(\mathsf{AssetBase}\)</span>
-             as the value base point of the Pedersen Commitment.</p>
-            <p>This is done as follows:</p>
-            <div class="math">\(\mathsf{bvk} = (\sum_{i=1}^{n} \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v^{balanceOrchard}}, \mathcal{V}^{\mathsf{Orchard}}) - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})\)</div>
-            <p>After computing
-                <span class="math">\(\mathsf{bvk}\)</span>
-            , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
-            <p>In the case that the balance of all the Action values related to a specific Asset will be zero, there will be no value added to the vector. This way, neither the number of Assets nor their Asset Identifiers will be revealed, except in the case that an Asset is burnt.</p>
-            <section id="burn-mechanism-consensus-rules"><h3><span class="section-heading">Burn Mechanism Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <ol type="1">
-                    <li>We require that
-                        <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\)</span>
-                    . That is, ZEC or TAZ is not allowed to be burnt.</li>
-                    <li>We require that for every
-                        <span class="math">\(\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0\)</span>
-                    .</li>
-                    <li>We require that there be no duplication of Custom Assets in the
-                        <span class="math">\(\mathsf{assetBurn}\)</span>
-                     set. That is, every
-                        <span class="math">\(\mathsf{AssetBase}\)</span>
-                     has at most one entry in
-                        <span class="math">\(\mathsf{assetBurn}\)</span>
-                    .</li>
-                </ol>
-                <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
-                <section id="rationale-for-burn-mechanism"><h4><span class="section-heading">Rationale for Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>As for the value balance verification, we assume
-                        <span class="math">\(n\)</span>
-                     Actions,
-                        <span class="math">\(m\)</span>
-                     of which are related to ZEC and the remaining
-                        <span class="math">\(n-m\)</span>
-                     Actions related to Custom Assets.</p>
-                    <p>The burn mechanism verification is equivalent to:</p>
-                    <div class="math">\(\mathsf{bvk} = ((\sum_{i=1}^{m} \mathsf{cv^{net}}_{i}) + (\sum_{j=m+1}^{n} \mathsf{cv^{net}}_{j})) - ([\mathsf{v^{balanceOrchard}}]\mathcal{V}^{\mathsf{Orchard}} + [0]\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{k=1}^{L} [\mathsf{v}_{k}]\mathsf{AssetBase}_{k} + [0]\mathcal{R}^{\mathsf{Orchard}})\)</div>
-                    <p>The relationship between
-                        <span class="math">\(\mathsf{bvk}\)</span>
-                     and
-                        <span class="math">\(\mathsf{bsk}\)</span>
-                     will hold only if the sum of the net values of the Actions equals the sum of
-                        <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
-                     and the
-                        <span class="math">\(\mathsf{v}_k\)</span>
-                     values, across base points (i.e. Asset Base).</p>
                 </section>
             </section>
         </section>
