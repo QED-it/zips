@@ -172,8 +172,17 @@ For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` v
 
 We denote by :math:`L` the cardinality of the :math:`\mathsf{assetBurn}` set.
 
-Value Balance Verification
+Additional Consensus Rules
 ``````````````````````````
+
+1. We require that :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, ZEC or TAZ is not allowed to be burnt.
+2. We require that for every :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0`.
+3. We require that there be no duplication of Custom Assets in the :math:`\mathsf{assetBurn}` set. That is, every :math:`\mathsf{AssetBase}` has at most one entry in :math:`\mathsf{assetBurn}`.
+
+**Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
+
+Value Balance Verification
+--------------------------
 
 In order to verify the balance of the different Assets, the verifier MUST perform a similar process as for the Orchard protocol [#protocol-binding]_, with the addition of the burn information.
 
@@ -185,15 +194,6 @@ The verifier MUST compute the value balance verification equation:
 .. math:: \mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})
 
 After computing :math:`\mathsf{bvk}`, the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.
-
-Additional Consensus Rules
-``````````````````````````
-
-1. We require that :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, ZEC or TAZ is not allowed to be burnt.
-2. We require that for every :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0`.
-3. We require that there be no duplication of Custom Assets in the :math:`\mathsf{assetBurn}` set. That is, every :math:`\mathsf{AssetBase}` has at most one entry in :math:`\mathsf{assetBurn}`.
-
-**Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
 
 
 Rationale for Value Balance Verification
