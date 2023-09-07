@@ -301,6 +301,8 @@ A ZSA Asset Burn description is encoded in a transaction as an instance of an ``
 | 8     | ``valueBurn`` | :math:`\{1 .. 2^{64} - 1\}` | The amount being burnt.                                                                                                   |
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 
+The encodings of each of these elements are defined in ZIP 226 [#zip-0226]_.
+
 Issuance Action Description (``IssueAction``)
 ---------------------------------------------
 
@@ -325,6 +327,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 |                             |                          |                                           | * The remaining bits are set to ``0``.                              |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 
+The encodings of each of these elements are defined in ZIP 227 [#zip-0227]_.
 
 Reference implementation
 ========================
@@ -341,5 +344,7 @@ References
 .. [#protocol-outputdesc] `Zcash Protocol Specification, Version 2021.2.16 [NU5 proposal]. Section 4.5: Output Descriptions <protocol/protocol.pdf#outputdesc>`_
 .. [#protocol-actiondesc] `Zcash Protocol Specification, Version 2021.2.16 [NU5 proposal]. Section 4.6: Action Descriptions <protocol/protocol.pdf#actiondesc>`_
 .. [#zip-0222] `ZIP 222: Transparent Zcash Extensions <zip-0222.rst>`_
+.. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <https://qed-it.github.io/zips/zip-0226>`_
+.. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <https://qed-it.github.io/zips/zip-0227>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
