@@ -216,7 +216,7 @@ Transaction Format
 
 The encodings of ``tx_in``, and ``tx_out`` are as in a version 4 transaction (i.e.
 unchanged from Canopy). The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``
-, ``ZSAOrchardAction`` and ``AssetBurn`` are described below. The encoding of Sapling Spends and Outputs has
+, ``ZSAOrchardAction``, ``AssetBurn`` and ``IssueAction`` are described below. The encoding of Sapling Spends and Outputs has
 changed relative to prior versions in order to better separate data that describe the
 effects of the transaction from the proofs of and commitments to those effects, and for
 symmetry with this separation in the Orchard-related parts of the transaction format.
@@ -300,6 +300,31 @@ A ZSA Asset Burn description is encoded in a transaction as an instance of an ``
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | 8     | ``valueBurn`` | :math:`\{1 .. 2^{64} - 1\}` | The amount being burnt.                                                                                                   |
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
+
+Issuance Action Description (``IssueAction``)
+---------------------------------------------
+
+An issuance action, ``IssueAction``, is the instance of issuing a specific Custom Asset, and contains the following fields:
+
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+| Bytes                       | Name                     | Data Type                                 | Description                                                         |
++=============================+==========================+===========================================+=====================================================================+
+|``2``                        |``assetDescSize``         |``byte``                                   |The length of the asset description string in bytes.                 |  
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``assetDescSize``            |``asset_desc``            |``byte[assetDescSize]``                    |A byte sequence of length ``assetDescSize`` bytes which SHOULD be a  |
+|                             |                          |                                           |well-formed UTF-8 code unit sequence according to Unicode 15.0.0     |
+|                             |                          |                                           |or later.                                                            |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``varies``                   |``nNotes``                |``compactSize``                            |The number of notes in the issuance action.                          |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``noteSize * nNotes``        |``vNotes``                |``Note[nNotes]``                           |A sequence of note descriptions within the issuance action,          |
+|                             |                          |                                           |where ``noteSize`` is the size, in bytes, of a Note.                 |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``1``                        |``flagsIssuance``         |``byte``                                   |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
+|                             |                          |                                           | * :math:`\mathsf{finalize}`                                         |
+|                             |                          |                                           | * The remaining bits are set to ``0``.                              |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+
 
 Reference implementation
 ========================
