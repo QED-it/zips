@@ -176,15 +176,15 @@ Transaction Format
 | **ZSA Issuance Fields**                                                                                                                                                            |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 |``varies``                          |``nIssueActions``         |``compactSize``                         |The number of issuance actions in the bundle.                              |
-+------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
++------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 |``IssueActionSize * nIssueActions`` |``vIssueActions``         |``IssueAction[nIssueActions]``          |A sequence of issuance action descriptions, where IssueActionSize is       |
 |                                    |                          |                                        |the size, in bytes, of an IssueAction description.                         |
-+------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
++------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 |``32``                              |``ik``                    |``byte[32]``                            |The issuance validating key of the issuer, used to validate the signature. |
-+------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
++------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 |``64``                              |``issueAuthSig``          |``byte[64]``                            |The signature of the transaction SIGHASH, signed by the issuer,            |
-|                                    |                          |                                        |validated as in `Issuance Authorization Signature Scheme`_.                |
-+------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
+|                                    |                          |                                        |validated as in Issuance Authorization Signature Scheme [#zip-0227]_.      |
++------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 
 
 * The fields ``valueBalanceSapling`` and ``bindingSigSapling`` are present if and only if
@@ -288,8 +288,8 @@ ZSA Orchard Action Description (``ZSAOrchardAction``)
 The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding
 and Consensus’ of the Zcash Protocol Specification [#protocol-actiondesc]_.
 
-ZSA Asset Burn Description (``AssetBurn``)
-------------------------------------------
+ZSA Asset Burn Description
+--------------------------
 
 A ZSA Asset Burn description is encoded in a transaction as an instance of an ``AssetBurn`` type:
 
