@@ -145,7 +145,7 @@ Transaction Format
 |                             |                          |                                        |``vActionsOrchard``.                                                 |
 +-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
 |``852 * nActionsOrchard``    |``vActionsOrchard``       |``ZSAOrchardAction[nActionsOrchard]``   |A sequence of ZSA Orchard Action descriptions, encoded per           |
-|                             |                          |                                        |the `ZSA Orchard Action Description Encoding` in `ZIP 226`.          |
+|                             |                          |                                        |the `ZSA Orchard Action Description Encoding`.                       |
 +-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
 |``1``                        |``flagsOrchard``          |``byte``                                |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                          |                                        | * ``enableSpendsOrchard``                                           |
@@ -199,7 +199,7 @@ Transaction Format
   ``vActionsOrchard`` and MUST be ordered such that the proof or signature at a given
   index corresponds to the ``ZSAOrchardAction`` at the same index.
 
-* For coinbase transactions, the ``enableSpendsOrchard`` bit MUST be set to ``0``.
+* For coinbase transactions, the ``enableSpendsOrchard`` and the ``enableZSAs`` bits MUST be set to ``0``.
 
 The encodings of ``tx_in``, and ``tx_out`` are as in a version 4 transaction (i.e.
 unchanged from Canopy). The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``
@@ -247,8 +247,8 @@ Sapling Output Description (``OutputDescriptionV6``)
 The encodings of each of these elements are defined in §7.4 ‘Output Description Encoding
 and Consensus’ of the Zcash Protocol Specification [#protocol-outputdesc]_.
 
-Orchard Action Description (``ZSAOrchardAction``)
--------------------------------------------------
+ZSA Orchard Action Description (``ZSAOrchardAction``)
+-----------------------------------------------------
 
 +-----------------------------+--------------------------+--------------------------------------+------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                            | Description                                                |
