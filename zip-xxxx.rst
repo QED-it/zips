@@ -173,6 +173,18 @@ Transaction Format
 | ``40 * nAssetBurn``                | ``vAssetBurn``           | ``AssetBurn[nAssetBurn]``              | A sequence of Asset Burn descriptions,                                    |
 |                                    |                          |                                        | encoded per `ZSA Asset Burn Description`_.                                |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
+| **ZSA Issuance Fields**                                                                                                                                                            |
++------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
+|``varies``                          |``nIssueActions``         |``compactSize``                         |The number of issuance actions in the bundle.                              |
++------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
+|``IssueActionSize * nIssueActions`` |``vIssueActions``         |``IssueAction[nIssueActions]``          |A sequence of issuance action descriptions, where IssueActionSize is       |
+|                                    |                          |                                        |the size, in bytes, of an IssueAction description.                         |
++------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
+|``32``                              |``ik``                    |``byte[32]``                            |The issuance validating key of the issuer, used to validate the signature. |
++------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
+|``64``                              |``issueAuthSig``          |``byte[64]``                            |The signature of the transaction SIGHASH, signed by the issuer,            |
+|                                    |                          |                                        |validated as in `Issuance Authorization Signature Scheme`_.                |
++------------------------------------+--------------------------+-------------------------------------------+------------------------------------------------------------------------+
 
 
 * The fields ``valueBalanceSapling`` and ``bindingSigSapling`` are present if and only if
