@@ -60,6 +60,8 @@ Because in a single transaction all value commitments are balanced, there must b
 
 In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes [#protocol-dummynotes]_ for Custom Assets, as we need to enforce that the :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` of the output note of that Split Action is the output of a valid :math:`\mathsf{ZSAValueBase^{Orchard}}` computation defined in ZIP 227 [#zip-0227]_.
 
+In order to be able to pause the ZSA functionality, we added the :math:`\mathsf{enable\_zsa}` boolean flag. When this flag is set to false, it is not possible to perform ZSA transactions (the circuit will fail).
+
 Finally, in this ZIP we also describe the *burn* mechanism, which is a direct extension of the transfer mechanism. The burn process uses a similar mechanism to what is used in Orchard to unshield ZEC, by using the :math:`\mathsf{valueBalance}` of the Asset in question. Burning Assets is useful for many purposes, including bridging of Wrapped Assets and removing supply of Assets.
 
 Specification
@@ -246,6 +248,13 @@ The following constraints must be added to ensure that the input and output note
 - In the New note commitment integrity constraint in the Orchard Action statement [#protocol-actionstatement]_, :math:`\mathsf{NoteCommit^{Orchard}_{rcm^{new}}(repr_{\mathbb{P}}(g_d^{new}), repr_{\mathbb{P}}(pk_d^{new}), v^{new}, \rho^{new}, \psi^{new})}` is replaced with :math:`\mathsf{NoteCommit^{OrchardZSA}_{rcm^{new}}(repr_{\mathbb{P}}(g_d^{new}), repr_{\mathbb{P}}(pk_d^{new}), v^{new}, \rho^{new}, \psi^{new}, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`.
 
 To make the evaluation of the note commitment easier, we add a boolean :math:`\mathsf{is\_native\_asset}` as an auxiliary witness. We also add some constraints to verify that this variable is activated (i.e. :math:`\mathsf{is\_native\_asset} = 1`) if the Asset Base is equal to :math:`\mathcal{V}^\mathsf{Orchard}` and this variable is not activated (i.e. :math:`\mathsf{is\_native\_asset} = 0`) if the Asset Base is not equal to :math:`\mathcal{V}^\mathsf{Orchard}`.
+
+enable\_zsa Flag
+````````````````
+
+The following constraints must be added to disable ZSA transactions when the :math:`\mathsf{enable\_zsa}` flag is set to false:
+
+- if :math:`\mathsf{enable\_zsa}` is not activated (i.e. :math:`\mathsf{enable\_zsa} = 0`), then the :math:`\mathsf{AsssetBase}` must be equal to the native asset (i.e. :math:`\mathsf{is\_native\_asset} = 1`).
 
 Value Commitment Correctness
 ````````````````````````````
