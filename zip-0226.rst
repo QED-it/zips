@@ -140,7 +140,7 @@ Value Commitment
 
 In the case of the ZSA protocol, the value of different Asset Identifiers in a given transaction will be committed using a **different value base point**. The value commitment becomes:
 
-.. math:: \mathsf{cv^{net}:=ValueCommit^{OrchardZSA}_{rcv}(v^{net}_{AssetId}, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}:= \mathsf{[v^{net}_{AssetId}]}\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}} + [\mathsf{rcv}]\mathcal{R}^{\mathsf{Orchard}}
+.. math:: \mathsf{cv^{net}:=ValueCommit^{OrchardZSA}_{rcv}(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}, v^{net}_{AssetId})}:= \mathsf{[v^{net}_{AssetId}]}\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}} + [\mathsf{rcv}]\mathcal{R}^{\mathsf{Orchard}}
 
 where :math:`\mathsf{v^{net}_{AssetId}} = \mathsf{v^{old}_{AssetId} - v^{new}_{AssetId}}` such that :math:`\mathsf{v^{old}_{AssetId}}` and :math:`\mathsf{v^{new}_{AssetId}}` are the values of the old and new notes of Asset Identifier :math:`\mathsf{AssetId}` respectively,
 
@@ -150,7 +150,7 @@ where :math:`\mathsf{v^{net}_{AssetId}} = \mathsf{v^{old}_{AssetId} - v^{new}_{A
 
 :math:`\mathcal{R}^{\mathsf{Orchard}}:=\mathsf{GroupHash^{\mathbb{P}}}\texttt{("z.cash:Orchard-cv", "r")}`, as in the Orchard protocol.
 
-We define :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{ZEC}} :=\mathcal{V}^{\mathsf{Orchard}}` so that the value commitment for ZEC notes is computed identically to the Orchard protocol deployed in NU5 [#zip-0224]_. As such :math:`\mathsf{ValueCommit^{Orchard}_{rcv}(v)}` as defined in [#zip-0224]_ is used as :math:`\mathsf{ValueCommit^{OrchardZSA}_{rcv}(v, \mathcal{V}^{\mathsf{Orchard}})}` here.
+We define :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{ZEC}} :=\mathcal{V}^{\mathsf{Orchard}}` so that the value commitment for ZEC notes is computed identically to the Orchard protocol deployed in NU5 [#zip-0224]_. As such :math:`\mathsf{ValueCommit^{Orchard}_{rcv}(v)}` as defined in [#zip-0224]_ is used as :math:`\mathsf{ValueCommit^{OrchardZSA}_{rcv}(\mathcal{V}^{\mathsf{Orchard}}, v)}` here.
 
 Rationale for Value Commitment
 ``````````````````````````````
@@ -191,7 +191,7 @@ For a total of :math:`n` Actions in a transfer, the prover MUST still sign the S
 
 The verifier MUST compute the value balance verification equation:
 
-.. math:: \mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})
+.. math:: \mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(\mathcal{V}^{\mathsf{Orchard}}, v^{balanceOrchard})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{AssetBase}_{k}, \mathsf{v}_{k})
 
 After computing :math:`\mathsf{bvk}`, the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.
 
@@ -287,7 +287,7 @@ Asset Identifier Consistency for Split Actions
 Senders must not be able to change the Asset Base for the output note in a Split Action. We do this via the following constraints:
 
 - The Value Commitment Integrity should be changed:
-    - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}`
+    - Replace the input note value by a generic value, :math:`\mathsf{v}'`, as :math:`\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}, v’ - v^new)}`
 - Add a boolean :math:`\mathsf{split\_flag}` variable as an auxiliary witness. This variable is to be activated :math:`\mathsf{split\_flag} = 1` if the Action in question has a Split Input and :math:`\mathsf{split\_flag} = 0` if the Action is actually spending an input note:
     - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{v}' = 0` otherwise constrain :math:`\mathsf{v}'=\mathsf{v^{old}}` from the auxiliary input.
     - If :math:`\mathsf{split\_flag} = 1` then constrain :math:`\mathsf{is\_native\_asset} = 0` because split notes are only available for Custom Assets.

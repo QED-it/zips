@@ -162,7 +162,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
             <section id="value-commitment"><h3><span class="section-heading">Value Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#value-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>In the case of the ZSA protocol, the value of different Asset Identifiers in a given transaction will be committed using a <strong>different value base point</strong>. The value commitment becomes:</p>
-                <div class="math">\(\mathsf{cv^{net}:=ValueCommit^{OrchardZSA}_{rcv}(v^{net}_{AssetId}, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}:= \mathsf{[v^{net}_{AssetId}]}\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}} + [\mathsf{rcv}]\mathcal{R}^{\mathsf{Orchard}}\)</div>
+                <div class="math">\(\mathsf{cv^{net}:=ValueCommit^{OrchardZSA}_{rcv}(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}, v^{net}_{AssetId})}:= \mathsf{[v^{net}_{AssetId}]}\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}} + [\mathsf{rcv}]\mathcal{R}^{\mathsf{Orchard}}\)</div>
                 <p>where
                     <span class="math">\(\mathsf{v^{net}_{AssetId}} = \mathsf{v^{old}_{AssetId} - v^{new}_{AssetId}}\)</span>
                  such that
@@ -183,7 +183,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  so that the value commitment for ZEC notes is computed identically to the Orchard protocol deployed in NU5 <a id="footnote-reference-35" class="footnote_reference" href="#zip-0224">4</a>. As such
                     <span class="math">\(\mathsf{ValueCommit^{Orchard}_{rcv}(v)}\)</span>
                  as defined in <a id="footnote-reference-36" class="footnote_reference" href="#zip-0224">4</a> is used as
-                    <span class="math">\(\mathsf{ValueCommit^{OrchardZSA}_{rcv}(v, \mathcal{V}^{\mathsf{Orchard}})}\)</span>
+                    <span class="math">\(\mathsf{ValueCommit^{OrchardZSA}_{rcv}(\mathcal{V}^{\mathsf{Orchard}}, v)}\)</span>
                  here.</p>
                 <section id="rationale-for-value-commitment"><h4><span class="section-heading">Rationale for Value Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-value-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The Orchard Protocol uses a Homomorphic Pedersen Commitment <a id="footnote-reference-37" class="footnote_reference" href="#protocol-concretevaluecommit">25</a> to perform the value commitment, with fixed base points
@@ -239,7 +239,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_{i}\)</span>
                 .</p>
                 <p>The verifier MUST compute the value balance verification equation:</p>
-                <div class="math">\(\mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(v^{balanceOrchard}, \mathcal{V}^{\mathsf{Orchard}})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{v}_{k}, \mathsf{AssetBase}_{k})\)</div>
+                <div class="math">\(\mathsf{bvk} =(\sum_{i=1}^{n}  \mathsf{cv^{net}}_{i})  - \mathsf{ValueCommit_0^{OrchardZSA}(\mathcal{V}^{\mathsf{Orchard}}, v^{balanceOrchard})} - \sum_{k=1}^{L} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{AssetBase}_{k}, \mathsf{v}_{k})\)</div>
                 <p>After computing
                     <span class="math">\(\mathsf{bvk}\)</span>
                 , the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.</p>
@@ -372,7 +372,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                         <li>Replace the input note value by a generic value,
                                             <span class="math">\(\mathsf{v}'\)</span>
                                         , as
-                                            <span class="math">\(\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(v’ - v^new, \mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}})}\)</span>
+                                            <span class="math">\(\mathsf{cv^{net}} = \mathsf{ValueCommit_rcv^{OrchardZSA}(\mathsf{AssetBase}^{\mathsf{Orchard}}_{\mathsf{AssetId}}, v’ - v^new)}\)</span>
                                         </li>
                                     </ul>
                                 </dd>
