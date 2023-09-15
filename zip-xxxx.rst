@@ -212,7 +212,7 @@ Transaction Format
   ``vActionsOrchard`` and MUST be ordered such that the proof or signature at a given
   index corresponds to the ``ZSAOrchardAction`` at the same index.
 
-* For coinbase transactions, the ``enableSpendsOrchard`` and the ``enableZSAs`` bits MUST be set to ``0``.
+* For coinbase transactions, the ``enableSpendsOrchard`` and ``enableZSAs`` bits MUST be set to ``0``.
 
 The encodings of ``tx_in``, and ``tx_out`` are as in a version 4 transaction (i.e.
 unchanged from Canopy). The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``
