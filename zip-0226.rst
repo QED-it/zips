@@ -49,7 +49,7 @@ This ZIP builds on the issuance mechanism introduced in ZIP 227 [#zip-0227]_.
 Overview
 ========
 In order to be able to represent different Assets, we need to define a data field that uniquely represents the Asset in question, which we call the Asset Identifier :math:`\mathsf{AssetId}`. 
-This Asset Identifier maps to an Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` that is stored in Orchard-based ZSA notes.
+This Asset Identifier maps to an Asset Base :math:`\mathsf{AssetBase}` that is stored in Orchard-based ZSA notes.
 These terms are formally defined in ZIP 227 [#zip-0227]_.
 
 The Asset Identifier (via means of the Asset Digest and Asset Base) will be used to enforce that the balance of an Action Description [#protocol-actions]_ is preserved across Assets (see the Orchard Binding Signature [#protocol-binding]_), and by extension the balance of an Orchard transaction. That is, the sum of all the :math:`\mathsf{value^{net}}` from each Action Description, computed as :math:`\mathsf{value^{old}-value^{new}}`, must be balanced **only with respect to the same Asset Identifier**. This is especially important since we will allow different Action Descriptions to transfer notes of different Asset Identifiers, where the overall balance is checked without revealing which (or how many distinct) Assets are being transferred.
@@ -58,7 +58,7 @@ As was initially proposed by Jack Grigg and Daira Hopwood [#initial-zsa-issue]_ 
 
 Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base an auxiliary input to the proof for each Action statement [#protocol-actionstatement]_, represented already as a point on the Pallas curve. The circuit then should check that the same Asset Base is used in the old note commitment and the new note commitment [#protocol-concretesinsemillacommit]_, **and** as the base point in the value commitment [#protocol-concretevaluecommit]_. This ensures (1) that the input and output notes are of the same Asset Base, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.
 
-In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes [#protocol-dummynotes]_ for Custom Assets, as we need to enforce that the :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` of the output note of that Split Action is the output of a valid :math:`\mathsf{ZSAValueBase^{Orchard}}` computation defined in ZIP 227 [#zip-0227]_.
+In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes [#protocol-dummynotes]_ for Custom Assets, as we need to enforce that the :math:`\mathsf{AssetBase}` of the output note of that Split Action is the output of a valid :math:`\mathsf{ZSAValueBase}` computation defined in ZIP 227 [#zip-0227]_.
 
 Finally, in this ZIP we also describe the *burn* mechanism, which is a direct extension of the transfer mechanism. The burn process uses a similar mechanism to what is used in Orchard to unshield ZEC, by using the :math:`\mathsf{valueBalance}` of the Asset in question. Burning Assets is useful for many purposes, including bridging of Wrapped Assets and removing supply of Assets.
 
@@ -70,7 +70,7 @@ Most of the protocol is kept the same as the Orchard protocol released with NU5,
 Asset Identifiers
 -----------------
 
-For every new Asset, there must be a new and unique Asset Identifier. Every Asset is defined by an *Asset description*, :math:`\mathsf{asset\_desc}`, which is a global byte string (scoped across all future versions of Zcash). From this Asset description and the issuance key of the issuer, the specific Asset Identifier, :math:`\mathsf{AssetId}`, the Asset Digest, and the Asset Base (:math:`\mathsf{AssetBase}^{\mathsf{Orchard}}` for the Orchard-based ZSA protocol) are derived as defined in ZIP 227 [#zip-0227]_.
+For every new Asset, there must be a new and unique Asset Identifier. Every Asset is defined by an *Asset description*, :math:`\mathsf{asset\_desc}`, which is a global byte string (scoped across all future versions of Zcash). From this Asset description and the issuance key of the issuer, the specific Asset Identifier, :math:`\mathsf{AssetId}`, the Asset Digest, and the Asset Base (:math:`\mathsf{AssetBase}`) are derived as defined in ZIP 227 [#zip-0227]_.
 
 This Asset Base will be the base point of the value commitment for the specific Custom Asset. Note that the Asset Base of the ZEC Asset will be kept as the original value base point, :math:`\mathcal{V}^\mathsf{Orchard}`.
 

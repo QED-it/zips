@@ -46,7 +46,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>In order to be able to represent different Assets, we need to define a data field that uniquely represents the Asset in question, which we call the Asset Identifier
                 <span class="math">\(\mathsf{AssetId}\)</span>
             . This Asset Identifier maps to an Asset Base
-                <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
+                <span class="math">\(\mathsf{AssetBase}\)</span>
              that is stored in Orchard-based ZSA notes. These terms are formally defined in ZIP 227 <a id="footnote-reference-9" class="footnote_reference" href="#zip-0227">6</a>.</p>
             <p>The Asset Identifier (via means of the Asset Digest and Asset Base) will be used to enforce that the balance of an Action Description <a id="footnote-reference-10" class="footnote_reference" href="#protocol-actions">15</a> is preserved across Assets (see the Orchard Binding Signature <a id="footnote-reference-11" class="footnote_reference" href="#protocol-binding">17</a>), and by extension the balance of an Orchard transaction. That is, the sum of all the
                 <span class="math">\(\mathsf{value^{net}}\)</span>
@@ -60,9 +60,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             , of the <em>net value</em> in an Orchard Action.</p>
             <p>Because in a single transaction all value commitments are balanced, there must be as many different value base points as there are Asset Identifiers for a given shielded protocol used in a transaction. We propose to make the Asset Base an auxiliary input to the proof for each Action statement <a id="footnote-reference-14" class="footnote_reference" href="#protocol-actionstatement">27</a>, represented already as a point on the Pallas curve. The circuit then should check that the same Asset Base is used in the old note commitment and the new note commitment <a id="footnote-reference-15" class="footnote_reference" href="#protocol-concretesinsemillacommit">24</a>, <strong>and</strong> as the base point in the value commitment <a id="footnote-reference-16" class="footnote_reference" href="#protocol-concretevaluecommit">25</a>. This ensures (1) that the input and output notes are of the same Asset Base, and (2) that only Actions with the same Asset Base will balance out in the Orchard binding signature.</p>
             <p>In order to ensure the security of the transfers, and as we will explain below, we are redefining input dummy notes <a id="footnote-reference-17" class="footnote_reference" href="#protocol-dummynotes">26</a> for Custom Assets, as we need to enforce that the
-                <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
+                <span class="math">\(\mathsf{AssetBase}\)</span>
              of the output note of that Split Action is the output of a valid
-                <span class="math">\(\mathsf{ZSAValueBase^{Orchard}}\)</span>
+                <span class="math">\(\mathsf{ZSAValueBase}\)</span>
              computation defined in ZIP 227 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0227">6</a>.</p>
             <p>Finally, in this ZIP we also describe the <em>burn</em> mechanism, which is a direct extension of the transfer mechanism. The burn process uses a similar mechanism to what is used in Orchard to unshield ZEC, by using the
                 <span class="math">\(\mathsf{valueBalance}\)</span>
@@ -76,8 +76,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 , which is a global byte string (scoped across all future versions of Zcash). From this Asset description and the issuance key of the issuer, the specific Asset Identifier,
                     <span class="math">\(\mathsf{AssetId}\)</span>
                 , the Asset Digest, and the Asset Base (
-                    <span class="math">\(\mathsf{AssetBase}^{\mathsf{Orchard}}\)</span>
-                 for the Orchard-based ZSA protocol) are derived as defined in ZIP 227 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0227">6</a>.</p>
+                    <span class="math">\(\mathsf{AssetBase}\)</span>
+                ) are derived as defined in ZIP 227 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0227">6</a>.</p>
                 <p>This Asset Base will be the base point of the value commitment for the specific Custom Asset. Note that the Asset Base of the ZEC Asset will be kept as the original value base point,
                     <span class="math">\(\mathcal{V}^\mathsf{Orchard}\)</span>
                 .</p>

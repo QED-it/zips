@@ -161,9 +161,9 @@ where
 
 - :math:`\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathsf{0x00} || \mathsf{repr}_{\mathbb{P}}(\mathsf{ik}) || \mathsf{asset\_desc}\!`.
 
-Define :math:`\mathsf{AssetBase^{Protocol}_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase^{Protocol}}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`
+Define :math:`\mathsf{AssetBase_{\mathsf{AssetId}}} := \mathsf{ZSAValueBase}(\mathsf{AssetDigest}_{\mathsf{AssetId}})`
 
-In the case of the Orchard-based ZSA protocol, we define :math:`\mathsf{ZSAValueBase^{Orchard}}(\mathsf{AssetDigest}_{\mathsf{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest}_{\mathsf{AssetId}})`
+In the case of the Orchard-based ZSA protocol, we define :math:`\mathsf{ZSAValueBase}(\mathsf{AssetDigest}_{\mathsf{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest}_{\mathsf{AssetId}})`
 where :math:`\mathsf{GroupHash}^\mathbb{P}` is defined as in [#protocol-concretegrouphashpallasandvesta]_.
 
 The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:
@@ -259,11 +259,11 @@ For all actions ``IssueAction``:
 
 - encode :math:`\mathsf{asset\_desc}` as a UTF-8 byte string of size up to 512.
 - compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as decribed in the `Specification: Asset Identifier`_ section.
-- compute :math:`\mathsf{AssetBase^{Protocol}}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
+- compute :math:`\mathsf{AssetBase}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
 - set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`)
 - For each recipient :math:`i`:
 
-    - generate a ZSA output note that includes the Asset Base. For an Orchard-based ZSA note this is :math:`\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \rho_i, \mathsf{rseed}_i, \mathsf{AssetBase^{Orchard}}, \mathsf{rcm}_i)\!`.
+    - generate a ZSA output note that includes the Asset Base. For an Orchard-based ZSA note this is :math:`\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \rho_i, \mathsf{rseed}_i, \mathsf{AssetBase}, \mathsf{rcm}_i)\!`.
 
 - encode the ``IssueAction`` into the vector ``vIssueActions`` of the bundle.
 
