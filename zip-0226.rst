@@ -164,20 +164,20 @@ Burn Mechanism
 
 The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
 
-The sender includes a :math:`\mathsf{v^{AssetBase}}` variable for every Asset Identifier that is being burnt, which represents the amount of that Asset being burnt. As described in the `ZSA Transaction Structure`_, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC Asset, and represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
+The sender includes a :math:`\mathsf{v_{AssetId}}` variable for every Asset Identifier that is being burnt, which represents the amount of that Asset being burnt. As described in the `ZSA Transaction Structure`_, this is separate from the regular :math:`\mathsf{valueBalance^Orchard}` that is the default transparent value for the ZEC Asset, and represents either the transaction fee, or the amount of ZEC changing pools (eg: to Sapling or Transparent).
 
-For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` vector the tuple :math:`(\mathsf{AssetBase},\mathsf{v^{AssetBase}})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
+For every Custom Asset that is burnt, we add to the :math:`\mathsf{assetBurn}` vector the tuple :math:`(\mathsf{AssetBase}_{\mathsf{AssetId}},\mathsf{v_{AssetId}})` such that the validator of the transaction can compute the value commitment with the corresponding value base point of that Asset. This ensures that the values are all balanced out with respect to the Asset Identifiers in the transfer.
 
-.. math:: \mathsf{assetBurn} = \{ (\mathsf{AssetBase},\mathsf{v^{AssetBase}})\ |\ \forall\ \mathsf{AssetBase}\ \textit{s.t.}\ \mathsf{v^{AssetBase}} \neq 0 \}
+.. math:: \mathsf{assetBurn} = \{ (\mathsf{AssetBase}_{\mathsf{AssetId}},\mathsf{v_{AssetId}})\ |\ \forall\ \mathsf{AssetBase}_{\mathsf{AssetId}}\ \textit{s.t.}\ \mathsf{v_{AssetId}} \neq 0 \}
 
 We denote by :math:`L` the cardinality of the :math:`\mathsf{assetBurn}` set.
 
 Additional Consensus Rules
 ``````````````````````````
 
-1. We require that :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, ZEC or TAZ is not allowed to be burnt.
-2. We require that for every :math:`\forall (\mathsf{AssetBase},\mathsf{v^{AssetBase}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v^{AssetBase}} \neq 0`.
-3. We require that there be no duplication of Custom Assets in the :math:`\mathsf{assetBurn}` set. That is, every :math:`\mathsf{AssetBase}` has at most one entry in :math:`\mathsf{assetBurn}`.
+1. We require that for every :math:`(\mathsf{AssetBase}_{\mathsf{AssetId}},\mathsf{v_{AssetId}}) \in \mathsf{assetBurn}\ ,\ \mathsf{AssetBase}_{\mathsf{AssetId}} \neq \mathcal{V}^{\mathsf{Orchard}}`. That is, ZEC or TAZ is not allowed to be burnt.
+2. We require that for every :math:`(\mathsf{AssetBase}_{\mathsf{AssetId}},\mathsf{v_{AssetId}}) \in \mathsf{assetBurn}\ ,\ \mathsf{v_{AssetId}} \neq 0`.
+3. We require that there be no duplication of Custom Assets in the :math:`\mathsf{assetBurn}` set. That is, every :math:`\mathsf{AssetBase}_{\mathsf{AssetId}}` has at most one entry in :math:`\mathsf{assetBurn}`.
 
 **Note:** Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.
 
