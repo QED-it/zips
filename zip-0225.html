@@ -43,92 +43,221 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/440">https://g
             <p>All fields in this specification are encoded as little-endian.</p>
             <p>The Zcash transaction format for transaction version 5 is as follows:</p>
             <section id="transaction-format"><h3><span class="section-heading">Transaction Format</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-format"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <div>
-                    <h1>System Message: ERROR/3 (zip-0225.rst line 83)</h1>
-                    <p>Malformed table.</p>
-                    <pre>+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-| Bytes                       | Name                     | Data Type                              | Description                                                         |
-+=============================+==========================+========================================+=====================================================================+
-| **Common Transaction Fields**                                                                                                                                         |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``header``                |``uint32``                              |Contains:                                                            |
-|                             |                          |                                        |  * ``fOverwintered`` flag (bit 31, always set)                      |
-|                             |                          |                                        |  * ``version`` (bits 30 .. 0) – transaction version.                |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``nVersionGroupId``       |``uint32``                              |Version group ID (nonzero).                                          |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``nConsensusBranchId``    |``uint32``                              |Consensus branch ID (nonzero).                                       |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``lock_time``             |``uint32``                              |Unix-epoch UTC time or block height, encoded as in Bitcoin.          |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``nExpiryHeight``         |``uint32``                              |A block height in the range {1 .. 499999999} after which             |
-|                             |                          |                                        |the transaction will expire, or 0 to disable expiry.                 |
-|                             |                          |                                        |[ZIP-203]                                                            |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-| **Transparent Transaction Fields**                                                                                                                                    |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``tx_in_count``           |``compactSize``                         |Number of transparent inputs in ``tx_in``.                           |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``tx_in``                 |``tx_in``                               |Transparent inputs, encoded as in Bitcoin.                           |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``tx_out_count``          |``compactSize``                         |Number of transparent outputs in ``tx_out``.                         |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``tx_out``                |``tx_out``                              |Transparent outputs, encoded as in Bitcoin.                          |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-| **Sapling Transaction Fields**                                                                                                                                        |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``nSpendsSapling``        |``compactSize``                         |Number of Sapling Spend descriptions in ``vSpendsSapling``.          |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``96 * nSpendsSapling``      |``vSpendsSapling``        |``SpendDescriptionV5[nSpendsSapling]``  |A sequence of Sapling Spend descriptions, encoded per                |
-|                             |                          |                                        |protocol §7.3 ‘Spend Description Encoding and Consensus’.            |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``nOutputsSapling``       |``compactSize``                         |Number of Sapling Output Decriptions in ``vOutputsSapling``.         |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``756 * nOutputsSapling``    |``vOutputsSapling``       |``OutputDescriptionV5[nOutputsSapling]``|A sequence of Sapling Output descriptions, encoded per               |
-|                             |                          |                                        |protocol §7.4 ‘Output Description Encoding and Consensus’.           |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``8``                        |``valueBalanceSapling``   |``int64``                               |The net value of Sapling Spends minus Outputs                        |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``32``                       |``anchorSapling``         |``byte[32]``                            |A root of the Sapling note commitment tree                           |
-|                             |                          |                                        |at some block height in the past.                                    |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``192 * nSpendsSapling``     |``vSpendProofsSapling``   |``byte[192 * nSpendsSapling]``          |Encodings of the zk-SNARK proofs for each Sapling Spend.             |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``64 * nSpendsSapling``      |``vSpendAuthSigsSapling`` |``byte[64 * nSpendsSapling]``           |Authorizing signatures for each Sapling Spend.                       |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``192 * nOutputsSapling``    |``vOutputProofsSapling``  |``byte[192 * nOutputsSapling]``         |Encodings of the zk-SNARK proofs for each Sapling Output.            |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``64``                       |``bindingSigSapling``     |``byte[64]``                            |A Sapling binding signature on the SIGHASH transaction hash.         |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-| **Orchard Transaction Fields**                                                                                                                                        |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``nActionsOrchard``       |``compactSize``                         |The number of Orchard Action descriptions in                         |
-|                             |                          |                                        |``vActionsOrchard``.                                                 |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``820 * nActionsOrchard``    |``vActionsOrchard``       |``OrchardAction[nActionsOrchard]``      |A sequence of Orchard Action descriptions, encoded per               |
-|                             |                          |                                        |§7.5 ‘Action Description Encoding and Consensus’.                    |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``1``                        |``flagsOrchard``          |``byte``                                |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
-|                             |                          |                                        | * ``enableSpendsOrchard``                                           |
-|                             |                          |                                        | * ``enableOutputsOrchard``                                          |
-|                             |                          |                                        | * ``enableZSA``                                          |
-|                             |                          |                                        | * The remaining bits are set to ``0``.                              |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``8``                        |``valueBalanceOrchard``   |``int64``                               |The net value of Orchard spends minus outputs.                       |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``32``                       |``anchorOrchard``         |``byte[32]``                            |A root of the Orchard note commitment tree at some block             |
-|                             |                          |                                        |height in the past.                                                  |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``sizeProofsOrchard``     |``compactSize``                         |Length in bytes of ``proofsOrchard``. Value is                       |
-|                             |                          |                                        |:math:`2720 + 2272 \cdot \mathtt{nActionsOrchard}`.                  |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``sizeProofsOrchard``        |``proofsOrchard``         |``byte[sizeProofsOrchard]``             |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``64 * nActionsOrchard``     |``vSpendAuthSigsOrchard`` |``byte[64 * nActionsOrchard]``          |Authorizing signatures for each Orchard Action.                      |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+
-|``64``                       |``bindingSigOrchard``     |``byte[64]``                            |An Orchard binding signature on the SIGHASH transaction hash.        |
-+-----------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------+</pre>
-                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bytes</th>
+                            <th>Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="4"><strong>Common Transaction Fields</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>header</code></td>
+                            <td><code>uint32</code></td>
+                            <td>
+                                <dl>
+                                    <dt>Contains:</dt>
+                                    <dd>
+                                        <ul>
+                                            <li><code>fOverwintered</code> flag (bit 31, always set)</li>
+                                            <li><code>version</code> (bits 30 .. 0) – transaction version.</li>
+                                        </ul>
+                                    </dd>
+                                </dl>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>nVersionGroupId</code></td>
+                            <td><code>uint32</code></td>
+                            <td>Version group ID (nonzero).</td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>nConsensusBranchId</code></td>
+                            <td><code>uint32</code></td>
+                            <td>Consensus branch ID (nonzero).</td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>lock_time</code></td>
+                            <td><code>uint32</code></td>
+                            <td>Unix-epoch UTC time or block height, encoded as in Bitcoin.</td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>nExpiryHeight</code></td>
+                            <td><code>uint32</code></td>
+                            <td>A block height in the range {1 .. 499999999} after which the transaction will expire, or 0 to disable expiry. [ZIP-203]</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><strong>Transparent Transaction Fields</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>tx_in_count</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>Number of transparent inputs in <code>tx_in</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>tx_in</code></td>
+                            <td><code>tx_in</code></td>
+                            <td>Transparent inputs, encoded as in Bitcoin.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>tx_out_count</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>Number of transparent outputs in <code>tx_out</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>tx_out</code></td>
+                            <td><code>tx_out</code></td>
+                            <td>Transparent outputs, encoded as in Bitcoin.</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><strong>Sapling Transaction Fields</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>nSpendsSapling</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>Number of Sapling Spend descriptions in <code>vSpendsSapling</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>96 * nSpendsSapling</code></td>
+                            <td><code>vSpendsSapling</code></td>
+                            <td><code>SpendDescriptionV5[nSpendsSapling]</code></td>
+                            <td>A sequence of Sapling Spend descriptions, encoded per protocol §7.3 ‘Spend Description Encoding and Consensus’.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>nOutputsSapling</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>Number of Sapling Output Decriptions in <code>vOutputsSapling</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>756 * nOutputsSapling</code></td>
+                            <td><code>vOutputsSapling</code></td>
+                            <td><code>OutputDescriptionV5[nOutputsSapling]</code></td>
+                            <td>A sequence of Sapling Output descriptions, encoded per protocol §7.4 ‘Output Description Encoding and Consensus’.</td>
+                        </tr>
+                        <tr>
+                            <td><code>8</code></td>
+                            <td><code>valueBalanceSapling</code></td>
+                            <td><code>int64</code></td>
+                            <td>The net value of Sapling Spends minus Outputs</td>
+                        </tr>
+                        <tr>
+                            <td><code>32</code></td>
+                            <td><code>anchorSapling</code></td>
+                            <td><code>byte[32]</code></td>
+                            <td>A root of the Sapling note commitment tree at some block height in the past.</td>
+                        </tr>
+                        <tr>
+                            <td><code>192 * nSpendsSapling</code></td>
+                            <td><code>vSpendProofsSapling</code></td>
+                            <td><code>byte[192 * nSpendsSapling]</code></td>
+                            <td>Encodings of the zk-SNARK proofs for each Sapling Spend.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64 * nSpendsSapling</code></td>
+                            <td><code>vSpendAuthSigsSapling</code></td>
+                            <td><code>byte[64 * nSpendsSapling]</code></td>
+                            <td>Authorizing signatures for each Sapling Spend.</td>
+                        </tr>
+                        <tr>
+                            <td><code>192 * nOutputsSapling</code></td>
+                            <td><code>vOutputProofsSapling</code></td>
+                            <td><code>byte[192 * nOutputsSapling]</code></td>
+                            <td>Encodings of the zk-SNARK proofs for each Sapling Output.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64</code></td>
+                            <td><code>bindingSigSapling</code></td>
+                            <td><code>byte[64]</code></td>
+                            <td>A Sapling binding signature on the SIGHASH transaction hash.</td>
+                        </tr>
+                        <tr>
+                            <td colspan="4"><strong>Orchard Transaction Fields</strong></td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>nActionsOrchard</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>The number of Orchard Action descriptions in <code>vActionsOrchard</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>820 * nActionsOrchard</code></td>
+                            <td><code>vActionsOrchard</code></td>
+                            <td><code>OrchardAction[nActionsOrchard]</code></td>
+                            <td>A sequence of Orchard Action descriptions, encoded per §7.5 ‘Action Description Encoding and Consensus’.</td>
+                        </tr>
+                        <tr>
+                            <td><code>1</code></td>
+                            <td><code>flagsOrchard</code></td>
+                            <td><code>byte</code></td>
+                            <td>
+                                <dl>
+                                    <dt>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</dt>
+                                    <dd>
+                                        <ul>
+                                            <li><code>enableSpendsOrchard</code></li>
+                                            <li><code>enableOutputsOrchard</code></li>
+                                            <li>The remaining bits are set to <code>0</code>.</li>
+                                        </ul>
+                                    </dd>
+                                </dl>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><code>8</code></td>
+                            <td><code>valueBalanceOrchard</code></td>
+                            <td><code>int64</code></td>
+                            <td>The net value of Orchard spends minus outputs.</td>
+                        </tr>
+                        <tr>
+                            <td><code>32</code></td>
+                            <td><code>anchorOrchard</code></td>
+                            <td><code>byte[32]</code></td>
+                            <td>A root of the Orchard note commitment tree at some block height in the past.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>sizeProofsOrchard</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>Length in bytes of <code>proofsOrchard</code>. Value is
+                                <span class="math">\(2720 + 2272 \cdot \mathtt{nActionsOrchard}\)</span>
+                            .</td>
+                        </tr>
+                        <tr>
+                            <td><code>sizeProofsOrchard</code></td>
+                            <td><code>proofsOrchard</code></td>
+                            <td><code>byte[sizeProofsOrchard]</code></td>
+                            <td>Encoding of aggregated zk-SNARK proofs for Orchard Actions.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64 * nActionsOrchard</code></td>
+                            <td><code>vSpendAuthSigsOrchard</code></td>
+                            <td><code>byte[64 * nActionsOrchard]</code></td>
+                            <td>Authorizing signatures for each Orchard Action.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64</code></td>
+                            <td><code>bindingSigOrchard</code></td>
+                            <td><code>byte[64]</code></td>
+                            <td>An Orchard binding signature on the SIGHASH transaction hash.</td>
+                        </tr>
+                    </tbody>
+                </table>
                 <ul>
                     <li>The fields <code>valueBalanceSapling</code> and <code>bindingSigSapling</code> are present if and only if
                         <span class="math">\(\mathtt{nSpendsSapling} + \mathtt{nOutputsSapling} &gt; 0\)</span>
@@ -146,7 +275,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/440">https://g
                     <li>The elements of <code>vSpendProofsSapling</code> and <code>vSpendAuthSigsSapling</code> have a 1:1 correspondence to the elements of <code>vSpendsSapling</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>SpendDescriptionV5</code> at the same index.</li>
                     <li>The elements of <code>vOutputProofsSapling</code> have a 1:1 correspondence to the elements of <code>vOutputsSapling</code> and MUST be ordered such that the proof at a given index corresponds to the <code>OutputDescriptionV5</code> at the same index.</li>
                     <li>The proofs aggregated in <code>proofsOrchard</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardAction</code> at the same index.</li>
-                    <li>For coinbase transactions, the <code>enableSpendsOrchard</code> bit and the <code>enableZSA</code> bit MUST be set to <code>0</code>.</li>
+                    <li>For coinbase transactions, the <code>enableSpendsOrchard</code> bit MUST be set to <code>0</code>.</li>
                 </ul>
                 <p>The encodings of <code>tx_in</code>, and <code>tx_out</code> are as in a version 4 transaction (i.e. unchanged from Canopy). The encodings of <code>SpendDescriptionV5</code>, <code>OutputDescriptionV5</code> and <code>OrchardAction</code> are described below. The encoding of Sapling Spends and Outputs has changed relative to prior versions in order to better separate data that describe the effects of the transaction from the proofs of and commitments to those effects, and for symmetry with this separation in the Orchard-related parts of the transaction format.</p>
             </section>
