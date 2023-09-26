@@ -101,8 +101,29 @@ The relations between these keys are shown in the following diagram:
 Issuance Authorization Signature Scheme
 ---------------------------------------
 
-We define the issuance authorization signature scheme :math:`\mathsf{IssueAuthSig}` similar to :math:`\mathsf{SpendAuthSig}^{\mathsf{Orchard}}`, the Orchard spend authorization signature scheme [#protocol-concretespendauthsig]_. 
-Specifically, we instantiate :math:`\mathsf{IssueAuthSig}` as :math:`\mathsf{RedPallas}` without key re-randomization using generator :math:`\mathcal{P}_{\mathbb{G}} = \mathcal{G}^{\mathsf{Issuance}} := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:ZSA"}, \texttt{"Issuance"})` where :math:`\mathsf{GroupHash}^\mathbb{P}` is defined as in the Zcash protocol specification [#protocol-concretegrouphashpallasandvesta]_.
+We instantiate the issuance authorization signature scheme :math:`\mathsf{IssueAuthSig}` as a Schnorr signature over the :math:`\mathtt{secp256k1}` curve.
+We define the constants as per the :math:`\mathtt{secp256k1}` standard parameters, as described in BIP 340 [#bip-0340]_. 
+
+The associated types of the :math:`\mathsf{IssueAuthSig}` signature scheme are as follows:
+
+* :math:`\mathsf{IssueAuthSig.Message} = \mathbb{B}^{\mathbb{Y}[\mathbb{N}]}`
+* :math:`\mathsf{IssueAuthSig.Signature} = \mathbb{B}^{\mathbb{Y}[64]}`
+* :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}[32]}`
+* :math:`\mathsf{IssueAuthSig.Private} = \mathbb{B}^{\mathbb{Y}[32]}`
+
+The signing key generation algorithm and the validating key derivation algorithm are defined in the `Issuance Key Derivation`_ section below.
+
+The signing algorithm :math:`\mathsf{IssueAuthSig.Sign}` is defined as the `Sign` algorithm from BIP 340 [#bip-0340]_, except for the following changes:
+
+* We use :math:`\mathsf{hash}_{\mathsf{ZIP0227/aux}}` in place of :math:`\mathsf{hash}_{\mathsf{BIP0340/aux}}`.
+* We fix the auxiliary random data :math:`a = \mathtt{[0x00]}^{32}`.
+* We use :math:`\mathsf{hash}_{\mathsf{ZIP0227/nonce}}` in place of :math:`\mathsf{hash}_{\mathsf{BIP0340/nonce}}`.
+* We use :math:`\mathsf{hash}_{\mathsf{ZIP0227/challenge}}` in place of :math:`\mathsf{hash}_{\mathsf{BIP0340/challenge}}`.
+
+The validating algorithm :math:`\mathsf{IssueAuthSig.Validate}` is defined as the `Verify` algorithm from BIP 340 [#bip-0340]_, except for the following changes:
+
+* We use :math:`\mathsf{hash}_{\mathsf{ZIP0227/challenge}}` in place of :math:`\mathsf{hash}_{\mathsf{BIP0340/challenge}}`.
+
 
 Issuance Key Derivation
 -----------------------
@@ -128,18 +149,14 @@ We use the notation of ZIP 32 [#zip-0032-orchard-key-path]_ for shielded HD path
 
 From the generated :math:`(\mathsf{sk}, \mathsf{c})`, we set the issuance master key to be :math:`\mathsf{imk} := \mathsf{sk}`.
 
-Derivation of issuance authorizing key and issuance validating key
-``````````````````````````````````````````````````````````````````
+Derivation of issuance validating key
+`````````````````````````````````````
 
-The issuance authorizing key and issuance validating key are derived from the issuance master key in an analogous manner to the derivation of the Orchard spend authorizing key and Orchard spend validating key from the Orchard spending key [#protocol-orchardkeycomponents]_, as described below.
+The issuance validating key, :math:`\mathsf{ik}`, is derived from the issuance master key as in the `PubKey` algorithm defined in BIP 340 [#bip-0340]_.
 
-- The issuance authorizing key is derived from the issuance master key, :math:`\mathsf{imk}`, as a private signature key. The function :math:`\mathsf{PRF^{expand}_{imk}}` is as defined in the Zcash protocol specification [#protocol-abstractprfs]_:
+.. math:: \mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{imk})
 
-.. math:: \mathsf{isk} := \mathsf{ToScalar}^{\mathsf{Orchard}}(︀ \mathsf{PRF^{expand}_{imk}}([\mathtt{0x0a}]) )
-
-- The issuance validating key is derived from the issuance authorizing key, :math:`\mathsf{isk}`, as a public verification key:
-
-.. math:: \mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{isk})
+where :math:`\mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{imk}) := \textit{PubKey}(\mathsf{imk})`, and the `PubKey` algorithm is as defined in BIP 340.
 
 This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 [#zip-0032]_. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.
 
@@ -578,6 +595,7 @@ References
 .. [#zip-0032-key-path-levels] `ZIP 32: Shielded Hierarchical Deterministic Wallets - Key path levels <zip-0032.html#key-path-levels>`_
 .. [#zip-0032-orchard-key-path] `ZIP 32: Shielded Hierarchical Deterministic Wallets - Orchard key path <zip-0032.html#orchard-key-path>`_
 .. [#zip-0316] `ZIP 316: Unified Addresses and Unified Viewing Keys <zip-0316.html>`_
+.. [#bip-0340] `BIP 340: Schnorr Signatures for secp256k1 <https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki>`_
 .. [#protocol-addressesandkeys] `Zcash Protocol Specification, Version 2022.3.8. Section 3.1: Payment Addresses and Keys <protocol/protocol.pdf#addressesandkeys>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2022.3.8. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
 .. [#protocol-abstractprfs] `Zcash Protocol Specification, Version 2022.3.8. Section 4.1.2: Pseudo Random Functions <protocol/protocol.pdf#abstractprfs>`_
