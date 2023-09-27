@@ -106,10 +106,10 @@ We define the constants as per the :math:`\mathtt{secp256k1}` standard parameter
 
 The associated types of the :math:`\mathsf{IssueAuthSig}` signature scheme are as follows:
 
-* :math:`\mathsf{IssueAuthSig.Message} = \mathbb{B}^{\mathbb{Y}[\mathbb{N}]}`
-* :math:`\mathsf{IssueAuthSig.Signature} = \mathbb{B}^{\mathbb{Y}[64]}`
-* :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}[32]}`
-* :math:`\mathsf{IssueAuthSig.Private} = \mathbb{B}^{\mathbb{Y}[32]}`
+* :math:`\mathsf{IssueAuthSig.Message} = \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}`
+* :math:`\mathsf{IssueAuthSig.Signature} = \mathbb{B}^{\mathbb{Y}^{[64]}}`
+* :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
+* :math:`\mathsf{IssueAuthSig.Private} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
 
 The signing key generation algorithm and the validating key derivation algorithm are defined in the `Issuance Key Derivation`_ section below.
 
