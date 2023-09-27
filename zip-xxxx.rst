@@ -150,6 +150,7 @@ Transaction Format
 |``1``                               |``flagsOrchard``          |``byte``                                |An 8-bit value representing a set of flags. Ordered from LSB to MSB:       |
 |                                    |                          |                                        | * ``enableSpendsOrchard``                                                 |
 |                                    |                          |                                        | * ``enableOutputsOrchard``                                                |
+|                                    |                          |                                        | * ``enableZSAs``                                                          |
 |                                    |                          |                                        | * The remaining bits are set to ``0``.                                    |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 |``8``                               |``valueBalanceOrchard``   |``int64``                               |The net value of Orchard spends minus outputs.                             |
