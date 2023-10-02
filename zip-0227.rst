@@ -111,7 +111,13 @@ The associated types of the :math:`\mathsf{IssueAuthSig}` signature scheme are a
 * :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
 * :math:`\mathsf{IssueAuthSig.Private} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
 
+where :math:`\mathbb{B}^{\mathbb{Y}^{[k]}}` denotes the set of sequences of :math:`k` bytes, and :math:`\mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}` denotes the type of byte sequences of arbitrary length, as defined in the protocol specification [#protocol-notation]_.
+
 The signing key generation algorithm and the validating key derivation algorithm are defined in the `Issuance Key Derivation`_ section below.
+
+We use :math:`\mathsf{hash}_{\mathsf{name}} : \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{\mathbb{Y}^{[32]}}` in the same manner as defined in BIP 340 [#bip-0340]_, that is, 
+:math:`\mathsf{hash}_{\mathsf{name}}(\mathsf{x}) := \mathsf{SHA256}(\mathsf{SHA256}(\mathsf{tag}) \| \mathsf{SHA256}(\mathsf{tag}) \| \mathsf{x})`
+where :math:`\mathsf{tag}` is the UTF-8 encoding of :math:`\mathsf{name}`.
 
 The signing algorithm :math:`\mathsf{IssueAuthSig.Sign}` is defined as the `Sign` algorithm from BIP 340 [#bip-0340]_, except for the following changes:
 
@@ -596,6 +602,7 @@ References
 .. [#zip-0032-orchard-key-path] `ZIP 32: Shielded Hierarchical Deterministic Wallets - Orchard key path <zip-0032.html#orchard-key-path>`_
 .. [#zip-0316] `ZIP 316: Unified Addresses and Unified Viewing Keys <zip-0316.html>`_
 .. [#bip-0340] `BIP 340: Schnorr Signatures for secp256k1 <https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki>`_
+.. [#protocol-Notation] `Zcash Protocol Specification, Version 2022.3.8. Section 2: Notation <protocol/protocol.pdf#notation>`_
 .. [#protocol-addressesandkeys] `Zcash Protocol Specification, Version 2022.3.8. Section 3.1: Payment Addresses and Keys <protocol/protocol.pdf#addressesandkeys>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2022.3.8. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
 .. [#protocol-abstractprfs] `Zcash Protocol Specification, Version 2022.3.8. Section 4.1.2: Pseudo Random Functions <protocol/protocol.pdf#abstractprfs>`_
