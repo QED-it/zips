@@ -73,14 +73,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </ul>
         </section>
         <section id="specification-issuance-keys-and-issuance-authorization-signature-scheme"><h2><span class="section-heading">Specification: Issuance Keys and Issuance Authorization Signature Scheme</span><span class="section-anchor"> <a rel="bookmark" href="#specification-issuance-keys-and-issuance-authorization-signature-scheme"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The ZSA Protocol adds the following three keys to the key components <a id="footnote-reference-9" class="footnote_reference" href="#protocol-addressesandkeys">19</a>:</p>
+            <p>The ZSA Protocol adds the following keys to the key components <a id="footnote-reference-9" class="footnote_reference" href="#protocol-addressesandkeys">19</a>:</p>
             <ol type="1">
                 <li>The issuance master key, denoted as
                     <span class="math">\(\mathsf{imk}\)</span>
-                , is the key that is used to derive the other two keys.</li>
-                <li>The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as
-                    <span class="math">\(\mathsf{isk}\)</span>
-                . This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
+                , is the key that is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.</li>
                 <li>The issuance validating key, denoted as
                     <span class="math">\(\mathsf{ik}\)</span>
                 , is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.</li>
@@ -401,8 +398,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li><code>vIssueActions</code>: an array of issuance actions, of type <code>IssueAction</code>.</li>
                     <li>
                         <span class="math">\(\mathsf{issueAuthSig}\)</span>
-                    : the signature of the transaction SIGHASH, signed by the issuance authorizing key,
-                        <span class="math">\(\mathsf{isk}\)</span>
+                    : the signature of the transaction SIGHASH, signed by the issuance master key,
+                        <span class="math">\(\mathsf{imk}\)</span>
                     , that validates the issuance .</li>
                 </ul>
                 <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-23" class="footnote_reference" href="#protocol-transactionstructure">26</a>.</p>
@@ -486,8 +483,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <li>encode the
                         <span class="math">\(\mathsf{ik}\)</span>
                      as 32 byte-string</li>
-                    <li>sign the SIGHASH transaction hash with the issuance authorizing key,
-                        <span class="math">\(\mathsf{isk}\)</span>
+                    <li>sign the SIGHASH transaction hash with the issuance master key,
+                        <span class="math">\(\mathsf{imk}\)</span>
                     , using the
                         <span class="math">\(\mathsf{IssueAuthSig}\)</span>
                      signature scheme. The signature is then added to the issuance bundle.</li>
@@ -738,7 +735,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                         <span class="math">\(\mathsf{finalize}\)</span>
                      boolean for all the Assets issued with that key should be set to
                         <span class="math">\(1\)</span>
-                     and the issuer should change to a new issuance authorizing key, and issue new Assets, each with a new
+                     and the issuer should change to a new issuance master key, and issue new Assets, each with a new
                         <span class="math">\(\mathsf{AssetId}\)</span>
                     .</li>
                 </ul>

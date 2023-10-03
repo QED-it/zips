@@ -80,13 +80,11 @@ Requirements
 Specification: Issuance Keys and Issuance Authorization Signature Scheme
 ========================================================================
 
-The ZSA Protocol adds the following three keys to the key components [#protocol-addressesandkeys]_:
+The ZSA Protocol adds the following keys to the key components [#protocol-addressesandkeys]_:
 
-1. The issuance master key, denoted as :math:`\mathsf{imk}`, is the key that is used to derive the other two keys.
+1. The issuance master key, denoted as :math:`\mathsf{imk}`, is the key that is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
 
-2. The issuance authorizing key is the key that is used to sign the issuance transaction, and is denoted as :math:`\mathsf{isk}`. This key is used to authorize the issuance of a specific Asset Identifier, and is only used by the issuer.
-
-3. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
+2. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate the issuance transaction. This key is used to validate the issuance of a specific Asset Identifier, and is used by all blockchain users (specifically the Asset owners and consensus validators) to associate the Asset in question with the issuer.
 
 The relations between these keys are shown in the following diagram:
 
@@ -261,7 +259,7 @@ It contains the following fields:
 
 - :math:`\mathsf{ik}`: the issuance validating key, that allows the validators to verify that the :math:`\mathsf{AssetId}` is properly associated with the issuer.
 - ``vIssueActions``: an array of issuance actions, of type ``IssueAction``.
-- :math:`\mathsf{issueAuthSig}`: the signature of the transaction SIGHASH, signed by the issuance authorizing key, :math:`\mathsf{isk}`, that validates the issuance .
+- :math:`\mathsf{issueAuthSig}`: the signature of the transaction SIGHASH, signed by the issuance master key, :math:`\mathsf{imk}`, that validates the issuance .
 
 The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format [#protocol-transactionstructure]_.
 
@@ -299,7 +297,7 @@ For the ``IssueBundle``:
 
 - encode the ``vIssueActions`` vector
 - encode the :math:`\mathsf{ik}` as 32 byte-string
-- sign the SIGHASH transaction hash with the issuance authorizing key, :math:`\mathsf{isk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
+- sign the SIGHASH transaction hash with the issuance master key, :math:`\mathsf{imk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
 
 
 **Note:** that the commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
@@ -545,7 +543,7 @@ Issuance Key Compromise
 
 The design of this protocol does not currently allow for rotation of the issuance validating key that would allow for replacing the key of a specific Asset. In case of compromise, the following actions are recommended:
 
-- If an issuance validating key is compromised, the :math:`\mathsf{finalize}` boolean for all the Assets issued with that key should be set to :math:`1` and the issuer should change to a new issuance authorizing key, and issue new Assets, each with a new :math:`\mathsf{AssetId}`.
+- If an issuance validating key is compromised, the :math:`\mathsf{finalize}` boolean for all the Assets issued with that key should be set to :math:`1` and the issuer should change to a new issuance master key, and issue new Assets, each with a new :math:`\mathsf{AssetId}`.
 
 Bridging Assets
 ---------------
