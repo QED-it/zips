@@ -118,7 +118,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(k\)</span>
                  bytes, and
                     <span class="math">\(\mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}\)</span>
-                 denotes the type of byte sequences of arbitrary length, as defined in the protocol specification <a id="footnote-reference-11" class="footnote_reference" href="#protocol-notation">18</a>.</p>
+                 denotes the type of byte sequences of arbitrary length, as defined in the Zcash protocol specification <a id="footnote-reference-11" class="footnote_reference" href="#protocol-notation">18</a>.</p>
                 <p>The signing key generation algorithm and the validating key derivation algorithm are defined in the <a href="#issuance-key-derivation">Issuance Key Derivation</a> section below.</p>
                 <p>We use
                     <span class="math">\(\mathsf{hash}_{\mathsf{name}} : \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{\mathbb{Y}^{[32]}}\)</span>
@@ -131,35 +131,30 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 .</p>
                 <p>The signing algorithm
                     <span class="math">\(\mathsf{IssueAuthSig.Sign}\)</span>
-                 is defined as the <cite>Sign</cite> algorithm from BIP 340 <a id="footnote-reference-13" class="footnote_reference" href="#bip-0340">17</a>, except for the following changes:</p>
+                 is defined as the
+                    <span class="math">\(\mathsf{Sign}\)</span>
+                 algorithm from BIP 340 <a id="footnote-reference-13" class="footnote_reference" href="#bip-0340">17</a> with the auxiliary data (denoted by
+                    <span class="math">\(a\)</span>
+                ) fixed to the 32-byte string of zeros:</p>
                 <ul>
-                    <li>We use
-                        <span class="math">\(\mathsf{hash}_{\mathsf{ZIP0227/aux}}\)</span>
-                     in place of
-                        <span class="math">\(\mathsf{hash}_{\mathsf{BIP0340/aux}}\)</span>
-                    .</li>
-                    <li>We fix the auxiliary random data
+                    <li>
+                        <span class="math">\(\mathsf{IssueAuthSig.Sign}(\mathsf{sk}, M) := \mathsf{Sign}(sk,M)\)</span>
+                     with
                         <span class="math">\(a = \mathtt{[0x00]}^{32}\)</span>
-                    .</li>
-                    <li>We use
-                        <span class="math">\(\mathsf{hash}_{\mathsf{ZIP0227/nonce}}\)</span>
-                     in place of
-                        <span class="math">\(\mathsf{hash}_{\mathsf{BIP0340/nonce}}\)</span>
-                    .</li>
-                    <li>We use
-                        <span class="math">\(\mathsf{hash}_{\mathsf{ZIP0227/challenge}}\)</span>
-                     in place of
-                        <span class="math">\(\mathsf{hash}_{\mathsf{BIP0340/challenge}}\)</span>
                     .</li>
                 </ul>
                 <p>The validating algorithm
-                    <span class="math">\(\mathsf{IssueAuthSig.Validate}\)</span>
-                 is defined as the <cite>Verify</cite> algorithm from BIP 340 <a id="footnote-reference-14" class="footnote_reference" href="#bip-0340">17</a>, except for the following changes:</p>
+                    <span class="math">\(\mathsf{IssueAuthSig.Validate}(\mathsf{vk}, M, \sigma)\)</span>
+                 is defined using the
+                    <span class="math">\(\mathsf{Verify}\)</span>
+                 algorithm from BIP 340 <a id="footnote-reference-14" class="footnote_reference" href="#bip-0340">17</a> as:</p>
                 <ul>
-                    <li>We use
-                        <span class="math">\(\mathsf{hash}_{\mathsf{ZIP0227/challenge}}\)</span>
-                     in place of
-                        <span class="math">\(\mathsf{hash}_{\mathsf{BIP0340/challenge}}\)</span>
+                    <li>Return
+                        <span class="math">\(1\)</span>
+                     if
+                        <span class="math">\(\mathsf{Verify}(vk, M, \sigma)\)</span>
+                     succeeds, otherwise
+                        <span class="math">\(0\)</span>
                     .</li>
                 </ul>
             </section>
