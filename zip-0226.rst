@@ -312,8 +312,8 @@ Backwards Compatibility with ZEC Notes
 
 The input note in the old note commitment integrity check must either include an Asset Base (ZSA note) or not (pre-ZSA Orchard note). If the note is a pre-ZSA Orchard note, the note commitment is computed in the original Orchard fashion [#protocol-abstractcommit]_. If the note is a ZSA note, the note commitment is computed as defined in the `Note Structure & Commitment`_ section.
 
-ZSA Transaction Structure
-=========================
+Orchard-ZSA Transaction Structure
+=================================
 
 The transaction format for v6 transactions is described in ZIP 230 [#zip-0230]_.
 
