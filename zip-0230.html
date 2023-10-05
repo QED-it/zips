@@ -27,15 +27,14 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             <p>The character § is used when referring to sections of the Zcash Protocol Specification <a id="footnote-reference-2" class="footnote_reference" href="#protocol">2</a>.</p>
         </section>
         <section id="abstract"><h2><span class="section-heading">Abstract</span><span class="section-anchor"> <a rel="bookmark" href="#abstract"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This proposal defines a new Zcash peer-to-peer transaction format, which includes data that supports Zcash Shielded Assets (ZSAs) on the Orchard shielded pool <a id="footnote-reference-3" class="footnote_reference" href="#protocol">2</a>. The new transaction format defines well-bounded regions of the serialized form to serve each of the existing pools of funds, and adds and describes a new elements containing ZSA-specific elements.</p>
-            <p>This ZIP also depends upon and defines modifications to the computation of the values <strong>TxId Digest</strong>, <strong>Signature Digest</strong>, and <strong>Authorizing Data Commitment</strong> defined by ZIP 244 <a id="footnote-reference-4" class="footnote_reference" href="#zip-0244">9</a>.</p>
+            <p>This proposal defines a new Zcash peer-to-peer transaction format, which includes data that supports the Orchard-ZSA protocol and all Zcash Shielded Assets (ZSAs) related operations. The new transaction format defines well-bounded regions of the serialized form to serve each of the existing pools of funds, and adds and describes a new elements containing ZSA-specific elements.</p>
+            <p>This ZIP also depends upon and defines modifications to the computation of the values <strong>TxId Digest</strong>, <strong>Signature Digest</strong>, and <strong>Authorizing Data Commitment</strong> defined by ZIP 244 <a id="footnote-reference-3" class="footnote_reference" href="#zip-0244">9</a>.</p>
         </section>
         <section id="motivation"><h2><span class="section-heading">Motivation</span><span class="section-anchor"> <a rel="bookmark" href="#motivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The new Orchard shielded pool requires serialized data elements that are distinct from any previous Zcash transaction. Since ZIP 244 was activated in NU5, the v5 and later serialized transaction formats are not consensus-critical. Thus, this ZIP defines format that can easily accommodate future extensions, where elements or a given pool are kept separate.</p>
+            <p>The Orchard-ZSA protocol requires serialized data elements that are distinct from any previous Zcash transaction. Since ZIP 244 was activated in NU5, the v5 and later serialized transaction formats are not consensus-critical. Thus, this ZIP defines format that can easily accommodate future extensions, where elements or a given pool are kept separate.</p>
         </section>
         <section id="requirements"><h2><span class="section-heading">Requirements</span><span class="section-anchor"> <a rel="bookmark" href="#requirements"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The new format must fully support the Orchard protocol.</p>
-            <p>The new format must fully support Zcash Shielded Assets (ZSAs).</p>
+            <p>The new format must fully support the Orchard-ZSA protocol.</p>
             <p>The new format should lend itself to future extension or pruning to add or remove value pools.</p>
             <p>The computation of the non-malleable transaction identifier hash must include all newly incorporated elements except those that attest to transaction validity.</p>
             <p>The computation of the commitment to authorizing data for a transaction must include all newly incorporated elements that attest to transaction validity.</p>
@@ -280,7 +279,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td><code>40 * nAssetBurn</code></td>
                             <td><code>vAssetBurn</code></td>
                             <td><code>AssetBurn[nAssetBurn]</code></td>
-                            <td>A sequence of Asset Burn descriptions, encoded per <a id="problematic-1" class="problematic" href="#system-message-1">`ZSA Asset Burn Description`_</a>.</td>
+                            <td>A sequence of Asset Burn descriptions, encoded per <a href="#orchard-zsa-asset-burn-description">Orchard-ZSA Asset Burn Description</a>.</td>
                         </tr>
                         <tr>
                             <td colspan="4"><strong>Orchard-ZSA Issuance Fields</strong></td>
@@ -307,7 +306,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td><code>64</code></td>
                             <td><code>issueAuthSig</code></td>
                             <td><code>byte[64]</code></td>
-                            <td>The signature of the transaction SIGHASH, signed by the issuer, validated as in Issuance Authorization Signature Scheme <a id="footnote-reference-5" class="footnote_reference" href="#zip-0227">8</a>.</td>
+                            <td>The signature of the transaction SIGHASH, signed by the issuer, validated as in Issuance Authorization Signature Scheme <a id="footnote-reference-4" class="footnote_reference" href="#zip-0227">8</a>.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -363,7 +362,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.3 ‘Spend Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-6" class="footnote_reference" href="#protocol-spenddesc">3</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.3 ‘Spend Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-5" class="footnote_reference" href="#protocol-spenddesc">3</a>.</p>
             </section>
             <section id="sapling-output-description-outputdescriptionv6"><h3><span class="section-heading">Sapling Output Description (<code>OutputDescriptionV6</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#sapling-output-description-outputdescriptionv6"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <table>
@@ -408,7 +407,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.4 ‘Output Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-7" class="footnote_reference" href="#protocol-outputdesc">4</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.4 ‘Output Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-6" class="footnote_reference" href="#protocol-outputdesc">4</a>.</p>
             </section>
             <section id="orchard-zsa-action-description-orchardzsaaction"><h3><span class="section-heading">Orchard-ZSA Action Description (<code>OrchardZsaAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-action-description-orchardzsaaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <table>
@@ -465,7 +464,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-8" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-7" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
             </section>
             <section id="orchard-zsa-asset-burn-description"><h3><span class="section-heading">Orchard-ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance of an <code>AssetBurn</code> type:</p>
@@ -497,7 +496,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-9" class="footnote_reference" href="#zip-0226">7</a>.</p>
+                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-8" class="footnote_reference" href="#zip-0226">7</a>.</p>
             </section>
             <section id="issuance-action-description-issueaction"><h3><span class="section-heading">Issuance Action Description (<code>IssueAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action-description-issueaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -555,7 +554,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in ZIP 227 <a id="footnote-reference-10" class="footnote_reference" href="#zip-0227">8</a>.</p>
+                <p>The encodings of each of these elements are defined in ZIP 227 <a id="footnote-reference-9" class="footnote_reference" href="#zip-0227">8</a>.</p>
             </section>
         </section>
         <section id="reference-implementation"><h2><span class="section-heading">Reference implementation</span><span class="section-anchor"> <a rel="bookmark" href="#reference-implementation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -643,13 +642,6 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                 </tbody>
             </table>
         </section>
-    </section>
-    <section class="system-messages">
-        <h1>Docutils System Messages</h1>
-        <div id="system-message-1">
-            <h1>System Message: ERROR/3 (zip-0230.rst line 175) <a href="#problematic-1">problematic-1</a></h1>
-            <p>Unknown target name: "zsa asset burn description".</p>
-        </div>
     </section>
 </body>
 </html>

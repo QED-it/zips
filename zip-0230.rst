@@ -30,7 +30,7 @@ The character § is used when referring to sections of the Zcash Protocol Specif
 Abstract
 ========
 
-This proposal defines a new Zcash peer-to-peer transaction format, which includes data that supports Zcash Shielded Assets (ZSAs) on the Orchard shielded pool [#protocol]_.  The
+This proposal defines a new Zcash peer-to-peer transaction format, which includes data that supports the Orchard-ZSA protocol and all Zcash Shielded Assets (ZSAs) related operations. The
 new transaction format defines well-bounded regions of the serialized form to
 serve each of the existing pools of funds, and adds and describes a new elements
 containing ZSA-specific elements.
@@ -43,7 +43,7 @@ This ZIP also depends upon and defines modifications to the computation of the v
 Motivation
 ==========
 
-The new Orchard shielded pool requires serialized data elements that are distinct from
+The Orchard-ZSA protocol requires serialized data elements that are distinct from
 any previous Zcash transaction. Since ZIP 244 was activated in NU5, the
 v5 and later serialized transaction formats are not consensus-critical. 
 Thus, this ZIP defines format that can easily accommodate future extensions,
@@ -53,9 +53,7 @@ where elements or a given pool are kept separate.
 Requirements
 ============
 
-The new format must fully support the Orchard protocol.
-
-The new format must fully support Zcash Shielded Assets (ZSAs).
+The new format must fully support the Orchard-ZSA protocol.
 
 The new format should lend itself to future extension or pruning to add or remove
 value pools.
@@ -173,7 +171,7 @@ Transaction Format
 | ``varies``                         | ``nAssetBurn``           | ``compactSize``                        | The number of Assets burnt.                                               |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 | ``40 * nAssetBurn``                | ``vAssetBurn``           | ``AssetBurn[nAssetBurn]``              | A sequence of Asset Burn descriptions,                                    |
-|                                    |                          |                                        | encoded per `ZSA Asset Burn Description`_.                                |
+|                                    |                          |                                        | encoded per `Orchard-ZSA Asset Burn Description`_.                        |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
 | **Orchard-ZSA Issuance Fields**                                                                                                                                                    |
 +------------------------------------+--------------------------+----------------------------------------+---------------------------------------------------------------------------+
