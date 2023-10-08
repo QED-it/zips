@@ -111,20 +111,7 @@ The associated types of the :math:`\mathsf{IssueAuthSig}` signature scheme are a
 
 where :math:`\mathbb{B}^{\mathbb{Y}^{[k]}}` denotes the set of sequences of :math:`k` bytes, and :math:`\mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}` denotes the type of byte sequences of arbitrary length, as defined in the Zcash protocol specification [#protocol-notation]_.
 
-The signing key generation algorithm and the validating key derivation algorithm are defined in the `Issuance Key Derivation`_ section below.
-
-We use :math:`\mathsf{hash}_{\mathsf{name}} : \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{\mathbb{Y}^{[32]}}` in the same manner as defined in BIP 340 [#bip-0340]_, that is, 
-:math:`\mathsf{hash}_{\mathsf{name}}(\mathsf{x}) := \mathsf{SHA256}(\mathsf{SHA256}(\mathsf{tag}) \| \mathsf{SHA256}(\mathsf{tag}) \| \mathsf{x})`
-where :math:`\mathsf{tag}` is the UTF-8 encoding of :math:`\mathsf{name}`.
-
-The signing algorithm :math:`\mathsf{IssueAuthSig.Sign}` is defined as the :math:`\mathsf{Sign}` algorithm from BIP 340 [#bip-0340]_ with the auxiliary data (denoted by :math:`a`) fixed to the 32-byte string of zeros:
-
-* Let the auxiliary data :math:`a = \mathtt{[0x00]}^{32}`.
-* :math:`\mathsf{IssueAuthSig.Sign}(\mathsf{sk}, M) := \mathsf{Sign}(sk,M)`.
-
-The validating algorithm :math:`\mathsf{IssueAuthSig.Validate}(\mathsf{vk}, M, \sigma)` is defined using the :math:`\mathsf{Verify}` algorithm from BIP 340 [#bip-0340]_ as:
-
-* Return :math:`1` if :math:`\mathsf{Verify}(vk, M, \sigma)` succeeds, otherwise :math:`0`.
+The signing key generation algorithm and the validating key derivation algorithm are defined in the `Issuance Key Derivation`_ section, while the signing and validation algorithms are defined in the `Issuance Authorization Signing and Validation`_ section.
 
 Issuance Key Derivation
 -----------------------
@@ -160,6 +147,25 @@ The issuance validating key, :math:`\mathsf{ik}`, is derived from the issuance m
 where :math:`\mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{imk}) := \textit{PubKey}(\mathsf{imk})`, and the `PubKey` algorithm is as defined in BIP 340.
 
 This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 [#zip-0032]_. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.
+
+Issuance Authorization Signing and Validation
+---------------------------------------------
+
+We use :math:`\mathsf{hash}_{\mathsf{name}} : \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{\mathbb{Y}^{[32]}}` in the same manner as defined in BIP 340 [#bip-0340]_, that is, 
+:math:`\mathsf{hash}_{\mathsf{name}}(\mathsf{x}) := \mathsf{SHA256}(\mathsf{SHA256}(\mathsf{tag}) \| \mathsf{SHA256}(\mathsf{tag}) \| \mathsf{x})`
+where :math:`\mathsf{tag}` is the UTF-8 encoding of :math:`\mathsf{name}`.
+
+The signing algorithm :math:`\mathsf{IssueAuthSig.Sign}` is defined as the :math:`\mathsf{Sign}` algorithm from BIP 340 [#bip-0340]_ with the auxiliary data (denoted by :math:`a`) fixed to the 32-byte string of zeros.
+For an issuance master key :math:`\mathsf{imk} \in \mathbb{B}^{\mathbb{Y}[32]}`, and a message :math:`M \in \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}`, we define :math:`\mathsf{IssueAuthSig.Sign}(\mathsf{imk}, M)` as:
+
+* Let the auxiliary data :math:`a = \mathtt{[0x00]}^{32}`.
+* Return :math:`\mathsf{Sign}(\mathsf{imk},M)`.
+
+The validating algorithm :math:`\mathsf{IssueAuthSig.Validate}` is defined using the :math:`\mathsf{Verify}` algorithm from BIP 340 [#bip-0340]_.
+For an issuance validating key :math:`\mathsf{ik} \in \mathbb{B}^{\mathbb{Y}^{[32]}}`, a message :math:`M \in \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}`, and a signature :math:`\sigma \in \mathbb{B}^{\mathbb{Y}^{[64]}}`, we define :math:`\mathsf{IssueAuthSig.Sign}(\mathsf{ik}, M, \sigma)` as:
+
+* Return :math:`1` if :math:`\mathsf{Verify}(\mathsf{ik}, M, \sigma)` succeeds, otherwise :math:`0`.
+
 
 Specification: Asset Identifier
 ===============================
