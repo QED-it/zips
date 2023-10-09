@@ -311,7 +311,7 @@ Specification: Consensus Rule Changes
 
 For the ``IssueBundle``:
 
-- Verify the RedPallas-based issuance authorization signature on the SIGHASH transaction hash, :math:`\mathsf{SigHash}`, :math:`\mathsf{issueAuthSig}`, is verified by invoking :math:`\mathsf{issueAuthSig.VerifySig(ik, SigHash)}`
+- Verify the issuance authorization signature on the SIGHASH transaction hash, :math:`\mathsf{SigHash}`, :math:`\mathsf{issueAuthSig}`, is verified by invoking :math:`\mathsf{issueAuthSig.VerifySig(ik, SigHash)}`
 
 For each ``IssueAction`` in ``IssueBundle``:
 
