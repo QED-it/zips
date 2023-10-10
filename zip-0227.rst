@@ -290,7 +290,7 @@ For all actions ``IssueAction``:
 - encode :math:`\mathsf{asset\_desc}` as a UTF-8 byte string of size up to 512.
 - compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as decribed in the `Specification: Asset Identifier`_ section.
 - compute :math:`\mathsf{AssetBase}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
-- set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`)
+- set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`).
 - for each recipient :math:`i`:
 
     - generate a ZSA output note that includes the Asset Base. For an Orchard-ZSA note this is :math:`\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \rho_i, \mathsf{rseed}_i, \mathsf{AssetBase}, \mathsf{rcm}_i)\!`.
@@ -299,8 +299,8 @@ For all actions ``IssueAction``:
 
 For the ``IssueBundle``:
 
-- encode the ``vIssueActions`` vector
-- encode the :math:`\mathsf{ik}` as 32 byte-string
+- encode the ``vIssueActions`` vector.
+- encode the :math:`\mathsf{ik}` as 32 byte-string.
 - sign the SIGHASH transaction hash with the issuance master key, :math:`\mathsf{imk}`, using the :math:`\mathsf{IssueAuthSig}` signature scheme. The signature is then added to the issuance bundle.
 
 
@@ -312,7 +312,7 @@ Specification: Consensus Rule Changes
 
 For the ``IssueBundle``:
 
-- Verify the issuance authorization signature on the SIGHASH transaction hash, :math:`\mathsf{SigHash}`, :math:`\mathsf{issueAuthSig}`, is verified by invoking :math:`\mathsf{issueAuthSig.VerifySig(ik, SigHash)}`
+- Validate the issuance authorization signature, :math:`\mathsf{issueAuthSig}`, on the SIGHASH transaction hash, :math:`\mathsf{SigHash}`, by invoking :math:`\mathsf{IssueAuthSig.Validate(ik, SigHash, issueAuthSig)}`
 
 For each ``IssueAction`` in ``IssueBundle``:
 
