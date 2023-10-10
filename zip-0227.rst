@@ -105,8 +105,8 @@ We define the constants as per the :math:`\mathtt{secp256k1}` standard parameter
 The associated types of the :math:`\mathsf{IssueAuthSig}` signature scheme are as follows:
 
 * :math:`\mathsf{IssueAuthSig.Message} = \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}`
-* :math:`\mathsf{IssueAuthSig.Signature} = \mathbb{B}^{\mathbb{Y}^{[64]}}`
-* :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
+* :math:`\mathsf{IssueAuthSig.Signature} = \mathbb{B}^{\mathbb{Y}^{[64]}} \cup \{\bot\}`
+* :math:`\mathsf{IssueAuthSig.Public} = \mathbb{B}^{\mathbb{Y}^{[32]}} \cup \{\bot\}`
 * :math:`\mathsf{IssueAuthSig.Private} = \mathbb{B}^{\mathbb{Y}^{[32]}}`
 
 where :math:`\mathbb{B}^{\mathbb{Y}^{[k]}}` denotes the set of sequences of :math:`k` bytes, and :math:`\mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}}` denotes the type of byte sequences of arbitrary length, as defined in the Zcash protocol specification [#protocol-notation]_.
@@ -143,11 +143,15 @@ From the generated :math:`(\mathsf{sk}, \mathsf{c})`, we set the issuance master
 Derivation of issuance validating key
 `````````````````````````````````````
 
-The issuance validating key, :math:`\mathsf{ik}`, is derived from the issuance master key as in the `PubKey` algorithm defined in BIP 340 [#bip-0340]_.
+Define :math:`\mathsf{IssueAuthSig.DerivePublic}\: : \: (\mathsf{imk}\: : \: \mathsf{IssueAuthSig.Private}) \to \mathsf{IssueAuthSig.Public}` as:
 
-.. math:: \mathsf{ik} := \mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{imk})
+* :math:`\mathsf{ik} := \textit{PubKey}(\mathsf{imk})`
+* Return :math:`\bot` if the :math:`\textit{PubKey}` algorithm invocation fails, otherwise return :math:`\mathsf{ik}`.
 
-where :math:`\mathsf{IssueAuthSig}.\mathsf{DerivePublic}(\mathsf{imk}) := \textit{PubKey}(\mathsf{imk})`, and the `PubKey` algorithm is as defined in BIP 340.
+where the :math:`\textit{PubKey}` algorithm is defined in BIP 340 [#bip-0340]_. 
+
+It is possible for the :math:`\textit{PubKey}` algorithm to fail with very low probability, which means that :math:`\mathsf{IssueAuthSig.DerivePublic}` could return :math:`\bot` with very low probability. 
+If this happens, discard the keys and repeat with a different :math:`\mathsf{imk}`.
 
 This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 [#zip-0032]_. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.
 
@@ -157,13 +161,16 @@ Issuance Authorization Signing and Validation
 Define :math:`\mathsf{IssueAuthSig.Sign}\: : \: (\mathsf{imk}\: : \: \mathsf{IssueAuthSig.Private}) \times (M\: : \: \mathsf{IssueAuthSig.Message}) \to \mathsf{IssueAuthSig.Signature}` as:
 
 * Let the auxiliary data :math:`a = \mathtt{[0x00]}^{32}`.
-* Return :math:`\mathsf{Sign}(\mathsf{imk},M)`.
+* Let :math:`\sigma = \mathsf{Sign}(\mathsf{imk},M)`.
+* Return :math:`\bot` if the :math:`\mathsf{Sign}` algorithm fails in the previous step, otherwise return :math:`\sigma`.
 
 where the :math:`\mathsf{Sign}` algorithm is defined in BIP 340 and :math:`a` denotes the auxiliary data used in BIP 340 [#bip-0340]_.
+Note that :math:`\mathsf{IssueAuthSig.Sign}` could return :math:`\bot` with very low probability.
 
 
 Define :math:`\mathsf{IssueAuthSig.Validate}\: : \: (\mathsf{ik}\: : \: \mathsf{IssueAuthSig.Public}) \times (M\: : \: \mathsf{IssueAuthSig.Message}) \times (\sigma\: : \: \mathsf{IssueAuthSig.Signature}) \to \mathbb{B}` as:
 
+* Return :math:`0` if :math:`\sigma = \bot`.
 * Return :math:`1` if :math:`\mathsf{Verify}(\mathsf{ik}, M, \sigma)` succeeds, otherwise :math:`0`.
 
 where the :math:`\mathsf{Verify}` algorithm is defined in BIP 340 [#bip-0340]_.
@@ -290,7 +297,7 @@ For all actions ``IssueAction``:
 - encode :math:`\mathsf{asset\_desc}` as a UTF-8 byte string of size up to 512.
 - compute :math:`\mathsf{AssetDigest}` from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as decribed in the `Specification: Asset Identifier`_ section.
 - compute :math:`\mathsf{AssetBase}` from :math:`\mathsf{AssetDigest}` as decribed in the `Specification: Asset Identifier`_ section.
-- set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this Asset Identifier, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`).
+- set the :math:`\mathsf{finalize}` boolean as desired (if more issuance actions are to be created for this :math:`\mathsf{AssetBase}`, set :math:`\mathsf{finalize} = 0`, otherwise set :math:`\mathsf{finalize} = 1`).
 - for each recipient :math:`i`:
 
     - generate a ZSA output note that includes the Asset Base. For an Orchard-ZSA note this is :math:`\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \rho_i, \mathsf{rseed}_i, \mathsf{AssetBase}, \mathsf{rcm}_i)\!`.
