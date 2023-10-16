@@ -116,15 +116,10 @@ The signing key generation algorithm and the validating key derivation algorithm
 Issuance Key Derivation
 -----------------------
 
-The issuance master key can be generated in two ways:
-
-1. Generate the issuance master key uniformly at random from :math:`\mathsf{IssueAuthSig.Private}`, like the Orchard spending key [#protocol-orchardkeycomponents]_.
-2. Obtain the issuance master key as described in the `Issuance master key generation for hierarchical deterministic wallets`_ section below.
-
 Issuance master key generation for hierarchical deterministic wallets
 `````````````````````````````````````````````````````````````````````
 
-Here, the issuance master key is generated using the Orchard master key derivation procedure defined in ZIP 32 [#zip-0032-orchard-master]_. We reuse the functions defined there in what follows in this section.
+The issuance master key is generated using the Orchard master key derivation procedure defined in ZIP 32 [#zip-0032-orchard-master]_. We reuse the functions defined there in what follows in this section.
 
 Let :math:`S` be a seed byte sequence of a chosen length, which MUST be at least 32 and at most 252 bytes.
 We define the master extended issuance key :math:`m_{\mathsf{Issuance}} := \mathsf{MasterKeyGen}(\texttt{"ZIP32ZSAIssue_V1"}, S)`.

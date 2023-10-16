@@ -122,24 +122,17 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>The signing key generation algorithm and the validating key derivation algorithm are defined in the <a href="#issuance-key-derivation">Issuance Key Derivation</a> section, while the signing and validation algorithms are defined in the <a href="#issuance-authorization-signing-and-validation">Issuance Authorization Signing and Validation</a> section.</p>
             </section>
             <section id="issuance-key-derivation"><h3><span class="section-heading">Issuance Key Derivation</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-derivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The issuance master key can be generated in two ways:</p>
-                <ol type="1">
-                    <li>Generate the issuance master key uniformly at random from
-                        <span class="math">\(\mathsf{IssueAuthSig.Private}\)</span>
-                    , like the Orchard spending key <a id="footnote-reference-12" class="footnote_reference" href="#protocol-orchardkeycomponents">22</a>.</li>
-                    <li>Obtain the issuance master key as described in the <a href="#issuance-master-key-generation-for-hierarchical-deterministic-wallets">Issuance master key generation for hierarchical deterministic wallets</a> section below.</li>
-                </ol>
                 <section id="issuance-master-key-generation-for-hierarchical-deterministic-wallets"><h4><span class="section-heading">Issuance master key generation for hierarchical deterministic wallets</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-master-key-generation-for-hierarchical-deterministic-wallets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>Here, the issuance master key is generated using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-13" class="footnote_reference" href="#zip-0032-orchard-master">12</a>. We reuse the functions defined there in what follows in this section.</p>
+                    <p>The issuance master key is generated using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-12" class="footnote_reference" href="#zip-0032-orchard-master">12</a>. We reuse the functions defined there in what follows in this section.</p>
                     <p>Let
                         <span class="math">\(S\)</span>
                      be a seed byte sequence of a chosen length, which MUST be at least 32 and at most 252 bytes. We define the master extended issuance key
                         <span class="math">\(m_{\mathsf{Issuance}} := \mathsf{MasterKeyGen}(\texttt{"ZIP32ZSAIssue_V1"}, S)\)</span>
                     .</p>
-                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-14" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">13</a>, we only use hardened child key derivation for the issuance master key. We reuse the
+                    <p>As in ZIP 32 for Orchard <a id="footnote-reference-13" class="footnote_reference" href="#zip-0032-orchard-child-key-derivation">13</a>, we only use hardened child key derivation for the issuance master key. We reuse the
                         <span class="math">\(\mathsf{CDKsk}\)</span>
                      function for Orchard child key derivation from ZIP 32.</p>
-                    <p>We use the notation of ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-orchard-key-path">15</a> for shielded HD paths, and define the issuance master key path as
+                    <p>We use the notation of ZIP 32 <a id="footnote-reference-14" class="footnote_reference" href="#zip-0032-orchard-key-path">15</a> for shielded HD paths, and define the issuance master key path as
                         <span class="math">\(m_\mathsf{Issuance} / purpose' / coin\_type' / account'\)</span>
                     . We fix the path levels as follows:</p>
                     <ul>
@@ -158,7 +151,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         ) following the BIP 43 recommendation.</li>
                         <li>
                             <span class="math">\(coin\_type\)</span>
-                        : Defined as in ZIP 32 <a id="footnote-reference-16" class="footnote_reference" href="#zip-0032-key-path-levels">14</a>.</li>
+                        : Defined as in ZIP 32 <a id="footnote-reference-15" class="footnote_reference" href="#zip-0032-key-path-levels">14</a>.</li>
                         <li>
                             <span class="math">\(account\)</span>
                         : fixed to index
@@ -189,7 +182,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     </ul>
                     <p>where the
                         <span class="math">\(\textit{PubKey}\)</span>
-                     algorithm is defined in BIP 340 <a id="footnote-reference-17" class="footnote_reference" href="#bip-0340">17</a>.</p>
+                     algorithm is defined in BIP 340 <a id="footnote-reference-16" class="footnote_reference" href="#bip-0340">17</a>.</p>
                     <p>It is possible for the
                         <span class="math">\(\textit{PubKey}\)</span>
                      algorithm to fail with very low probability, which means that
@@ -199,7 +192,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      with very low probability. If this happens, discard the keys and repeat with a different
                         <span class="math">\(\mathsf{imk}\)</span>
                     .</p>
-                    <p>This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0032">11</a>. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.</p>
+                    <p>This allows the issuer to use the same wallet it usually uses to transfer Assets, while keeping a disconnect from the other keys. Specifically, this method is aligned with the requirements and motivation of ZIP 32 <a id="footnote-reference-17" class="footnote_reference" href="#zip-0032">11</a>. It provides further anonymity and the ability to delegate issuance of an Asset (or in the future, generate a multi-signature protocol) while the rest of the keys remain in the wallet safe.</p>
                 </section>
             </section>
             <section id="issuance-authorization-signing-and-validation"><h3><span class="section-heading">Issuance Authorization Signing and Validation</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-authorization-signing-and-validation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
@@ -225,7 +218,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{Sign}\)</span>
                  algorithm is defined in BIP 340 and
                     <span class="math">\(a\)</span>
-                 denotes the auxiliary data used in BIP 340 <a id="footnote-reference-19" class="footnote_reference" href="#bip-0340">17</a>. Note that
+                 denotes the auxiliary data used in BIP 340 <a id="footnote-reference-18" class="footnote_reference" href="#bip-0340">17</a>. Note that
                     <span class="math">\(\mathsf{IssueAuthSig.Sign}\)</span>
                  could return
                     <span class="math">\(\bot\)</span>
@@ -249,7 +242,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </ul>
                 <p>where the
                     <span class="math">\(\mathsf{Verify}\)</span>
-                 algorithm is defined in BIP 340 <a id="footnote-reference-20" class="footnote_reference" href="#bip-0340">17</a>.</p>
+                 algorithm is defined in BIP 340 <a id="footnote-reference-19" class="footnote_reference" href="#bip-0340">17</a>.</p>
             </section>
         </section>
         <section id="specification-asset-identifier"><h2><span class="section-heading">Specification: Asset Identifier</span><span class="section-anchor"> <a rel="bookmark" href="#specification-asset-identifier"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -291,7 +284,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <span class="math">\(\mathsf{ZSAValueBase}(\mathsf{AssetDigest}_{\mathsf{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest}_{\mathsf{AssetId}})\)</span>
              where
                 <span class="math">\(\mathsf{GroupHash}^\mathbb{P}\)</span>
-             is defined as in <a id="footnote-reference-21" class="footnote_reference" href="#protocol-concretegrouphashpallasandvesta">20</a>.</p>
+             is defined as in <a id="footnote-reference-20" class="footnote_reference" href="#protocol-concretegrouphashpallasandvesta">20</a>.</p>
             <p>The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:</p>
             <figure class="align-center" align="center">
                 <img width="600" src="zip-0227-asset-identifier-relation.png" alt="" />
@@ -433,7 +426,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{imk}\)</span>
                     , that validates the issuance .</li>
                 </ul>
-                <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-22" class="footnote_reference" href="#protocol-transactionstructure">26</a>.</p>
+                <p>The issuance bundle is then added within the transaction format as a new bundle. That is, issuance requires the addition of the following information to the transaction format <a id="footnote-reference-21" class="footnote_reference" href="#protocol-transactionstructure">26</a>.</p>
                 <table>
                     <thead>
                         <tr>
@@ -570,7 +563,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>For each note, compute the note commitment as
                     <span class="math">\(\mathsf{cm} = \mathsf{NoteCommit^{OrchardZSA}_{rcm}(repr_{\mathbb{P}}(g_d), repr_{\mathbb{P}}(pk_d), v, \rho, \psi, AssetBase)}\)</span>
-                 as defined in the Note Structure and Commitment section of ZIP 226 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226-notestructure">5</a> and</li>
+                 as defined in the Note Structure and Commitment section of ZIP 226 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226-notestructure">5</a> and</li>
                 <li>Add
                     <span class="math">\(\mathsf{cm}\)</span>
                  to the Merkle tree of note commitments.</li>
@@ -611,7 +604,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <ul>
                     <li>By using the
                         <span class="math">\(\mathsf{finalize}\)</span>
-                     boolean and the burning mechanism defined in <a id="footnote-reference-24" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
+                     boolean and the burning mechanism defined in <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, issuers can control the supply production of any Asset associated to their issuer keys. For example,
                         <ul>
                             <li>by setting
                                 <span class="math">\(\mathsf{finalize} = 1\)</span>
@@ -643,7 +636,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="txid-digest-issuance"><h2><span class="section-heading">TxId Digest - Issuance</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-issuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the Orchard-ZSA protocol can be found in ZIP 226 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0226-txiddigest">6</a>. As in ZIP 244 <a id="footnote-reference-26" class="footnote_reference" href="#zip-0244">7</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
+            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the Orchard-ZSA protocol can be found in ZIP 226 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0226-txiddigest">6</a>. As in ZIP 244 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0244">7</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
             <p>A new issuance transaction digest algorithm is defined that constructs the subtree of the transaction digest tree of hashes for the issuance portion of a transaction. Each branch of the subtree will correspond to a specific subset of issuance transaction data. The overall structure of the hash is as follows; each name referenced here will be described in detail below:</p>
             <pre>issuance_digest
 ├── issue_actions_digest
@@ -677,7 +670,7 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
                         <p>The personalization field of this hash is set to:</p>
                         <pre>"ZTxIdIAcNoteHash"</pre>
                         <section id="t-5a-i-1-recipient"><h6><span class="section-heading">T.5a.i.1: recipient</span><span class="section-anchor"> <a rel="bookmark" href="#t-5a-i-1-recipient"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
-                            <p>This is the raw encoding of an Orchard shielded payment address as defined in the protocol specification <a id="footnote-reference-27" class="footnote_reference" href="#protocol-orchardpaymentaddrencoding">25</a>.</p>
+                            <p>This is the raw encoding of an Orchard shielded payment address as defined in the protocol specification <a id="footnote-reference-26" class="footnote_reference" href="#protocol-orchardpaymentaddrencoding">25</a>.</p>
                         </section>
                         <section id="t-5a-i-2-value"><h6><span class="section-heading">T.5a.i.2: value</span><span class="section-anchor"> <a rel="bookmark" href="#t-5a-i-2-value"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h6>
                             <p>Note value encoded as little-endian 8-byte representation of 64-bit unsigned integer (e.g. u64 in Rust) raw value.</p>
@@ -711,7 +704,7 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
             </section>
         </section>
         <section id="signature-digest"><h2><span class="section-heading">Signature Digest</span><span class="section-anchor"> <a rel="bookmark" href="#signature-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-28" class="footnote_reference" href="#zip-0244-sigdigest">8</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
+            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-27" class="footnote_reference" href="#zip-0244-sigdigest">8</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
             <p>The overall structure of the hash is as follows. We highlight the changes for the Orchard-ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the Orchard-ZSA protocol:</p>
             <pre>signature_digest
 ├── header_digest
@@ -726,14 +719,14 @@ S.2: transparent_sig_digest (32-byte hash output)
 S.3: sapling_digest         (32-byte hash output)
 S.4: orchard_digest         (32-byte hash output)
 S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
-                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0244">7</a>.</p>
+                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-28" class="footnote_reference" href="#zip-0244">7</a>.</p>
                 <section id="s-5-issuance-digest"><h4><span class="section-heading">S.5: issuance_digest</span><span class="section-anchor"> <a rel="bookmark" href="#s-5-issuance-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>Identical to that specified for the transaction identifier.</p>
                 </section>
             </section>
         </section>
         <section id="authorizing-data-commitment"><h2><span class="section-heading">Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-30" class="footnote_reference" href="#zip-0244-authcommitment">9</a> which commits to the authorizing data of a transaction is modified by the Orchard-ZSA protocol to have the following structure. We highlight the changes for the Orchard-ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the Orchard-ZSA protocol:</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0244-authcommitment">9</a> which commits to the authorizing data of a transaction is modified by the Orchard-ZSA protocol to have the following structure. We highlight the changes for the Orchard-ZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the Orchard-ZSA protocol:</p>
             <pre>auth_digest
 ├── transparent_scripts_digest
 ├── sapling_auth_digest
@@ -774,7 +767,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                 </ul>
             </section>
             <section id="bridging-assets"><h3><span class="section-heading">Bridging Assets</span><span class="section-anchor"> <a rel="bookmark" href="#bridging-assets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>For bridging purposes, the secure method of off-boarding Assets is to burn an Asset with the burning mechanism in ZIP 226 <a id="footnote-reference-31" class="footnote_reference" href="#zip-0226">4</a>. Users should be aware of issuers that demand the Assets be sent to a specific address on the Zcash chain to be redeemed elsewhere, as this may not reflect the real reserve value of the specific Wrapped Asset.</p>
+                <p>For bridging purposes, the secure method of off-boarding Assets is to burn an Asset with the burning mechanism in ZIP 226 <a id="footnote-reference-30" class="footnote_reference" href="#zip-0226">4</a>. Users should be aware of issuers that demand the Assets be sent to a specific address on the Zcash chain to be redeemed elsewhere, as this may not reflect the real reserve value of the specific Wrapped Asset.</p>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -788,7 +781,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                  in order to properly keep track of the total supply for different Asset Identifiers. This is useful for wallets and other applications that need to keep track of the total supply of Assets.</p>
             </section>
             <section id="fee-structures"><h3><span class="section-heading">Fee Structures</span><span class="section-anchor"> <a rel="bookmark" href="#fee-structures"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317 <a id="footnote-reference-32" class="footnote_reference" href="#zip-0317b">10</a>.</p>
+                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317 <a id="footnote-reference-31" class="footnote_reference" href="#zip-0317b">10</a>.</p>
             </section>
         </section>
         <section id="test-vectors"><h2><span class="section-heading">Test Vectors</span><span class="section-anchor"> <a rel="bookmark" href="#test-vectors"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
