@@ -75,7 +75,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         <section id="specification-issuance-keys-and-issuance-authorization-signature-scheme"><h2><span class="section-heading">Specification: Issuance Keys and Issuance Authorization Signature Scheme</span><span class="section-anchor"> <a rel="bookmark" href="#specification-issuance-keys-and-issuance-authorization-signature-scheme"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The Orchard-ZSA Protocol adds the following keys to the key components <a id="footnote-reference-9" class="footnote_reference" href="#protocol-addressesandkeys">19</a>:</p>
             <ol type="1">
-                <li>The issuance authorization key, denoted as
+                <li>The issuance authorizing key, denoted as
                     <span class="math">\(\mathsf{isk}\)</span>
                 , is the key used to authorize the issuance of Asset Identifiers by a given issuer, and is only used by that issuer.</li>
                 <li>The issuance validating key, denoted as
@@ -125,12 +125,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
             <section id="issuance-key-derivation"><h3><span class="section-heading">Issuance Key Derivation</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-derivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <section id="issuance-authorizing-key-generation-for-hierarchical-deterministic-wallets"><h4><span class="section-heading">Issuance authorizing key generation for hierarchical deterministic wallets</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-authorizing-key-generation-for-hierarchical-deterministic-wallets"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <div>
-                        <h1>System Message: WARNING/2 (zip-0227.rst line 123)</h1>
-                        <p>Title underline too short.</p>
-                        <pre>Issuance authorizing key generation for hierarchical deterministic wallets
-``````````````````````````````````````````````````````````````````````</pre>
-                    </div>
                     <p>The issuance authorizing key is generated using the Orchard master key derivation procedure defined in ZIP 32 <a id="footnote-reference-12" class="footnote_reference" href="#zip-0032-orchard-master">12</a>. We reuse the functions defined there in what follows in this section.</p>
                     <p>Let
                         <span class="math">\(S\)</span>

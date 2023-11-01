@@ -82,7 +82,7 @@ Specification: Issuance Keys and Issuance Authorization Signature Scheme
 
 The Orchard-ZSA Protocol adds the following keys to the key components [#protocol-addressesandkeys]_:
 
-1. The issuance authorization key, denoted as :math:`\mathsf{isk}`, is the key used to authorize the issuance of Asset Identifiers by a given issuer, and is only used by that issuer.
+1. The issuance authorizing key, denoted as :math:`\mathsf{isk}`, is the key used to authorize the issuance of Asset Identifiers by a given issuer, and is only used by that issuer.
 
 2. The issuance validating key, denoted as :math:`\mathsf{ik}`, is the key that is used to validate issuance transactions. This key is used to validate the issuance of Asset Identifiers by a given issuer, and is used by all blockchain users (specifically the owners of notes for that Asset, and consensus validators) to associate the Asset in question with the issuer.
 
@@ -120,7 +120,7 @@ Issuance Key Derivation
 -----------------------
 
 Issuance authorizing key generation for hierarchical deterministic wallets
-``````````````````````````````````````````````````````````````````````
+``````````````````````````````````````````````````````````````````````````
 
 The issuance authorizing key is generated using the Orchard master key derivation procedure defined in ZIP 32 [#zip-0032-orchard-master]_. We reuse the functions defined there in what follows in this section.
 
