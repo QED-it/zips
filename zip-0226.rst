@@ -101,8 +101,8 @@ We define the note commitment scheme :math:`\mathsf{NoteCommit^{OrchardZSA}_{rcm
 where :math:`\mathbb{P}, \ell_{\mathbb{P}}, q_{\mathbb{P}}` are as defined for the Pallas curve [#protocol-pallasandvesta]_, and where :math:`\mathsf{NoteCommit}^{\mathsf{Orchard}}.\mathsf{Trapdoor}` and :math:`\mathsf{Orchard}.\mathsf{Output}` are as defined in the Zcash protocol specification [#protocol-abstractcommit]_.
 This note commitment scheme is instantiated using the Sinsemilla Commitment [#protocol-concretesinsemillacommit]_ as follows:
 
-    \mathsf{NoteCommit^{OrchardZSA}_{rcm}(g_{d}*, pk_{d}*, v, \rho, \psi, \mathsf{AssetBase})}
 .. math:: \begin{align}
+    \mathsf{NoteCommit^{OrchardZSA}_{rcm}(g_{d}\star, pk_{d}\star, v, \rho, \psi, \mathsf{AssetBase})}
     :=\begin{cases}
     \mathsf{NoteCommit^{Orchard}_{rcm}(g_{d}\star, pk_{d}\star, v, \rho, \psi)}, &\text{if } \mathsf{AssetBase} = \mathcal{V}^{\mathsf{Orchard}} \\
     \mathsf{cm}_{\mathsf{ZSA}} &\text{otherwise}
