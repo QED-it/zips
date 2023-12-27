@@ -312,7 +312,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                                 | Description                                                         |
 +=============================+==========================+===========================================+=====================================================================+
-|``2``                        |``assetDescSize``         |``byte``                                   |The length of the asset description string in bytes.                 |  
+|``2``                        |``assetDescSize``         |``compactSize``                            |The length of the asset description string in bytes.                 |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``assetDescSize``            |``asset_desc``            |``byte[assetDescSize]``                    |A byte sequence of length ``assetDescSize`` bytes which SHOULD be a  |
 |                             |                          |                                           |well-formed UTF-8 code unit sequence according to Unicode 15.0.0     |
