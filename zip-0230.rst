@@ -296,7 +296,8 @@ An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | Bytes | Name          | Data Type                   | Description                                                                                                               |
 +=======+===============+=============================+===========================================================================================================================+
-| 32    | ``AssetBase`` | ``byte[32]``                | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase}^{\mathsf{Orchard}}`. |
+| 32    | ``AssetBase`` | ``byte[32]``                | For the Orchard-ZSA protocol, this is the byte encoding of the Asset Base :math:`\mathsf{asset\_base}` defined in         |
+|       |               |                             | ZIP 226: Note Structure & Commitment [#zip-0226-note-structure-commitment]_.                                              |
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
 | 8     | ``valueBurn`` | :math:`\{1 .. 2^{64} - 1\}` | The amount being burnt.                                                                                                   |
 +-------+---------------+-----------------------------+---------------------------------------------------------------------------------------------------------------------------+
@@ -345,6 +346,7 @@ References
 .. [#protocol-actiondesc] `Zcash Protocol Specification, Version 2021.2.16 [NU5 proposal]. Section 4.6: Action Descriptions <protocol/protocol.pdf#actiondesc>`_
 .. [#zip-0222] `ZIP 222: Transparent Zcash Extensions <zip-0222.rst>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <https://qed-it.github.io/zips/zip-0226>`_
+.. [#zip-0226-note-structure-commitment] `ZIP 226: Transfer and Burn of Zcash Shielded Assets - Note Structure & Commitment <https://qed-it.github.io/zips/zip-0226#note-structure-commitment>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <https://qed-it.github.io/zips/zip-0227>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_

@@ -205,10 +205,10 @@ The relations between the Asset Identifier, Asset Digest, and Asset Base are sho
     :align: center
     :figclass: align-center
 
-    Diagram relating the Asset Identifier, Asset Digest, and Asset Base in the ZSA Protocol
+    Diagram relating the Asset Identifier, Asset Digest, and Asset Base in the Orchard-ZSA Protocol
 
 
-**Note:** To keep notations light and concise, we may omit :math:`\mathsf{AssetId}` (resp. :math:`\mathsf{Protocol}`) in the subscript (resp. superscript) when the Asset Identifier (resp. Protocol) is clear from the context.
+**Note:** To keep notations light and concise, we may omit :math:`\mathsf{AssetId}` in the subscript when the Asset Identifier is clear from the context.
 
 Wallets MUST NOT display just the :math:`\mathsf{asset\_desc}` string to their users as the name of the Asset. Some possible alternatives include:
 
