@@ -214,8 +214,8 @@ Transaction Format
 
 * For coinbase transactions, the ``enableSpendsOrchard`` and ``enableZSAs`` bits MUST be set to ``0``.
 
-The encodings of ``tx_in``, and ``tx_out`` are as in a version 4 transaction (i.e.
-unchanged from Canopy). The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``
+The encodings of ``tx_in``, and ``tx_out`` are as in a version 4 transaction.
+The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``
 , ``OrchardZsaAction``, ``AssetBurn`` and ``IssueAction`` are described below. The encoding of Sapling Spends and Outputs has
 changed relative to prior versions in order to better separate data that describe the
 effects of the transaction from the proofs of and commitments to those effects, and for
