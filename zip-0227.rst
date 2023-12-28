@@ -233,7 +233,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 
 - :math:`\mathsf{assetDescSize}`: the size of the Asset description, a number between :math:`0` and :math:`512`, stored in two bytes.
 - :math:`\mathsf{asset\_desc}`: the Asset description, a byte string of up to 512 bytes as defined in the `Specification: Asset Identifier`_ section.
-- ``vNotes``: an array of ``Note`` containing the unencrypted output notes of the recipients of the Asset.
+- ``vNotes``: an array of ``Note`` [#zip-0226-note-structure-commitment] containing the unencrypted output notes of the recipients of the Asset.
 - ``flagsIssuance``: a byte that stores the :math:`\mathsf{finalize}` boolean that defines whether the issuance of that specific Custom Asset is finalized or not.
 
 An asset's :math:`\mathsf{AssetDigest}` is added to the :math:`\mathsf{previously\_finalized}` set after a block that contains any issuance transaction for that asset with :math:`\mathsf{finalize} = 1`. It then cannot be removed from this set. For Assets with :math:`\mathsf{AssetDigest} \in \mathsf{previously\_finalized}`, no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with :math:`\mathsf{AssetDigest} \not\in \mathsf{previously\_finalized}`, new issuance actions can be issued in future transactions. These must use the same Asset description, :math:`\mathsf{asset\_desc}`, and can either maintain :math:`\mathsf{finalize} = 0` or change it to :math:`\mathsf{finalize} = 1`, denoting that this Custom Asset cannot be issued after the containing block.
