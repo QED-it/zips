@@ -138,6 +138,11 @@ We use the notation of ZIP 32 [#zip-0032-orchard-key-path]_ for shielded HD path
 
 From the generated :math:`(\mathsf{sk}, \mathsf{c})`, we set the issuance authorizing key to be :math:`\mathsf{isk} := \mathsf{sk}`.
 
+Rationale for Issuance authorizing key generation
+'''''''''''''''''''''''''''''''''''''''''''''''''
+The issuance authorizing key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.
+
+
 Derivation of issuance validating key
 `````````````````````````````````````
 
@@ -304,13 +309,18 @@ If all of the above checks pass, do the following:
 - If :math:`\mathsf{finalize} = 1`, add :math:`\mathsf{AssetDigest}` to the :math:`\mathsf{previously\_finalized}` set immediately after the block in which this transaction occurs.
 - (Replay Protection) If issue bundle is present, the fees MUST be greater than zero.
 
+Rationale for non-zero Issue Bundle fees
+----------------------------------------
+We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. 
+If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. 
+A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.
+
 
 
 Rationale
 =========
 The following is a list of rationale for different decisions made in the proposal:
 
-- The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.
 - The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.
 - The :math:`\mathsf{asset\_desc}` is a general byte string in order to allow for a wide range of information type to be included that may be associated with the Assets. Some are:
 
@@ -319,8 +329,7 @@ The following is a list of rationale for different decisions made in the proposa
     - bridging information for Wrapped Assets (chain of origin, issuer name, etc)
     - information to be committed by the issuer, though not enforceable by the protocol.
 
-- We require a check whether the :math:`\mathsf{finalize}` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the :math:`\mathsf{previously\_finalized}`` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
-- We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.
+- We require a check whether the :math:`\mathsf{finalize}` flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the :math:`\mathsf{previously\_finalized}` set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.
 
 Concrete Applications
 ---------------------

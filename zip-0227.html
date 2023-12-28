@@ -165,6 +165,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     , we set the issuance authorizing key to be
                         <span class="math">\(\mathsf{isk} := \mathsf{sk}\)</span>
                     .</p>
+                    <section id="rationale-for-issuance-authorizing-key-generation"><h5><span class="section-heading">Rationale for Issuance authorizing key generation</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-issuance-authorizing-key-generation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>The issuance authorizing key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.</p>
+                    </section>
                 </section>
                 <section id="derivation-of-issuance-validating-key"><h4><span class="section-heading">Derivation of issuance validating key</span><span class="section-anchor"> <a rel="bookmark" href="#derivation-of-issuance-validating-key"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>Define
@@ -483,11 +486,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  set immediately after the block in which this transaction occurs.</li>
                 <li>(Replay Protection) If issue bundle is present, the fees MUST be greater than zero.</li>
             </ul>
+            <section id="rationale-for-non-zero-issue-bundle-fees"><h3><span class="section-heading">Rationale for non-zero Issue Bundle fees</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-non-zero-issue-bundle-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.</p>
+            </section>
         </section>
         <section id="rationale"><h2><span class="section-heading">Rationale</span><span class="section-anchor"> <a rel="bookmark" href="#rationale"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The following is a list of rationale for different decisions made in the proposal:</p>
             <ul>
-                <li>The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This is in order to keep the issuance details and the Asset Identifiers consistent across multiple shielded pools.</li>
                 <li>The design decision is not to have a chosen name to describe the Custom Asset, but to delegate it to an off-chain mapping, as this would imply a land-grab “war”.</li>
                 <li>The
                     <span class="math">\(\mathsf{asset\_desc}\)</span>
@@ -502,9 +507,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>We require a check whether the
                     <span class="math">\(\mathsf{finalize}\)</span>
                  flag only has been set in a previous block rather than a previous transaction in the same block. In other words, we only update the
-                    <span class="math">\(\mathsf{previously\_finalized}`\)</span>
+                    <span class="math">\(\mathsf{previously\_finalized}\)</span>
                  set at the block boundary. This is in keeping with the current property which allows for a miner to reorder transactions in a block without changing the meaning, which we aim to preserve.</li>
-                <li>We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.</li>
             </ul>
             <section id="concrete-applications"><h3><span class="section-heading">Concrete Applications</span><span class="section-anchor"> <a rel="bookmark" href="#concrete-applications"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p><strong>Asset Features</strong></p>
