@@ -233,7 +233,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 
 - :math:`\mathsf{assetDescSize}`: the size of the Asset description, a number between :math:`0` and :math:`512`, stored in two bytes.
 - :math:`\mathsf{asset\_desc}`: the Asset description, a byte string of up to 512 bytes as defined in the `Specification: Asset Identifier`_ section.
-- ``vNotes``: an array of ``Note`` [#zip-0226-note-structure-commitment] containing the unencrypted output notes of the recipients of the Asset.
+- ``vNotes``: an array of ``Note`` [#zip-0226-notestructure] containing the unencrypted output notes of the recipients of the Asset.
 - ``flagsIssuance``: a byte that stores the :math:`\mathsf{finalize}` boolean that defines whether the issuance of that specific Custom Asset is finalized or not.
 
 An asset's :math:`\mathsf{AssetDigest}` is added to the :math:`\mathsf{previously\_finalized}` set after a block that contains any issuance transaction for that asset with :math:`\mathsf{finalize} = 1`. It then cannot be removed from this set. For Assets with :math:`\mathsf{AssetDigest} \in \mathsf{previously\_finalized}`, no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with :math:`\mathsf{AssetDigest} \not\in \mathsf{previously\_finalized}`, new issuance actions can be issued in future transactions. These must use the same Asset description, :math:`\mathsf{asset\_desc}`, and can either maintain :math:`\mathsf{finalize} = 0` or change it to :math:`\mathsf{finalize} = 1`, denoting that this Custom Asset cannot be issued after the containing block.
@@ -295,7 +295,7 @@ For each ``IssueAction`` in ``IssueBundle``:
 - check that :math:`0 < \mathtt{assetDescSize} <= 512`.
 - retrieve :math:`\mathsf{AssetBase}` from the first note in the sequence and check that :math:`\mathsf{AssetBase}` is derived from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as described in the `Specification: Asset Identifier`_ section.
 - check that the :math:`\mathsf{AssetDigest}` does not exist in the :math:`\mathsf{previously\_finalized}` set in the global state.
-- check that every note in the ``IssueAction`` contains the same :math:`\mathsf{AssetBase}` and is properly constructed as :math:`\mathsf{note} = (\mathsf{g_d, pk_d, v, \rho, rseed, AssetBase})`.
+- check that every note in the ``IssueAction`` contains the same :math:`\mathsf{AssetBase}` and is an Orchard-ZSA Note [#zip-0226-notestructure]_.
 
 If all of the above checks pass, do the following:
 
