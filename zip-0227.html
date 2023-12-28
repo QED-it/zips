@@ -310,6 +310,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <li>Wallets could allow clients to provide an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers via a petname system. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.</li>
                 <li>The Asset Digest could be used as a more compact bytestring to uniquely determine an Asset, and wallets could support clients scanning QR codes to load Asset information into their wallets.</li>
             </ul>
+            <p>If the
+                <span class="math">\(\mathsf{asset\_desc}\)</span>
+             string is not a well-formed UTF-8 code unit sequence, the wallet SHOULD use the byte string as is in their method for displaying the Asset.</p>
         </section>
         <section id="specification-global-issuance-state"><h2><span class="section-heading">Specification: Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>Issuance requires the following additions to the global state defined at block boundaries:</p>
