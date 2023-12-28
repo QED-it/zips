@@ -293,8 +293,6 @@ For the ``IssueBundle``:
 For each ``IssueAction`` in ``IssueBundle``:
 
 - check that :math:`0 < \mathtt{assetDescSize} <= 512`.
-- check that :math:`\mathsf{asset\_desc}` is a string of length :math:`\mathtt{assetDescSize}` bytes.
-
 - retrieve :math:`\mathsf{AssetBase}` from the first note in the sequence and check that :math:`\mathsf{AssetBase}` is derived from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as described in the `Specification: Asset Identifier`_ section.
 - check that the :math:`\mathsf{AssetDigest}` does not exist in the :math:`\mathsf{previously\_finalized}` set in the global state.
 - check that every note in the ``IssueAction`` contains the same :math:`\mathsf{AssetBase}` and is properly constructed as :math:`\mathsf{note} = (\mathsf{g_d, pk_d, v, \rho, rseed, AssetBase})`.
