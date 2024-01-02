@@ -303,16 +303,12 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p><strong>Note:</strong> To keep notations light and concise, we may omit
                 <span class="math">\(\mathsf{AssetId}\)</span>
              in the subscript when the Asset Identifier is clear from the context.</p>
-            <p>Wallets MUST NOT display just the
+            <p>Wallets SHOULD use the Asset Base as the unique identifier of the Asset in the Orchard-ZSA Protocol. Furthermore, wallets MUST NOT display just the
                 <span class="math">\(\mathsf{asset\_desc}\)</span>
-             string to their users as the name of the Asset. Some possible alternatives include:</p>
-            <ul>
-                <li>Wallets could allow clients to provide an additional configuration file that stores a one-to-one mapping of names to Asset Identifiers via a petname system. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.</li>
-                <li>The Asset Digest could be used as a more compact bytestring to uniquely determine an Asset, and wallets could support clients scanning QR codes to load Asset information into their wallets.</li>
-            </ul>
-            <p>If the
+             string to their users as the name of the Asset. If the
                 <span class="math">\(\mathsf{asset\_desc}\)</span>
-             string is not a well-formed UTF-8 code unit sequence, the wallet SHOULD use the byte string as is in their method for displaying the Asset.</p>
+             string is not a well-formed UTF-8 code unit sequence, the wallet MUST provide a warning that the Asset description cannot be parsed as a UTF-8 encoded string, and SHOULD use the byte string as is in their method for displaying the Asset description.</p>
+            <p>Wallets could allow clients to provide an additional configuration file that stores a one-to-one mapping of names to Asset Bases via a petname system. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients. The Asset Digest could be used as a more compact bytestring to identify an Asset, and wallets could support clients scanning QR codes to load Asset information into their wallets.</p>
         </section>
         <section id="specification-global-issuance-state"><h2><span class="section-heading">Specification: Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>Issuance requires the following additions to the global state defined at block boundaries:</p>
