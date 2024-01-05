@@ -219,8 +219,7 @@ The Asset Base is the unique identifier of the Asset in the Orchard-ZSA Protocol
 Wallets MUST NOT display just the :math:`\mathsf{asset\_desc}` string to their users as the name of the Asset.
 If the :math:`\mathsf{asset\_desc}` string is not a well-formed UTF-8 code unit sequence, the wallet MUST provide a warning that the Asset description cannot be parsed as a UTF-8 encoded string, and SHOULD use the byte string as is in their method for displaying the Asset description.
 
-Wallets could allow clients to provide an additional configuration file that stores a one-to-one mapping of names to Asset Bases via a petname system. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.
-The Asset Digest could be used as a more compact bytestring to identify an Asset, and wallets could support clients scanning QR codes to load Asset information into their wallets.
+Wallets could allow clients to provide an additional configuration file that stores a one-to-one mapping of names to Asset Bases via an auxiliary naming system. This allows clients to rename the Assets in a way they find useful. Default versions of this file with well-known Assets listed can be made available online as a starting point for clients.
 
 
 Specification: Global Issuance State
@@ -312,10 +311,10 @@ If all of the above checks pass, do the following:
 - If :math:`\mathsf{finalize} = 1`, add :math:`\mathsf{AssetDigest}` to the :math:`\mathsf{previously\_finalized}` set immediately after the block in which this transaction occurs.
 - (Replay Protection) If issue bundle is present, the fees MUST be greater than zero.
 
-Rationale for non-zero Issue Bundle fees
-----------------------------------------
-We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a transaction containing only an issue bundle. 
-If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. 
+Rationale for non-zero fees when an Issue Bundle is included
+------------------------------------------------------------
+We require non-zero fees in the presence of an issue bundle, in order to preclude the possibility of a replay attack. 
+The replay attack can happen if a transaction containing only an issue bundle with no fees: in particular, if a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. 
 A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.
 
 
