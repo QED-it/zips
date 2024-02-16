@@ -91,7 +91,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                         <tr>
                             <td><code>64</code></td>
                             <td><code>bindingSigOrchard</code></td>
-                            <td><code>bytes[64]</code></td>
+                            <td><code>byte[64]</code></td>
                             <td>An Orchard binding signature on the SIGHASH transaction hash.</td>
                         </tr>
                     </tbody>
@@ -118,7 +118,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                                 <td><code>64 *
 preAuthActionGroup.nActionsOrchard</code></td>
                                 <td><code>vSpendAuthSigsOrchard</code></td>
-                                <td><code>bytes[64][preAuthActionGroup.nActionsOrchard]</code></td>
+                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
                                 <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. See <a href="#spend-authorization-signature-changes">Spend Authorization Signature Changes</a> for details.</td>
                             </tr>
                         </tbody>
@@ -155,7 +155,7 @@ preAuthActionGroup.nActionsOrchard</code></td>
                             <tr>
                                 <td><code>32</code></td>
                                 <td><code>anchorOrchard</code></td>
-                                <td><code>bytes[32]</code></td>
+                                <td><code>byte[32]</code></td>
                                 <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-13" class="footnote_reference" href="#protocol-txnencoding">12</a>.</td>
                             </tr>
                             <tr>
@@ -167,7 +167,7 @@ preAuthActionGroup.nActionsOrchard</code></td>
                             <tr>
                                 <td><code>sizeProofsOrchard</code></td>
                                 <td><code>proofsOrchard</code></td>
-                                <td><code>bytes[sizeProofsOrchard]</code></td>
+                                <td><code>byte[sizeProofsOrchard]</code></td>
                                 <td>The aggregated zk-SNARK proof for all Actions in the Action Group.</td>
                             </tr>
                             <tr>
