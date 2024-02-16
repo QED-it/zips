@@ -276,6 +276,8 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     </ul>
                 </blockquote>
             </section>
+            <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+            </section>
             <section id="rationale-for-protocol-changes"><h3><span class="section-heading">Rationale for Protocol Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-protocol-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>We cover here the reasons for the different design choices in different sections.</p>
                 <section id="rationale-for-action-groups"><h4><span class="section-heading">Rationale for Action Groups</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-action-groups"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
@@ -315,6 +317,32 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                      is a modular addition of random field elements, extracting specific values without additional context isn't possible. Hence,
                         <span class="math">\(\mathsf{bsk}\)</span>
                      “binds together" the commitments of all Actions in the Order, preventing selective extraction of specific Actions in a Swap Order by a malicious matcher.</p>
+                </section>
+                <section id="rationale-for-fees"><h4><span class="section-heading">Rationale for Fees</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>The primary goal of a fee mechanism is twofold:</p>
+                    <ul>
+                        <li>It should disincentivize malicious users from flooding the network with spam Swap offers that are unlikely to be matched.</li>
+                        <li>It should incentivize the party performing the matching to perform the additional work required to match orders and bundle them together.</li>
+                        <li>It should incentivize the miners to accept the transaction into the blocks they propose.</li>
+                    </ul>
+                    <p>We believe the payment of fees in ZEC is the best approach for the ecosystem. We discuss the other options in the <a href="#fee-considerations">Fee Considerations</a> subsection of the <a href="#other-considerations">Other Considerations</a> section.</p>
+                    <section id="matcher-fees"><h5><span class="section-heading">Matcher Fees</span><span class="section-anchor"> <a rel="bookmark" href="#matcher-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>For the matching to be economically viable, the fees captured by the matcher to create the bundle must at least be higher than the fees needed to settle the bundle on the chain. In the P2P setting, or more generally, in situations where the party performing the matching is known to the parties creating the Swap Orders, it is possible to include balanced Actions with output notes for the matcher so as to pay fees to the matcher.</p>
+                        <p>In order to support cases where the matcher may not be known in advance, we note that the Action Group structure allows for the creation of a (positively) value-imbalanced “fee action” where traders pass an input ZEC note to the fee action to “deposit” a fee in the order. The Matcher would need to insert a new Action Group whose overall value balances out with the other Action Groups in the bundle - to form the finalized Zcash transaction. This Action Group appended by the Matcher would contain one "fee-taking" action. This comes at the expense of having an additional AG in the finalized Zcash tx (which proof won't be aggregated with the other proofs).</p>
+                    </section>
+                    <section id="miner-fees"><h5><span class="section-heading">Miner Fees</span><span class="section-anchor"> <a rel="bookmark" href="#miner-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                        <p>The proposed changes to the transaction structure and the consensus checks also require a change in the fees paid to miners.</p>
+                        <ul>
+                            <li>The use of Action Groups adds information to the transaction object, and adds more bytes to the blockchain state. This needs to be paid for by network users in general.</li>
+                            <li>Transaction validation by miners will also require additional computation. This should be paid by transaction senders.</li>
+                        </ul>
+                        <p>We note a few considerations about the computational overhead:</p>
+                        <ul>
+                            <li>Action Groups limit the amount of proof aggregation. As of now, proof aggregation is carried out “on the fly during the proof generation” - so if a transaction has N Action Groups, it will have N aggregated proofs to verify. This means that if a user generates a Zcash transaction with N Action Groups each containing one Action, then proofs will not be aggregated at all, which not only increases the number of bytes added on the chain but also slows down the verification of the proofs in the transaction.</li>
+                            <li>Action Groups are not just “wrappers/namespaces for Actions”, they are data structures coming with new fields such as time_limit that require additional checks on the transaction validation steps.</li>
+                            <li>The spend authorization signature is not generated (and verified) using the SIGHASH, this means that all Action Groups must be hashed independently for these signatures to be verified. For a transaction containing N Action Groups, this requires N calls to the hash function to verify all signatures. This contrasts with Orchard's current verification which only needs to generate SIGHASH once to verify the spend authorization signatures and the binding signature.</li>
+                        </ul>
+                    </section>
                 </section>
             </section>
         </section>
@@ -420,25 +448,9 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The primary goal of a fee mechanism is twofold:</p>
-                <ul>
-                    <li>It should disincentivize malicious users from flooding the network with spam Swap offers that are unlikely to be matched.</li>
-                    <li>It should incentivize the party performing the matching to perform the additional work required to match orders and bundle them together.</li>
-                </ul>
-                <p>For the matching to be economically viable, the fees captured by the matcher to create the bundle must at least be higher than the fees needed to settle the bundle on the chain.</p>
-                <p>The proposed changes to the transaction structure and the consensus checks also require a change in the fees paid to miners.</p>
-                <ul>
-                    <li>The use of Action Groups adds information to the transaction object, and adds more bytes to the blockchain state. This needs to be paid for by network users in general.</li>
-                    <li>Transaction validation by miners will also require additional computation. This should be paid by transaction senders.</li>
-                </ul>
-                <p>We note a few considerations about the computational overhead:</p>
-                <ul>
-                    <li>Action Groups limit the amount of proof aggregation. As of now, proof aggregation is carried out “on the fly during the proof generation” - so if a transaction has N Action Groups, it will have N aggregated proofs to verify. This means that if a user generates a Zcash transaction with N Action Groups each containing one Action, then proofs will not be aggregated at all, which not only increases the number of bytes added on the chain but also slows down the verification of the proofs in the transaction.</li>
-                    <li>Action Groups are not just “wrappers/namespaces for Actions”, they are data structures coming with new fields such as time_limit that require additional checks on the transaction validation steps.</li>
-                    <li>The spend authorization signature is not generated (and verified) using the SIGHASH, this means that all Action Groups must be hashed independently for these signatures to be verified. For a transaction containing N Action Groups, this requires N calls to the hash function to verify all signatures. This contrasts with Orchard's current verification which only needs to generate SIGHASH once to verify the spend authorization signatures and the binding signature.</li>
-                </ul>
-                <p>There are also other questions about fee capture. Is it acceptable if the fees are paid in the Assets being swapped? Should it be paid by both parties involved in the Swap? We believe that fees should be paid in ZEC. This helps alleviate concerns about other Assets piggy-backing on the Zcash network without providing value to holders of ZEC. Even beyond that, taking fees in the traded assets exposes the Matcher to all traded assets. This may pose regulatory issues for the Matcher (e.g. if specific assets are deemed illegal in specific jurisdictions). The effect of this may be the re-creation of mechanisms of central exchanges, where only a specific list of assets are accepted for trading by matchers (similar to the “asset listing” approach of centralized exchanges).</p>
+            <section id="fee-considerations"><h3><span class="section-heading">Fee Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#fee-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>Some questions about fee capture are as follows. Is it acceptable if the fees are paid in the Assets being swapped? Should it be paid by both parties involved in the Swap?</p>
+                <p>Paying fees in ZEC helps alleviate concerns about other Assets piggy-backing on the Zcash network without providing value to holders of ZEC. Even beyond that, taking fees in the traded Assets exposes the Matcher to all traded Assets. This may pose regulatory issues for the Matcher (e.g. if specific Assets are deemed illegal in specific jurisdictions). The effect of this may be the re-creation of mechanisms of central exchanges, where only a specific list of Assets are accepted for trading by matchers (similar to the “asset listing” approach of centralized exchanges).</p>
             </section>
             <section id="matchers"><h3><span class="section-heading">Matchers</span><span class="section-anchor"> <a rel="bookmark" href="#matchers"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The Swap protocol has been described above for the peer-to-peer setting between parties. However, it also supports other use cases such as transaction relays and centralized matching services. This is achieved via Matchers, who are entities (or a network of entities) that run an Order Matching process. This Matching process (i.e. instance of computer program) carries out the Matching operation on a set of received Orders. The Matcher produces Bundles from Orders and then sends them on-chain for settlement. Some supported possibilities are sketched in the figures below.</p>
