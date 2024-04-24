@@ -334,6 +334,9 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         <span class="math">\(0\!\)</span>
                     .</li>
                     <li>The proofs aggregated in <code>proofsOrchardZSA</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardZsaAction</code> at the same index.</li>
+                    <li>The fields <code>ik</code> and <code>issueAuthSig</code> are present if and only if
+                        <span class="math">\(\mathtt{nIssueActions} &gt; 0\!\)</span>
+                    .</li>
                     <li>For coinbase transactions, the <code>enableSpendsOrchard</code> and <code>enableZSAs</code> bits MUST be set to
                         <span class="math">\(0\!\)</span>
                     .</li>
