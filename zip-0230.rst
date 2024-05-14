@@ -334,6 +334,8 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 
 The encodings of each of these elements are defined in ZIP 227 [#zip-0227]_.
+Note that we allow the number of notes (represented by ``nNotes``) to be zero. 
+This allows for issuers to create Issuance Actions to only finalize an issued Asset, without needing them to simultaneously issue more of that Asset. 
 
 Reference implementation
 ========================
