@@ -264,15 +264,6 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td>Authorizing signatures for each Orchard-ZSA Action.</td>
                         </tr>
                         <tr>
-                            <td><code>64</code></td>
-                            <td><code>bindingSigOrchard</code></td>
-                            <td><code>byte[64]</code></td>
-                            <td>An Orchard binding signature on the SIGHASH transaction hash.</td>
-                        </tr>
-                        <tr>
-                            <td colspan="4"><strong>Orchard-ZSA Burn Fields</strong></td>
-                        </tr>
-                        <tr>
                             <td><code>varies</code></td>
                             <td><code>nAssetBurn</code></td>
                             <td><code>compactSize</code></td>
@@ -283,6 +274,12 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td><code>vAssetBurn</code></td>
                             <td><code>AssetBurn[nAssetBurn]</code></td>
                             <td>A sequence of Asset Burn descriptions, encoded per <a href="#orchard-zsa-asset-burn-description">Orchard-ZSA Asset Burn Description</a>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64</code></td>
+                            <td><code>bindingSigOrchard</code></td>
+                            <td><code>byte[64]</code></td>
+                            <td>An Orchard-ZSA binding signature on the SIGHASH transaction hash.</td>
                         </tr>
                         <tr>
                             <td colspan="4"><strong>Orchard-ZSA Issuance Fields</strong></td>
