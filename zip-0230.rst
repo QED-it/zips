@@ -302,7 +302,7 @@ An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance
 +=======+===============+=============================+====================================================================================================================+
 | 32    | ``AssetBase`` | ``byte[32]``                | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase^{Orchard}}\!`. |
 +-------+---------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------+
-| 8     | ``valueBurn`` | :math:`\{1 .. 2^{64} - 1\}` | The amount being burnt.                                                                                            |
+| 8     | ``valueBurn`` | ``uint64``                  | The amount being burnt. The value is checked by consensus to be non-zero.                                          |
 +-------+---------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------+
 
 The encodings of each of these elements are defined in ZIP 226 [#zip-0226]_.

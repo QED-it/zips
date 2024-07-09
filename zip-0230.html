@@ -502,10 +502,8 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         <tr>
                             <td>8</td>
                             <td><code>valueBurn</code></td>
-                            <td>
-                                <span class="math">\(\{1 .. 2^{64} - 1\}\)</span>
-                            </td>
-                            <td>The amount being burnt.</td>
+                            <td><code>uint64</code></td>
+                            <td>The amount being burnt. The value is checked by consensus to be non-zero.</td>
                         </tr>
                     </tbody>
                 </table>
