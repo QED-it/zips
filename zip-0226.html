@@ -66,7 +66,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
              computation defined in ZIP 227 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0227">5</a>.</p>
             <p>We include the ability to pause the ZSA functionality, via a
                 <span class="math">\(\mathsf{enableZSA}\)</span>
-             boolean flag. When this flag is set to false, it is not possible to perform transactions involving Custom Assets (the Action statement as modified for ZSAs will not be satisfied).</p>
+             boolean flag. When this flag is set to false, it is not possible to perform transactions involving Custom Assets (the Action statement as modified for ZSAs will not be satisfied). When this flag is set to true, it will be possible to perform transactions involving Custom Assets, subject to the values of the
+                <span class="math">\(\mathsf{enableSpendsOrchard}\)</span>
+             and
+                <span class="math">\(\mathsf{enableOutputsOrchard}\)</span>
+             flags. That is, the types of transactions allowed for ZSAs will match those allowed for the Orchard pool in general when the
+                <span class="math">\(\mathsf{enableZSA}\)</span>
+             flag is set to true.</p>
             <p>Finally, in this ZIP we also describe the <em>burn</em> mechanism, which is a direct extension of the transfer mechanism. The burn process uses a similar mechanism to what is used in Orchard to unshield ZEC, by using the
                 <span class="math">\(\mathsf{valueBalance}\)</span>
              of the Asset in question. Burning Assets is useful for many purposes, including bridging of Wrapped Assets and removing supply of Assets.</p>
