@@ -214,25 +214,39 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  set.</p>
                 <section id="additional-consensus-rules"><h4><span class="section-heading">Additional Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#additional-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <ol type="1">
-                        <li>We require that for every
-                            <span class="math">\((\mathsf{AssetBase_{AssetId}}, \mathsf{v_{AssetId}}) \in \mathsf{assetBurn}, \mathsf{AssetBase_{AssetId}} \neq \mathcal{V}^{\mathsf{Orchard}}\!\)</span>
+                        <li>Check that for every
+                            <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\!\)</span>
                         . That is, ZEC or TAZ is not allowed to be burnt by this mechanism.</li>
-                        <li>We require that for every
-                            <span class="math">\((\mathsf{AssetBase_{AssetId}}, \mathsf{v_{AssetId}}) \in \mathsf{assetBurn}, \mathsf{v_{AssetId}} \neq 0\!\)</span>
+                        <li>Check that for every
+                            <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{v} \neq 0\!\)</span>
                         .</li>
-                        <li>We require that there be no duplication of Custom Assets in the
+                        <li>Check that there is no duplication of Custom Assets in the
                             <span class="math">\(\mathsf{assetBurn}\)</span>
                          set. That is, every
-                            <span class="math">\(\mathsf{AssetBase_{AssetId}}\)</span>
+                            <span class="math">\(\mathsf{AssetBase}\)</span>
                          has at most one entry in
                             <span class="math">\(\mathsf{assetBurn}\!\)</span>
                         .</li>
+                        <li>Check that for every
+                            <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}\!\)</span>
+                        ,
+                            <span class="math">\(\mathsf{v} \leq \mathsf{issued\_assets(AssetDigest).balance}\!\)</span>
+                        , where the map
+                            <span class="math">\(\mathsf{issued\_assets}\)</span>
+                         is defined in ZIP 227 <a id="footnote-reference-39" class="footnote_reference" href="#zip-0227">5</a>. That is, it is not possible to burn more of an Asset than is currently in circulation.</li>
                     </ol>
+                    <p>If all these checks pass, then for every
+                        <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}\!\)</span>
+                    , reduce the value of
+                        <span class="math">\(\mathsf{issued\_assets(AssetDigest).balance}\)</span>
+                     in the global state by
+                        <span class="math">\(\mathsf{v}\!\)</span>
+                    .</p>
                     <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
                 </section>
             </section>
             <section id="value-balance-verification"><h3><span class="section-heading">Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>In order to verify the balance of the different Assets, the verifier MUST perform a similar process as for the Orchard protocol <a id="footnote-reference-39" class="footnote_reference" href="#protocol-orchardbalance">18</a>, with the addition of the burn information.</p>
+                <p>In order to verify the balance of the different Assets, the verifier MUST perform a similar process as for the Orchard protocol <a id="footnote-reference-40" class="footnote_reference" href="#protocol-orchardbalance">18</a>, with the addition of the burn information.</p>
                 <p>For a total of
                     <span class="math">\(n\)</span>
                  Actions in a transfer, the prover MUST still sign the SIGHASH transaction hash using the binding signature key
@@ -255,7 +269,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      the set of indices of Actions that are related to Custom Assets.</p>
                     <p>The right hand side of the value balance verification equation can be expanded to:</p>
                     <div class="math">\(((\sum_{i \in S_{\mathsf{ZEC}}} \mathsf{cv}^{\mathsf{net}}_i) + (\sum_{j \in S_{\mathsf{CA}}} \mathsf{cv}^{\mathsf{net}}_j)) - ([\mathsf{v^{balanceOrchard}}]\,\mathcal{V}^{\mathsf{Orchard}} + [0]\,\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} [\mathsf{v}]\,\mathsf{AssetBase} + [0]\,\mathcal{R}^{\mathsf{Orchard}})\)</div>
-                    <p>This equation contains the balance check of the Orchard protocol <a id="footnote-reference-40" class="footnote_reference" href="#protocol-orchardbalance">18</a>. With ZSA, transfer Actions for Custom Assets must also be balanced across Asset Bases. All Custom Assets are contained within the shielded pool, and cannot be unshielded via a regular transfer. Custom Assets can be burnt, the mechanism for which reveals the amount and identifier of the Asset being burnt, within the
+                    <p>This equation contains the balance check of the Orchard protocol <a id="footnote-reference-41" class="footnote_reference" href="#protocol-orchardbalance">18</a>. With ZSA, transfer Actions for Custom Assets must also be balanced across Asset Bases. All Custom Assets are contained within the shielded pool, and cannot be unshielded via a regular transfer. Custom Assets can be burnt, the mechanism for which reveals the amount and identifier of the Asset being burnt, within the
                         <span class="math">\(\mathsf{assetBurn}\)</span>
                      set. As such, for a correctly constructed transaction, we will get
                         <span class="math">\(\sum_{j \in S_{\mathsf{CA}}} \mathsf{cv}^{\mathsf{net}}_j - \sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} [\mathsf{v}]\,\mathsf{AssetBase} = \sum_{j \in S_{\mathsf{CA}}} [\mathsf{rcv}^{\mathsf{net}}_j]\,\mathcal{R}^{\mathsf{Orchard}}\!\)</span>
@@ -304,11 +318,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathbb{F}_{q_{\mathbb{P}}}\!\)</span>
                 ,
                     <span class="math">\(\mathcal{K}^{\mathsf{Orchard}}\)</span>
-                 is the Orchard Nullifier Base as defined in <a id="footnote-reference-41" class="footnote_reference" href="#protocol-commitmentsandnullifiers">19</a>, and
+                 is the Orchard Nullifier Base as defined in <a id="footnote-reference-42" class="footnote_reference" href="#protocol-commitmentsandnullifiers">19</a>, and
                     <span class="math">\(\mathcal{L}^{\mathsf{Orchard}} := \mathsf{GroupHash^{\mathbb{P}}}(\texttt{"z.cash:Orchard"}, \texttt{"L"})\!\)</span>
                 .</p>
                 <section id="rationale-for-split-notes"><h4><span class="section-heading">Rationale for Split Notes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-split-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>In the Orchard protocol, since each Action represents an input and an output, the transaction that wants to send one input to multiple outputs must have multiple inputs. The Orchard protocol gives <em>dummy spend notes</em> <a id="footnote-reference-42" class="footnote_reference" href="#protocol-orcharddummynotes">17</a> to the Actions that have not been assigned input notes.</p>
+                    <p>In the Orchard protocol, since each Action represents an input and an output, the transaction that wants to send one input to multiple outputs must have multiple inputs. The Orchard protocol gives <em>dummy spend notes</em> <a id="footnote-reference-43" class="footnote_reference" href="#protocol-orcharddummynotes">17</a> to the Actions that have not been assigned input notes.</p>
                     <p>The Orchard technique requires modification for the ZSA protocol with multiple Asset Identifiers, as the output note of the split Actions <em>cannot</em> contain <em>just any</em> Asset Base. We must enforce it to be an actual output of a GroupHash computation (in fact, we want it to be of the same Asset Base as the original input note, but the binding signature takes care that the proper balancing is performed). Without this enforcement the prover could input a multiple (or linear combination) of an existing Asset Base, and thereby attack the network by overflowing the ZEC value balance and hence counterfeiting ZEC funds.</p>
                     <p>Therefore, for Custom Assets we enforce that <em>every</em> input note to an ZSA Action must be proven to exist in the set of note commitments in the note commitment tree. We then enforce this real note to be “unspendable” in the sense that its value will be zeroed in split Actions and the nullifier will be randomized, making the note not spendable in the specific Action. Then, the proof itself ensures that the output note is of the same Asset Base as the input note. In the circuit, the split note functionality will be activated by a boolean private input to the proof (aka the
                         <span class="math">\(\mathsf{split\_flag}\)</span>
@@ -317,8 +331,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </section>
             </section>
             <section id="circuit-statement"><h3><span class="section-heading">Circuit Statement</span><span class="section-anchor"> <a rel="bookmark" href="#circuit-statement"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>Every <em>ZSA Action statement</em> is closely similar to the Orchard Action statement <a id="footnote-reference-43" class="footnote_reference" href="#protocol-actionstatement">20</a>, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.</p>
-                <p>All modifications in the Circuit are detailed in <a id="footnote-reference-44" class="footnote_reference" href="#circuit-modifications">31</a>.</p>
+                <p>Every <em>ZSA Action statement</em> is closely similar to the Orchard Action statement <a id="footnote-reference-44" class="footnote_reference" href="#protocol-actionstatement">20</a>, except for a few additions that ensure the security of the Asset Identifier system. We detail these changes below.</p>
+                <p>All modifications in the Circuit are detailed in <a id="footnote-reference-45" class="footnote_reference" href="#circuit-modifications">31</a>.</p>
                 <section id="asset-base-equality"><h4><span class="section-heading">Asset Base Equality</span><span class="section-anchor"> <a rel="bookmark" href="#asset-base-equality"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The following constraints must be added to ensure that the input and output note are of the same
                         <span class="math">\(\mathsf{AssetBase}\!\)</span>
@@ -327,12 +341,12 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>The Asset Base,
                             <span class="math">\(\mathsf{AssetBase_{AssetId}}\!\)</span>
                         , for the note is witnessed once, as an auxiliary input.</li>
-                        <li>In the Old note commitment integrity constraint in the Orchard Action statement <a id="footnote-reference-45" class="footnote_reference" href="#protocol-actionstatement">20</a>,
+                        <li>In the Old note commitment integrity constraint in the Orchard Action statement <a id="footnote-reference-46" class="footnote_reference" href="#protocol-actionstatement">20</a>,
                             <span class="math">\(\mathsf{NoteCommit^{Orchard}_{rcm^{old}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{g_d^{old}}), \mathsf{repr}_{\mathbb{P}}(\mathsf{pk_d^{old}}), \mathsf{v^{old}}, \text{ρ}^{\mathsf{old}}, \text{ψ}^{\mathsf{old}})\)</span>
                          is replaced with
                             <span class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm^{old}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{g_d^{old}}), \mathsf{repr}_{\mathbb{P}}(\mathsf{pk_d^{old}}), \mathsf{v^{old}}, \text{ρ}^{\mathsf{old}}, \text{ψ}^{\mathsf{old}}, \mathsf{AssetBase_{AssetId}})\!\)</span>
                         .</li>
-                        <li>In the New note commitment integrity constraint in the Orchard Action statement <a id="footnote-reference-46" class="footnote_reference" href="#protocol-actionstatement">20</a>,
+                        <li>In the New note commitment integrity constraint in the Orchard Action statement <a id="footnote-reference-47" class="footnote_reference" href="#protocol-actionstatement">20</a>,
                             <span class="math">\(\mathsf{NoteCommit^{Orchard}_{rcm^{new}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{g_d^{new}}), \mathsf{repr}_{\mathbb{P}}(\mathsf{pk_d^{new}}), \mathsf{v^{new}}, \text{ρ}^{\mathsf{new}}, \text{ψ}^{\mathsf{new}})\)</span>
                          is replaced with
                             <span class="math">\(\mathsf{NoteCommit^{OrchardZSA}_{rcm^{new}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{g_d^{new}}), \mathsf{repr}_{\mathbb{P}}(\mathsf{pk_d^{new}}), \mathsf{v^{new}}, \text{ρ}^{\mathsf{new}}, \text{ψ}^{\mathsf{new}}, \mathsf{AssetBase_{AssetId}})\!\)</span>
@@ -449,15 +463,15 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     </ul>
                 </section>
                 <section id="backwards-compatibility-with-zec-notes"><h4><span class="section-heading">Backwards Compatibility with ZEC Notes</span><span class="section-anchor"> <a rel="bookmark" href="#backwards-compatibility-with-zec-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The input note in the old note commitment integrity check must either include an Asset Base (ZSA note) or not (pre-ZSA Orchard note). If the note is a pre-ZSA Orchard note, the note commitment is computed in the original Orchard fashion <a id="footnote-reference-47" class="footnote_reference" href="#protocol-abstractcommit">16</a>. If the note is a ZSA note, the note commitment is computed as defined in the <a href="#note-structure-commitment">Note Structure &amp; Commitment</a> section.</p>
+                    <p>The input note in the old note commitment integrity check must either include an Asset Base (ZSA note) or not (pre-ZSA Orchard note). If the note is a pre-ZSA Orchard note, the note commitment is computed in the original Orchard fashion <a id="footnote-reference-48" class="footnote_reference" href="#protocol-abstractcommit">16</a>. If the note is a ZSA note, the note commitment is computed as defined in the <a href="#note-structure-commitment">Note Structure &amp; Commitment</a> section.</p>
                 </section>
             </section>
         </section>
         <section id="orchard-zsa-transaction-structure"><h2><span class="section-heading">Orchard-ZSA Transaction Structure</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-transaction-structure"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction format for v6 transactions is described in ZIP 230 <a id="footnote-reference-48" class="footnote_reference" href="#zip-0230">10</a>.</p>
+            <p>The transaction format for v6 transactions is described in ZIP 230 <a id="footnote-reference-49" class="footnote_reference" href="#zip-0230">10</a>.</p>
         </section>
         <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-49" class="footnote_reference" href="#zip-0244">11</a> is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the <code>orchard_digest</code> to account for the inclusion of the Asset Base. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the ZSA protocol.</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-50" class="footnote_reference" href="#zip-0244">11</a> is modified by the ZSA protocol to add a new branch for issuance information, along with modifications within the <code>orchard_digest</code> to account for the inclusion of the Asset Base. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the ZSA protocol.</p>
             <section id="txid-digest-1"><h3><span class="section-heading">txid_digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-1"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>A BLAKE2b-256 hash of the following values</p>
                 <pre>T.1: header_digest       (32-byte hash output)
@@ -465,7 +479,7 @@ T.2: transparent_digest  (32-byte hash output)
 T.3: sapling_digest      (32-byte hash output)
 T.4: orchard_digest      (32-byte hash output)  [UPDATED FOR ZSA]
 T.5: issuance_digest     (32-byte hash output)  [ADDED FOR ZSA]</pre>
-                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-50" class="footnote_reference" href="#zip-0244">11</a>.</p>
+                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-51" class="footnote_reference" href="#zip-0244">11</a>.</p>
                 <section id="t-4-orchard-digest"><h4><span class="section-heading">T.4: orchard_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-4-orchard-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>When Orchard Actions are present in the transaction, this digest is a BLAKE2b-256 hash of the following values</p>
                     <pre>T.4a: orchard_actions_compact_digest      (32-byte hash output)          [UPDATED FOR ZSA]
@@ -476,7 +490,7 @@ T.4e: flagsOrchard                        (1 byte)
 T.4f: valueBalanceOrchard                 (64-bit signed little-endian)
 T.4g: anchorOrchard                       (32 bytes)</pre>
                     <section id="t-4a-orchard-actions-compact-digest"><h5><span class="section-heading">T.4a: orchard_actions_compact_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-4a-orchard-actions-compact-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>A BLAKE2b-256 hash of the subset of Orchard Action information intended to be included in an updated version of the ZIP-307 <a id="footnote-reference-51" class="footnote_reference" href="#zip-0307">12</a> <code>CompactBlock</code> format for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
+                        <p>A BLAKE2b-256 hash of the subset of Orchard Action information intended to be included in an updated version of the ZIP-307 <a id="footnote-reference-52" class="footnote_reference" href="#zip-0307">12</a> <code>CompactBlock</code> format for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
                         <pre>T.4a.i  : nullifier            (field encoding bytes)
 T.4a.ii : cmx                  (field encoding bytes)
 T.4a.iii: ephemeralKey         (field encoding bytes)
@@ -491,7 +505,7 @@ T.4a.iv : encCiphertext[..84]  (First 84 bytes of field encoding)  [UPDATED FOR 
                         <pre>"ZTxIdOrcActMHash"</pre>
                     </section>
                     <section id="t-4c-orchard-actions-noncompact-digest"><h5><span class="section-heading">T.4c: orchard_actions_noncompact_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-4c-orchard-actions-noncompact-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>A BLAKE2b-256 hash of the remaining subset of Orchard Action information <strong>not</strong> intended for inclusion in an updated version of the the ZIP 307 <a id="footnote-reference-52" class="footnote_reference" href="#zip-0307">12</a> <code>CompactBlock</code> format, for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
+                        <p>A BLAKE2b-256 hash of the remaining subset of Orchard Action information <strong>not</strong> intended for inclusion in an updated version of the the ZIP 307 <a id="footnote-reference-53" class="footnote_reference" href="#zip-0307">12</a> <code>CompactBlock</code> format, for all Orchard Actions belonging to the transaction. For each Action, the following elements are included in the hash:</p>
                         <pre>T.4d.i  : cv                    (field encoding bytes)
 T.4d.ii : rk                    (field encoding bytes)
 T.4d.iii: encCiphertext[596..]  (post-memo suffix of field encoding)  [UPDATED FOR ZSA]
@@ -520,12 +534,12 @@ T.4d.ii: valueBurn    (field encoding bytes)</pre>
                     </section>
                 </section>
                 <section id="t-5-issuance-digest"><h4><span class="section-heading">T.5: issuance_digest</span><span class="section-anchor"> <a rel="bookmark" href="#t-5-issuance-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>The details of the computation of this value are in ZIP 227 <a id="footnote-reference-53" class="footnote_reference" href="#zip-0227-txiddigest">7</a>.</p>
+                    <p>The details of the computation of this value are in ZIP 227 <a id="footnote-reference-54" class="footnote_reference" href="#zip-0227-txiddigest">7</a>.</p>
                 </section>
             </section>
         </section>
         <section id="signature-digest-and-authorizing-data-commitment"><h2><span class="section-heading">Signature Digest and Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#signature-digest-and-authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The details of the changes to these algorithms are in ZIP 227 <a id="footnote-reference-54" class="footnote_reference" href="#zip-0227-sigdigest">8</a> <a id="footnote-reference-55" class="footnote_reference" href="#zip-0227-authcommitment">9</a>.</p>
+            <p>The details of the changes to these algorithms are in ZIP 227 <a id="footnote-reference-55" class="footnote_reference" href="#zip-0227-sigdigest">8</a> <a id="footnote-reference-56" class="footnote_reference" href="#zip-0227-authcommitment">9</a>.</p>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <ul>
@@ -538,7 +552,7 @@ T.4d.ii: valueBurn    (field encoding bytes)</pre>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="transaction-fees"><h3><span class="section-heading">Transaction Fees</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-56" class="footnote_reference" href="#zip-0317b">13</a>.</p>
+                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the ZSA protocol upgrade <a id="footnote-reference-57" class="footnote_reference" href="#zip-0317b">13</a>.</p>
             </section>
             <section id="backward-compatibility"><h3><span class="section-heading">Backward Compatibility</span><span class="section-anchor"> <a rel="bookmark" href="#backward-compatibility"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and ZSA notes. As we specify above, there are three main reasons we can do this:</p>
