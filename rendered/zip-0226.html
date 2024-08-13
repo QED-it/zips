@@ -230,7 +230,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>Check that for every
                             <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}\!\)</span>
                         ,
-                            <span class="math">\(\mathsf{v} \leq \mathsf{issued\_assets(AssetDigest).balance}\!\)</span>
+                            <span class="math">\(\mathsf{v} \leq \mathsf{issued\_assets(AssetBase).balance}\!\)</span>
                         , where the map
                             <span class="math">\(\mathsf{issued\_assets}\)</span>
                          is defined in ZIP 227 <a id="footnote-reference-39" class="footnote_reference" href="#zip-0227-specification-global-issuance-state">6</a>. That is, it is not possible to burn more of an Asset than is currently in circulation.</li>
@@ -238,7 +238,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <p>If all these checks pass, then for every
                         <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}\!\)</span>
                     , reduce the value of
-                        <span class="math">\(\mathsf{issued\_assets(AssetDigest).balance}\)</span>
+                        <span class="math">\(\mathsf{issued\_assets(AssetBase).balance}\)</span>
                      in the global state by
                         <span class="math">\(\mathsf{v}\!\)</span>
                     .</p>

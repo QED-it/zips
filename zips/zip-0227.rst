@@ -221,12 +221,13 @@ Specification: Global Issuance State
 
 Issuance requires the following additions to the global state defined at block boundaries:
 
-A map, :math:`\mathsf{issued\_assets}\!`, from the Asset Digest, :math:`\mathsf{AssetDigest}`, to a tuple :math:`(\mathsf{balance}, \mathsf{final})\!`, for every Asset that has been issued up until the block boundary. For each Asset:
+A map, :math:`\mathsf{issued\_assets}\!`, from the Asset Base, :math:`\mathsf{AssetBase}`, to a tuple :math:`(\mathsf{balance}, \mathsf{final})\!`, for every Asset that has been issued up until the block boundary. For each Asset:
 
 - The amount of the Asset in circulation, computed as the amount of the Asset that has been issued less the amount of the Asset that has been burnt, is stored in :math:`\mathsf{balance}\!`.
-- The boolean :math:`\mathsf{final}` stores the finalization status of the Asset (i.e.: whether the :math:`\mathsf{finalize}` flag has been set to :math:`1` in some issuance transaction for the Asset preceding the block boundary).
+- The boolean :math:`\mathsf{final}` stores the finalization status of the Asset (i.e.: whether the :math:`\mathsf{finalize}` flag has been set to :math:`1` in some issuance transaction for the Asset preceding the block boundary). The value of :math:`\mathsf{final}` for any Asset cannot be changed from :math:`1` to :math:`0`.
 
-We use the notation :math:`\mathsf{issued\_assets}(\mathsf{AssetDigest}).\!\mathsf{balance}` and :math:`\mathsf{issued\_assets}(\mathsf{AssetDigest}).\!\mathsf{final}` to access, respectively, the balance and finalization status of the Asset stored in the global state.
+
+We use the notation :math:`\mathsf{issued\_assets}(\mathsf{AssetBase}).\!\mathsf{balance}` and :math:`\mathsf{issued\_assets}(\mathsf{AssetBase}).\!\mathsf{final}` to access, respectively, the balance and finalization status of the Asset stored in the global state.
 
 Rationale for Global Issuance State
 -----------------------------------
@@ -238,9 +239,6 @@ This allows for efficient detection of balance violations for any Asset, in whic
 
 Nodes also need to ensure the rejection of blocks in which issuance of Custom Assets that have been previously finalized. 
 The :math:`\mathsf{issued\_assets}` map allows nodes to store whether or not a given Asset has been finalized. 
-
-Note that while there is only a single pool for ZSAs, the :math:`\mathsf{issued\_assets}` map can be as specified above, but in future when there are multiple pools, the map will need to be extended to store the balance for the Asset in each pool.
-The map will be from a tuple of the Asset Digest and an identifier for a shielded pool that supports ZSAs, :math:`(\mathsf{AssetDigest}, \mathsf{Pool})\!`, to a tuple of the form :math:`(\mathsf{balance}, \mathsf{final})\!`, where the balance is for the specific shielded pool.
 
 Specification: Issuance Action, Issuance Bundle and Issuance Protocol
 =====================================================================
@@ -254,10 +252,6 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 - ``asset_desc``: the Asset description, a byte string of up to 512 bytes as defined in the `Specification: Asset Identifier`_ section.
 - ``vNotes``: an array of ``Note`` containing the unencrypted output notes of the recipients of the Asset.
 - ``flagsIssuance``: a byte that stores the :math:`\mathsf{finalize}` boolean that defines whether the issuance of that specific Custom Asset is finalized or not.
-
-The value of :math:`\mathsf{issued\_assets}(AssetDigest).final` is set to :math:`1` after a block that contains any issuance transaction for the Asset corresponding to :math:`\mathsf{AssetDigest}`` with :math:`\mathsf{finalize} = 1\!`.
-The value of :math:`\mathsf{issued\_assets}(AssetDigest).final` cannot be changed from :math:`1` to :math:`0`.
-
 
 An asset's :math:`\mathsf{AssetDigest}` is added to the :math:`\mathsf{previously\_finalized}` set after a block that contains any issuance transaction for that asset with :math:`\mathsf{finalize} = 1\!`. It then cannot be removed from this set. For Assets with :math:`\mathsf{AssetDigest} \in \mathsf{previously\_finalized}\!`, no further tokens can be issued, so as seen below, the validators will reject the transaction. For Assets with :math:`\mathsf{AssetDigest} \not\in \mathsf{previously\_finalized}\!`, new issuance actions can be issued in future transactions. These must use the same Asset description, :math:`\mathsf{asset\_desc}\!`, and can either maintain :math:`\mathsf{finalize} = 0` or change it to :math:`\mathsf{finalize} = 1\!`, denoting that this Custom Asset cannot be issued after the containing block.
 
@@ -350,7 +344,7 @@ For each ``IssueAction`` in ``IssueBundle``:
 - check that :math:`\mathsf{asset\_desc}` is a string of length :math:`\mathtt{assetDescSize}` bytes.
 
 - retrieve :math:`\mathsf{AssetBase}` from the first note in the sequence and check that :math:`\mathsf{AssetBase}` is derived from the issuance validating key :math:`\mathsf{ik}` and :math:`\mathsf{asset\_desc}` as described in the `Specification: Asset Identifier`_ section.
-- check that :math:`\mathsf{issued\_assets(AssetDigest).final} \neq 1` in the global state.
+- check that :math:`\mathsf{issued\_assets(AssetBase).final} \neq 1` in the global state.
 - check that every note in the ``IssueAction`` contains the same :math:`\mathsf{AssetBase}` and is properly constructed as :math:`\mathsf{note} = (\mathsf{g_d}, \mathsf{pk_d}, \mathsf{v}, \text{ρ}, \mathsf{rseed}, \mathsf{AssetBase})\!`.
 
 If all of the above checks pass, do the following:
@@ -359,9 +353,9 @@ If all of the above checks pass, do the following:
 
   - compute the note commitment as :math:`\mathsf{cm} = \mathsf{NoteCommit^{OrchardZSA}_{rcm}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{g_d}), \mathsf{repr}_{\mathbb{P}}(\mathsf{pk_d}), \mathsf{v}, \text{ρ}, \text{ψ}, \mathsf{AssetBase})` as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-notestructure]_.
   - Add :math:`\mathsf{cm}` to the Merkle tree of note commitments.
-  - Increase the value of :math:`\mathsf{issued\_assets(AssetDigest).balance}` by the value of the note, :math:`\mathsf{v}`.
+  - Increase the value of :math:`\mathsf{issued\_assets(AssetBase).balance}` by the value of the note, :math:`\mathsf{v}`.
 
-- If :math:`\mathsf{finalize} = 1\!`, set :math:`\mathsf{issued\_assets(AssetDigest).final}` to :math:`1` in the global state immediately after the block in which this transaction occurs.
+- If :math:`\mathsf{finalize} = 1\!`, set :math:`\mathsf{issued\_assets(AssetBase).final}` to :math:`1` in the global state immediately after the block in which this transaction occurs.
 
 - (Replay Protection) If issue bundle is present, the fees MUST be greater than zero.
 
