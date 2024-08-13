@@ -221,13 +221,12 @@ Specification: Global Issuance State
 
 Issuance requires the following additions to the global state defined at block boundaries:
 
-A map, :math:`\mathsf{issued\_assets}\!`, from the Asset Digest, :math:`\mathsf{AssetDigest}` corresponding to an Asset Identifier :math:`\mathsf{AId}`, to a tuple :math:`(\mathsf{balance_{AId}}, \mathsf{final_{AId}})`, for every Asset that has been issued up until the block boundary.
+A map, :math:`\mathsf{issued\_assets}\!`, from the Asset Digest, :math:`\mathsf{AssetDigest}`, to a tuple :math:`(\mathsf{balance}, \mathsf{final})\!`, for every Asset that has been issued up until the block boundary. For each Asset:
 
-- The amount of the Asset in circulation, computed as the amount of the Asset that has been issued less the amount of the Asset that has been burnt, is stored in :math:`\mathsf{balance_{AId}}`.
-- The boolean :math:`\mathsf{final_{AId}}` stores the finalization status of the Asset (i.e.: whether the :math:`\mathsf{finalize}` flag has been set to :math:`1` in some issuance transaction for Asset :math:`\mathsf{AId}` preceding the block boundary).
+- The amount of the Asset in circulation, computed as the amount of the Asset that has been issued less the amount of the Asset that has been burnt, is stored in :math:`\mathsf{balance}\!`.
+- The boolean :math:`\mathsf{final}` stores the finalization status of the Asset (i.e.: whether the :math:`\mathsf{finalize}` flag has been set to :math:`1` in some issuance transaction for the Asset preceding the block boundary).
 
-We use the notation :math:`\mathsf{issued\_assets}(AssetDigest)` to refer to the tuple, :math:`(\mathsf{balance_{AId}}, \mathsf{final_{AId}})`.
-Further, we use the notation :math:`\mathsf{issued\_assets}(AssetDigest).balance` and :math:`\mathsf{issued\_assets}(AssetDigest).final` to refer to the balance and finalization status of the Asset, respectively.
+We use the notation :math:`\mathsf{issued\_assets}(\mathsf{AssetDigest}).\!\mathsf{balance}` and :math:`\mathsf{issued\_assets}(\mathsf{AssetDigest}).\!\mathsf{final}` to access, respectively, the balance and finalization status of the Asset stored in the global state.
 
 Rationale for Global Issuance State
 -----------------------------------
@@ -238,10 +237,10 @@ Therefore, we require that all nodes maintain a record of the current amount in 
 This allows for efficient detection of balance violations for any Asset, in which scenario we specify a consensus rule to reject the block.
 
 Nodes also need to ensure the rejection of blocks in which issuance of Custom Assets that have been previously finalized. 
-The :math:`\mathsf{issued\_assets}\!` map allows nodes to store whether or not a given Asset has been finalized. 
+The :math:`\mathsf{issued\_assets}` map allows nodes to store whether or not a given Asset has been finalized. 
 
 Note that while there is only a single pool for ZSAs, the :math:`\mathsf{issued\_assets}` map can be as specified above, but in future when there are multiple pools, the map will need to be extended to store the balance for the Asset in each pool.
-That is, the map will be from the Asset Digest :math:`\mathsf{AssetDigest}` to a tuple of the form :math:`((\mathsf{balance_{AId}^{OrchardZSA}}, \mathsf{balance_{AId}^{NewPool}}, \ldots), \mathsf{final_{AId}})`, with one balance entry for each pool that supports ZSAs.
+The map will be from a tuple of the Asset Digest and an identifier for a shielded pool that supports ZSAs, :math:`(\mathsf{AssetDigest}, \mathsf{Pool})\!`, to a tuple of the form :math:`(\mathsf{balance}, \mathsf{final})\!`, where the balance is for the specific shielded pool.
 
 Specification: Issuance Action, Issuance Bundle and Issuance Protocol
 =====================================================================
