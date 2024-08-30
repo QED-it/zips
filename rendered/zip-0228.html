@@ -50,7 +50,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
         <section id="overview"><h2><span class="section-heading">Overview</span><span class="section-anchor"> <a rel="bookmark" href="#overview"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The proposed protocol allows trading parties in a peer-to-peer setting to send (and/or receive) Swap Orders via off-chain communication. If the Orders of the parties match, they can be included together in Swap Bundles and then settled on the Zcash blockchain (that is, the Assets under consideration are exchanged between the trading parties).</p>
             <figure class="align-center" align="center">
-                <img width="1000" src="zip-0228-images/zip-0228-matcher-p2p.png" alt="" />
+                <img width="1000" src="assets/images/zip-0228-matcher-p2p.png" alt="" />
                 <figcaption>The P2P setting, where two traders swap Assets between themselves.</figcaption>
             </figure>
             <p>A key challenge is that Swap Orders that match may contain Actions and Zero Knowledge Proofs generated using different blockchain states and roots of note commitment trees. In the current (NU5) protocol, each transaction contains a set of Actions and Proofs generated using a single anchor/Merkle root, and there is no way to combine independently generated halo2 proofs into a single combined proof.</p>
@@ -179,7 +179,7 @@ preAuthActionGroup.nActionsOrchard</code></td>
                         </tbody>
                     </table>
                     <figure class="align-center" align="center">
-                        <img width="1000" src="zip-0228-images/zip-0228-swap-bundle.png" alt="" />
+                        <img width="1000" src="assets/images/zip-0228-swap-bundle.png" alt="" />
                         <figcaption>An example Zcash transaction with a Swap Bundle (simplified, for reference only).</figcaption>
                     </figure>
                 </section>
@@ -433,11 +433,11 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
             <section id="matchers"><h3><span class="section-heading">Matchers</span><span class="section-anchor"> <a rel="bookmark" href="#matchers"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The Swap protocol has been described above for the peer-to-peer setting between parties. However, it also supports other use cases such as transaction relays and centralized matching services. This is achieved via Matchers, who are entities (or a network of entities) that run an Order Matching process. This Matching process (i.e. instance of computer program) carries out the Matching operation on a set of received Orders. The Matcher produces Bundles from Orders and then sends them on-chain for settlement. Some supported possibilities are sketched in the figures below.</p>
                 <figure class="align-center" align="center">
-                    <img width="600" src="zip-0228-images/zip-0228-matcher-scenario-1.png" alt="" />
+                    <img width="600" src="assets/images/zip-0228-matcher-scenario-1.png" alt="" />
                     <figcaption>Scenario 1: The order matching process is run on a single machine (i.e the Matcher is one machine used by User A and User B to swap).</figcaption>
                 </figure>
                 <figure class="align-center" align="center">
-                    <img width="600" src="zip-0228-images/zip-0228-matcher-scenario-2.png" alt="" />
+                    <img width="600" src="assets/images/zip-0228-matcher-scenario-2.png" alt="" />
                     <figcaption>Scenario 2: The order matching process is run via multiple machines (they could be connected on a network).</figcaption>
                 </figure>
                 <section id="high-level-logic-for-order-matching"><h4><span class="section-heading">High-level logic for Order Matching</span><span class="section-anchor"> <a rel="bookmark" href="#high-level-logic-for-order-matching"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
