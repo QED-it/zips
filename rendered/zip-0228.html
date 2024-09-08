@@ -276,6 +276,15 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     </ul>
                 </blockquote>
             </section>
+            <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>We distinguish between two types of fees for Asset Swaps, namely Miner Fees and Matcher Fees.</p>
+                <section id="miner-fees"><h4><span class="section-heading">Miner Fees</span><span class="section-anchor"> <a rel="bookmark" href="#miner-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>These are the fees paid to miners for including the transaction in a block. Miner fees are relevant at the time of settlement of the Swap Bundle on the chain. These continue to follow the same logic as in the ZSA Protocol, and are paid in ZEC.</p>
+                </section>
+                <section id="matcher-fees"><h4><span class="section-heading">Matcher Fees</span><span class="section-anchor"> <a rel="bookmark" href="#matcher-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>These are the fees paid to the party performing the matching. A party that creates a Swap Order includes a Fee Action inside the Action Group Description of that Swap Order in addition to the details of the desired Swap operation (see <a href="#specification-swap-orders">Specification: Swap Orders</a>). The Matcher creates an additional Action Group to transfer the fees to an address they control during the creation of the Swap Bundle. Thus, when the Swap Bundle is settled on the chain, the two parties swap Assets and the fees are transferred to the Matcher.</p>
+                </section>
+            </section>
             <section id="rationale-for-protocol-changes"><h3><span class="section-heading">Rationale for Protocol Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-protocol-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>We cover here the reasons for the different design choices in different sections.</p>
                 <section id="rationale-for-action-groups"><h4><span class="section-heading">Rationale for Action Groups</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-action-groups"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
@@ -315,6 +324,10 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                      is a modular addition of random field elements, extracting specific values without additional context isn't possible. Hence,
                         <span class="math">\(\mathsf{bsk}\)</span>
                      “binds together" the commitments of all Actions in the Order, preventing selective extraction of specific Actions in a Swap Order by a malicious matcher.</p>
+                </section>
+                <section id="rationale-for-fees"><h4><span class="section-heading">Rationale for Fees</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>The proposed changes to the transaction structure and the consensus checks also require a change in the fees paid to miners. The use of Action Groups adds information to the transaction object, and adds more bytes to the blockchain state. This needs to be paid for by network users and will result in an increase in the expected fee, though the logic is the same as in the ZSA Protocol.</p>
+                    <p>The Matcher Fees incentivize the Matcher to search through the unmatched Swap Orders and create Swap Bundles out of matching Orders. It also compensates the Matcher for the Miner Fees that will arise when the constructed Swap Bundle is included in a transaction. For the matching to be economically viable, the fees captured by the Matcher to create the Swap Bundle must at least be higher than the fees needed to settle the bundle on the chain. We continue to use ZEC for these fees as well, since the benefit of an arbitrary Asset to a third-party matcher is unclear, and exposes the Matcher to the traded assets. This exposure may pose regulatory issues for the Matcher (e.g. if specific assets are deemed illegal in specific jurisdictions). It also provides a straightforward compensation for the Miner Fee outlay. The fees being paid in ZEC also helps alleviate concerns about other Assets piggy-backing on the Zcash network without providing value to holders of ZEC.</p>
                 </section>
             </section>
         </section>
@@ -420,16 +433,6 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The primary goal of a fee mechanism is twofold:</p>
-                <ul>
-                    <li>It should disincentivize malicious users from flooding the network with spam Swap Orders that are unlikely to be matched.</li>
-                    <li>It should incentivize the party performing the matching to perform the additional work required to match orders and bundle them together.</li>
-                </ul>
-                <p>For the matching to be economically viable, the fees captured by the Matcher to create the bundle must at least be higher than the fees needed to settle the bundle on the chain.</p>
-                <p>The proposed changes to the transaction structure and the consensus checks also require a change in the fees paid to miners. The use of Action Groups adds information to the transaction object, and adds more bytes to the blockchain state. This needs to be paid for by network users and will result in an increase in the expected fee, though the logic is the same.</p>
-                <p>The fees being paid in ZEC helps alleviate concerns about other Assets piggy-backing on the Zcash network without providing value to holders of ZEC. Even beyond that, taking fees in the traded assets exposes the Matcher to all traded assets. This may pose regulatory issues for the Matcher (e.g. if specific assets are deemed illegal in specific jurisdictions). The effect of this may be the re-creation of mechanisms of central exchanges, where only a specific list of assets are accepted for trading by matchers (similar to the “asset listing” approach of centralized exchanges).</p>
-            </section>
             <section id="matchers"><h3><span class="section-heading">Matchers</span><span class="section-anchor"> <a rel="bookmark" href="#matchers"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The Swap protocol has been described above for the peer-to-peer setting between parties. However, it also supports other use cases such as transaction relays and centralized matching services. This is achieved via Matchers, who are entities (or a network of entities) that run an Order Matching process. This Matching process (i.e. instance of computer program) carries out the Matching operation on a set of received Orders. The Matcher produces Bundles from Orders and then sends them on-chain for settlement. Some supported possibilities are sketched in the figures below.</p>
                 <figure class="align-center" align="center">
