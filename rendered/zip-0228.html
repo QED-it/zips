@@ -54,7 +54,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                 <figcaption>The P2P setting, where two traders swap Assets between themselves.</figcaption>
             </figure>
             <p>A key challenge is that Swap Orders that match may contain Actions and Zero Knowledge Proofs generated using different blockchain states and roots of note commitment trees. In the current (NU5) protocol, each transaction contains a set of Actions and Proofs generated using a single anchor/Merkle root, and there is no way to combine independently generated halo2 proofs into a single combined proof.</p>
-            <p>To enable combining Actions and Proofs from different blockchain states, the concept of an Action Group is introduced in this ZIP. An Action Group groups together Actions and Proofs generated using a common commitment tree root. Action Groups replace Actions in the Zcash transaction format. This allows for creating a single Zcash transaction from different sets of Actions and Proofs generated using different anchors and blockchain states. This Action Groups-based transaction structure enables a wide range of use-cases to be built on Zcash, such as: P2P ZSA Swaps, Zcash transaction relays or ZSA Swaps via a centralized Matcher - to name a few (More details are under the <a href="#matchers">Matchers</a> heading in the <a href="#other-considerations">Other Considerations</a> section of this ZIP).</p>
+            <p>To enable combining Actions and Proofs from different blockchain states, the concept of an Action Group is introduced in this ZIP. An Action Group groups together Actions and Proofs generated using a common commitment tree root. Action Groups replace Actions in the Zcash transaction format. This allows for creating a single Zcash transaction from different sets of Actions and Proofs generated using different anchors and blockchain states. This Action Groups-based transaction structure enables a wide range of use-cases to be built on Zcash, such as: P2P ZSA Swaps, Zcash transaction relays or ZSA Swaps via a centralized Matcher - to name a few. (More details are under the <a href="#matchers">Matchers</a> heading in the <a href="#other-considerations">Other Considerations</a> section of this ZIP.)</p>
         </section>
         <section id="specification-protocol-changes"><h2><span class="section-heading">Specification: Protocol Changes</span><span class="section-anchor"> <a rel="bookmark" href="#specification-protocol-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The protocol is largely the same as that in the Orchard-ZSA Protocol described in ZIP 226 <a id="footnote-reference-8" class="footnote_reference" href="#zip-0226">4</a> and ZIP 227 <a id="footnote-reference-9" class="footnote_reference" href="#zip-0227">5</a>. The changes to the protocol are described in this section. The specification of the structure of Swap Orders (that are sent off-chain) is provided in the next section, <a href="#specification-swap-orders">Specification: Swap Orders</a>.</p>
@@ -143,8 +143,8 @@ preAuthActionGroup.nActionsOrchard</code></td>
                             <tr>
                                 <td><code>852 * nActionsOrchard</code></td>
                                 <td><code>vActionsOrchard</code></td>
-                                <td><code>OrchardZSAAction[nActionsOrchard]</code></td>
-                                <td>A sequence of ZSA Swap Action descriptions in the Action Group.</td>
+                                <td><code>OrchardZsaAction[nActionsOrchard]</code></td>
+                                <td>A sequence of ZSA Swap Action descriptions in the Action Group. The ''OrchardZsaAction'' type is defined in ZIP 230 [#zip-0230].</td>
                             </tr>
                             <tr>
                                 <td><code>1</code></td>
@@ -190,7 +190,7 @@ preAuthActionGroup.nActionsOrchard</code></td>
                 , which is defined to be
                     <span class="math">\(\mathsf{AGHash} := \mathsf{BLAKE2b}\texttt{-}\mathsf{256}(\texttt{"ZcashActionGroup"}, \mathsf{preAuthActionGroup})\)</span>
                 .</p>
-                <p>This change ensures that no changes are required in the Action Statement to be proved.</p>
+                <p>This change ensures that no changes are required in the Action statement to be proved.</p>
             </section>
             <section id="sighash-computation-changes"><h3><span class="section-heading">SIGHASH Computation Changes</span><span class="section-anchor"> <a rel="bookmark" href="#sighash-computation-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The addition of Action Groups to the Zcash transaction as another level of abstraction requires a change in the way transactions are hashed to compute the SIGHASH in ZIP 244, specifically in the <code>orchard_digest</code> section <a id="footnote-reference-16" class="footnote_reference" href="#zip-0244-orchard-digest">8</a>. We update the structure of the <code>orchard_digest</code> component of the SIGHASH as follows:</p>
@@ -254,11 +254,11 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     <span class="math">\(\mathsf{AGHash}\)</span>
                  using
                     <span class="math">\(\mathsf{rk}\)</span>
-                 as the validating key. (That is, the signature is over
+                 as the validating key (That is, the signature is over
                     <span class="math">\(\mathsf{AGHash}\)</span>
                  instead of
                     <span class="math">\(\mathsf{SigHash}\)</span>
-                .) The time limit also needs to be checked during verification. Specifically, the consensus rule becomes (if any checks fail, the transaction MUST be rejected):</p>
+                ). The time limit also needs to be checked during verification. Specifically, the consensus rule becomes (if any checks fail, the transaction MUST be rejected):</p>
                 <blockquote>
                     <ul>
                         <li>for all AG in ActionGroups do:
@@ -389,14 +389,14 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                  and create a note for themself, to receive the desired amount of another Asset
                     <span class="math">\(\mathsf{A}_2\)</span>
                 .</p>
-                <p>To support a CLOB like trading environment, the Order senders do not know in advance with whom their orders will be matched, so they do not know, in advance, who is the recipient of the funds they offer to swap. As such, they cannot create notes for a recipient other than themself. To form an Order, the sender must generate Actions with output notes and associated commitments, that use their own diversifier
+                <p>To support a Closed Ledger Order Book (CLOB)-like trading environment, the Order senders do not know in advance with whom their orders will be matched, so they do not know, in advance, who is the recipient of the funds they offer to swap. As such, they cannot create notes for a recipient other than themself. To form an Order, the sender must generate Actions with output notes and associated commitments, that use their own diversifier
                     <span class="math">\(\mathsf{d}\)</span>
                  and diversified transmission key
                     <span class="math">\(\mathsf{pk_d}\)</span>
                  <a id="footnote-reference-20" class="footnote_reference" href="#protocol-notes">9</a>.</p>
                 <p>Each Order can be seen as an “invalid" ZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).</p>
                 <p>Furthermore, each Order contains a specific Action that pays "matching fees" to the party performing the matching. This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties. In the P2P case the matcher is simply the second party out of the two (See the <a href="#fees">Fees</a> section for more details).</p>
-                <p>ZIP 226 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0226">4</a>, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. The structure there requires that the input and output notes of the OrchardZSA Action must have the same asset base. This ZIP continues with the same idea, i.e. the manipulation of a single Asset Base per Action. Therefore, Swap Orders are expected to generally have at least three Actions:</p>
+                <p>ZIP 226 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0226">4</a>, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base. This ZIP continues with the same idea, i.e. the manipulation of a single Asset Base per Action. Therefore, Swap Orders are expected to generally have at least three Actions:</p>
                 <ul>
                     <li>One Action for the Proposed Asset.</li>
                     <li>One Action for the Desired Asset.</li>
@@ -407,7 +407,7 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
             </section>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <section id="protection-against-replay-attacks"><h3><span class="section-heading">Protection against Replay attacks</span><span class="section-anchor"> <a rel="bookmark" href="#protection-against-replay-attacks"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+            <section id="protection-against-replay-attacks"><h3><span class="section-heading">Protection Against Replay attacks</span><span class="section-anchor"> <a rel="bookmark" href="#protection-against-replay-attacks"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>We consider whether our change from signing the SIGHASH in the spend authorization signature to signing the Action Group Hash opens any possibilities of replay attacks.</p>
                 <p>This is prevented by the use of the updated SIGHASH in the binding signature. If an adversary tries to extract an Action Group and associated Spend Authorization Signature from a transaction on the network to replay it within another transaction - which would potentially be detrimental to the matcher as it could make their bundle invalid (if the replayed Action Group gets included first on-chain) - the adversary will also need to be able to generate a binding signature on their replayed transaction, which is not possible without knowing the
                     <span class="math">\(\mathsf{bsk}\)</span>
@@ -416,17 +416,17 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                  is sent within the Swap Order, which is assumed to be communicated over a secure channel off-chain between the parties. This precludes the possibility of replay attacks.</p>
             </section>
             <section id="non-malleability-of-the-time-limit"><h3><span class="section-heading">Non-Malleability of the Time Limit</span><span class="section-anchor"> <a rel="bookmark" href="#non-malleability-of-the-time-limit"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>We protect against the malleation of the time limit field by a malicious matching party (in order to take advantage of the "free option" that it could obtain by extending the validity of an Order) by including the time limit inside the Action Group Hash that is signed using the Spend Authorization Signature (see more details in <a href="#rationale-for-time-limit">Rationale for Time Limit</a>). The security of the Spend Authorization Signature and the collision resistance of the BLAKE2b-256 hash then ensures that the time limit remains the same as the one mandated by the creator of the Swap Order.</p>
+                <p>We protect against the malleation of the <code>timeLimit</code> field by a malicious matching party (in order to take advantage of the "free option" that it could obtain by extending the validity of an Order) by including the time limit inside the Action Group Hash that is signed using the Spend Authorization Signature (see more details in <a href="#rationale-for-time-limit">Rationale for Time Limit</a>). The security of the Spend Authorization Signature and the collision resistance of the BLAKE2b-256 hash then ensures that the time limit remains the same as the one mandated by the creator of the Swap Order.</p>
             </section>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The primary goal of a fee mechanism is twofold:</p>
                 <ul>
-                    <li>It should disincentivize malicious users from flooding the network with spam Swap offers that are unlikely to be matched.</li>
+                    <li>It should disincentivize malicious users from flooding the network with spam Swap Orders that are unlikely to be matched.</li>
                     <li>It should incentivize the party performing the matching to perform the additional work required to match orders and bundle them together.</li>
                 </ul>
-                <p>For the matching to be economically viable, the fees captured by the matcher to create the bundle must at least be higher than the fees needed to settle the bundle on the chain.</p>
+                <p>For the matching to be economically viable, the fees captured by the Matcher to create the bundle must at least be higher than the fees needed to settle the bundle on the chain.</p>
                 <p>The proposed changes to the transaction structure and the consensus checks also require a change in the fees paid to miners. The use of Action Groups adds information to the transaction object, and adds more bytes to the blockchain state. This needs to be paid for by network users and will result in an increase in the expected fee, though the logic is the same.</p>
                 <p>The fees being paid in ZEC helps alleviate concerns about other Assets piggy-backing on the Zcash network without providing value to holders of ZEC. Even beyond that, taking fees in the traded assets exposes the Matcher to all traded assets. This may pose regulatory issues for the Matcher (e.g. if specific assets are deemed illegal in specific jurisdictions). The effect of this may be the re-creation of mechanisms of central exchanges, where only a specific list of assets are accepted for trading by matchers (similar to the “asset listing” approach of centralized exchanges).</p>
             </section>
@@ -446,16 +446,16 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                         <p>The Matcher must be able to receive incoming Swap Orders from traders willing to use it to Swap ZSAs. We assume that a Matcher is discoverable by market participant (e.g. it has a website), that traders can send Orders to the Matcher (e.g. using a secure 1-to-1 communication channel) and that a Matcher defines its own logic to process the received Swap Orders. Examples of such logic are:</p>
                         <ul>
                             <li>A set of validity checks to run on the received Swap Orders, e.g. to prevent DoS attacks (See <a href="#denial-of-service-dos-prevention">Denial-of-Service (DoS) Prevention</a>). If the verification of a Swap Order fails, the Swap Order gets rejected.</li>
-                            <li>A set of operations to manage the valid Swap Orders waiting to be matched. This could include, for instance, a set of data structures and operations to manage a mempool/Central Limit Order Book (CLOB), following a chosen ordering policy (See, <a href="#clob-and-matching-policies">CLOB and Matching Policies</a> for more details), etc.</li>
+                            <li>A set of operations to manage the valid Swap Orders waiting to be matched. This could include, for instance, a set of data structures and operations to manage a mempool/CLOB, following a chosen ordering policy (See, <a href="#clob-and-matching-policies">CLOB and Matching Policies</a> for more details), etc.</li>
                         </ul>
                     </section>
-                    <section id="create-swap-bundles-and-settle"><h5><span class="section-heading">Create Swap Bundles and Settle</span><span class="section-anchor"> <a rel="bookmark" href="#create-swap-bundles-and-settle"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                    <section id="create-swap-bundles-and-send-on-chain"><h5><span class="section-heading">Create Swap Bundles and Send on-chain</span><span class="section-anchor"> <a rel="bookmark" href="#create-swap-bundles-and-send-on-chain"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
                         <p>This step performs a set of operations, which from a set of matched Orders (see the previous step) builds a Swap Bundle to be sent on-chain as a Zcash transaction for settlement.</p>
                     </section>
                 </section>
             </section>
             <section id="clob-and-matching-policies"><h3><span class="section-heading">CLOB and Matching Policies</span><span class="section-anchor"> <a rel="bookmark" href="#clob-and-matching-policies"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The Matcher-based trading protocol for ZSA is primarily modeled after Central Limit Order Book (CLOB)-based execution <a id="footnote-reference-22" class="footnote_reference" href="#clob">13</a>. The Matcher is assumed to receive Swap Orders, add and order them in a data structure and match them when their terms align. Generally, sorting in a CLOB is made according to: 1st prices and 2nd the time at which an order is received by the Matcher.</p>
+                <p>The Matcher-based trading protocol for ZSA is primarily modeled after CLOB-based execution <a id="footnote-reference-22" class="footnote_reference" href="#clob">13</a>. The Matcher is assumed to receive Swap Orders, add and order them in a data structure and match them when their terms align. Generally, sorting in a CLOB is made according to: 1st prices and 2nd the time at which an order is received by the Matcher.</p>
                 <p>We can identify different ways to “consume” the CLOB, i.e., match Swap Orders together:</p>
                 <ul>
                     <li>Match on exact same quantities for proposed and desired assets. The check is: (
