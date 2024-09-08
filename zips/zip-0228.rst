@@ -112,7 +112,7 @@ The pre-authorization Action Group description data type, ``ActionGroupDescripti
 |``varies``                   |``nActionsOrchard``       |``compactSize``                                   |The number of Action descriptions in ``vActionsOrchard``.            |  
 +-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 |``852 * nActionsOrchard``    |``vActionsOrchard``       |``OrchardZsaAction[nActionsOrchard]``             |A sequence of ZSA Swap Action descriptions in the Action Group.      |  
-|                             |                          |                                                  |The ''OrchardZsaAction'' type is defined in ZIP 230 [#zip-0230].     |  
+|                             |                          |                                                  |The ''OrchardZsaAction'' type is defined in ZIP 230 [#zip-0230]_.    |  
 +-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 |``1``                        |``flagsOrchard``          |``byte``                                          |As defined in Section 7.1 of the Protocol                            |  
 |                             |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
@@ -523,6 +523,7 @@ References
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.html>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <zip-0227.html>`_
 .. [#zip-0227-assetbase] `ZIP 227: Issuance of Zcash Shielded Assets - Specification: Asset Identifier <zip-0227.html#specification-asset-identifier>`_
+.. [#zip-0230] `ZIP 230: Version 6 Transaction Format <zip-0230.html>`_
 .. [#zip-0230-transaction-format] `ZIP 230: Version 6 Transaction Format - Transaction Format <zip-0230.html#transaction-format>`_
 .. [#zip-0244-orchard-digest] `ZIP 244: Transaction Identifier Non-Malleability: T4. orchard_digest <zip-0244.html#t-4-orchard-digest>`_
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2023.4.0. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
