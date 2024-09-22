@@ -168,16 +168,16 @@ The use of different value base points for different Assets enables the final ba
 Burn Mechanism
 --------------
 
-The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". 
-The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. 
+The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed" by the holder. 
+The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation. 
 It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets.
 Burning makes it globally provable that a given amount of an Asset has been destroyed.
 
-In the `Orchard-ZSA Transaction Structure`_, there now is an :math:`\mathsf{assetBurn}` set. 
+In the `Orchard-ZSA Transaction Structure`_, there is now an :math:`\mathsf{assetBurn}` set. 
 For every Custom Asset (represented by its :math:`\mathsf{AssetBase}\!`) that is burnt in the transaction, the sender adds to :math:`\mathsf{assetBurn}` the tuple :math:`(\mathsf{AssetBase}, \mathsf{v})`, where :math:`\mathsf{v}` is the amount of the Custom Asset the sender wants to burn. 
 We denote by :math:`L` the cardinality of the :math:`\mathsf{assetBurn}` set in a transaction.
 
-As we will see in `Value Balance Verification`_, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. 
+As described in `Value Balance Verification`_, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. 
 This ensures that the values are all balanced out on a per-Asset basis in the transaction.
 
 Additional Consensus Rules

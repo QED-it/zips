@@ -195,8 +195,8 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </section>
             </section>
             <section id="burn-mechanism"><h3><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed". The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation at the consensus level. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets. Burning makes it globally provable that a given amount of an Asset has been destroyed.</p>
-                <p>In the <a href="#orchard-zsa-transaction-structure">Orchard-ZSA Transaction Structure</a>, there now is an
+                <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Asset Identifier to be "destroyed" by the holder. The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets. Burning makes it globally provable that a given amount of an Asset has been destroyed.</p>
+                <p>In the <a href="#orchard-zsa-transaction-structure">Orchard-ZSA Transaction Structure</a>, there is now an
                     <span class="math">\(\mathsf{assetBurn}\)</span>
                  set. For every Custom Asset (represented by its
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
@@ -211,7 +211,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  the cardinality of the
                     <span class="math">\(\mathsf{assetBurn}\)</span>
                  set in a transaction.</p>
-                <p>As we will see in <a href="#value-balance-verification">Value Balance Verification</a>, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. This ensures that the values are all balanced out on a per-Asset basis in the transaction.</p>
+                <p>As described in <a href="#value-balance-verification">Value Balance Verification</a>, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. This ensures that the values are all balanced out on a per-Asset basis in the transaction.</p>
                 <section id="additional-consensus-rules"><h4><span class="section-heading">Additional Consensus Rules</span><span class="section-anchor"> <a rel="bookmark" href="#additional-consensus-rules"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <ol type="1">
                         <li>Check that for every
