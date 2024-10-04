@@ -12,7 +12,7 @@
            Jonathan Rouach
            Pablo Kogan
            Vivek Arte
-  Status: Draft
+  Status: Revision 0: Active, Revision 1: Draft
   Category: Standards / Wallet
   Obsoletes: ZIP 313
   Created: 2022-08-15
@@ -52,7 +52,7 @@ The goal of this ZIP is to change the conventional fees for transactions
 by making them dependent on the number of inputs and outputs in a transaction,
 and to get buy-in for this change from wallet developers, miners and Zcash users.
 
-This ZIP also explicitly defines the fee mechanism associated with the Zcash Shielded Assets (ZSA) protocol as described in ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_.
+Revision 1 of this ZIP additionally defines the fee mechanism associated with the Zcash Shielded Assets (ZSA) protocol as described in ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_.
 
 
 Motivation
@@ -75,11 +75,19 @@ impose on various participants in the network. This will tend to discourage
 usage patterns that cause either intentional or unintentional denial of service,
 while still allowing low fees for regular transaction use cases.
 
-The proposed upgrade to the ZSA protocol will also need to define a fee structure consistent with the above objectives. This involves adaptation for the transfer protocol [#zip-0226]_, as well as additional considerations for the issuance protocol [#zip-0227]_ such as fees for asset issuance.
+Revision 1:
+-----------
 
-Specifically, the ZSA Transfer and Burn mechanism should follow the same fee mechanism in order to not discriminate between transfer bundle types. When it comes to Issuance of ZSA, however, we believe that there should be a disincentive that will stop users from flooding the chain with useless asset identifiers.
+The upgrade to the ZSA protocol will also need to define a fee structure consistent with the above objectives. 
+This involves adaptation for the transfer protocol [#zip-0226]_, as well as additional considerations for the issuance protocol [#zip-0227]_ such as fees for asset issuance. 
 
-In the case of Issuance, the computational power needed to verify the bundle is not large. The transaction size, however, can be an issue as the number of output notes can be large. Furthermore, as defined in ZIP 227 [#zip-0227]_, there is an additional data structure in the global state that needs to be maintained as part of the consensus. This motivates further the addition of an Issuance-specific fee.
+Specifically, the ZSA Transfer and Burn mechanism should follow the same fee mechanism in order to not discriminate between transfer bundle types. 
+When it comes to Issuance of ZSA, however, there should be a disincentive that will stop users from flooding the chain with useless asset identifiers.
+
+In the case of Issuance, the computational power needed to verify the bundle is not large. 
+The transaction size, however, can be an issue as the number of output notes can be large. 
+Furthermore, as defined in ZIP 227 [#zip-0227]_, there is an additional data structure in the global state that needs to be maintained as part of the consensus. 
+This motivates further the addition of an Issuance-specific fee.
 
 
 Requirements
@@ -95,13 +103,20 @@ Requirements
   two inputs and two outputs for each shielded pool used by the transaction).
 * Users should be able to spend a small number of UTXOs or notes with value
   below the marginal fee per input.
-* Post the upgrade to the ZSA protocol, users should be discouraged from issuing new “garbage” custom Assets.
-* Post the upgrade to the ZSA protocol, users should be discouraged from finalizing Assets frivolously.
+* Revision 1: Users should be discouraged from issuing new “garbage” custom Assets. 
+  The fee should reflect the cost of adding new data to the global state.
 
 
 
 Specification
 =============
+
+Revisions
+---------
+
+* Revision 0: The initial version of this specification.
+* Revision 1: This version adds to the fees mechanism post the adoption of the ZSA Protocol.
+  It adds additional fee considerations for the issuance and finalization of custom Zcash Shielded Assets.
 
 Notation
 --------
@@ -290,16 +305,16 @@ potential denial-of-service attacks.
    </details>
 
 
-ZSA Fee calculation
--------------------
+Revision 1: ZSA Fee calculation
+-------------------------------
 In addition to the parameters defined in the `Fee calculation`_ section, the ZSA protocol upgrade defines the following additional parameters:
 
-===================================== =============== ===============================================
-Parameter                                 Value         Units
-===================================== =============== ===============================================
-:math:`issuance\_fee`                 :math:`1000000` zatoshis per issuance action (as defined below)
-:math:`finalize\_fee`                 :math:`1000000` zatoshis per issuance action (as defined below)
-===================================== =============== ===============================================
+===================================== ================================ ===============================================
+Parameter                             Value                            Units
+===================================== ================================ ===============================================
+:math:`issuance\_fee`                 :math:`100 \cdot marginal\_fee`  zatoshis per issuance action (as defined below)
+:math:`finalize\_fee`                 :math:`20 \cdot marginal\_fee`   zatoshis per issuance action (as defined below)
+===================================== ================================ ===============================================
 
 Wallets implementing this specification SHOULD use a conventional fee, viz. :math:`zsa\_conventional\_fee`, that is
 calculated in zatoshis per the following formula:
@@ -310,7 +325,7 @@ calculated in zatoshis per the following formula:
      zsa\_logical\_actions  &=& logical\_actions \;+ \\
                        & & nTotalOutputsZsaIssuance \\
      zsa\_conventional\_fee &=& marginal\_fee \cdot \mathsf{max}(grace\_actions, zsa\_logical\_actions) \;+ \\
-                       & & issuance\_fee \cdot nIssueActions \;+ \\
+                       & & issuance\_fee \cdot nIssueActions \;- \\
                        & & finalize\_fee \cdot nFinalizeActions
    \end{array}
 
@@ -589,10 +604,10 @@ enforces a minimum fee of 100 zatoshis (this differs from `zcashd` only for
 valid transactions of less than 1000 bytes, assuming that `zcashd` uses its
 default value for ``-minrelaytxfee``).
 
-Deployment of ZSA changes
--------------------------
+Revision 1: Deployment of ZSA changes
+-------------------------------------
 
-The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of the deployment of the ZSA protocol (ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_), which is currently projected to be with Network Upgrade 6.
+The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of the deployment of the ZSA protocol (ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_), which is currently projected to be with Network Upgrade 7.
 
 
 Considered Alternatives
@@ -618,8 +633,8 @@ Possible alternatives for the parameters:
 of inputs/outputs to be non-proportional above the :math:`grace\_actions`
 threshold. This is no longer expressible with the formula specified above.)
 
-ZSA Fee Considerations
-======================
+Revision 1: ZSA Fee Considerations
+==================================
 
 We choose to maintain the native ZEC Asset as the primary token for the Zcash blockchain, similar to how ETH is needed for ERC20 transactions to the benefit of the Ethereum ecosystem.
 
