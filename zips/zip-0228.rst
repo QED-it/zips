@@ -100,8 +100,9 @@ The ``ActionGroupDescription`` data type contains the following fields:
 |                                    |                          |                                                  |signatures.                                                          |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 |``64 *                              |``vSpendAuthSigsOrchard`` |``byte[64][preAuthActionGroup.nActionsOrchard]``  |Authorizing signatures for the inclusion of each Action of the       |  
-|preAuthActionGroup.nActionsOrchard``|                          |                                                  |Action Group in a transaction.                                       |  
-|                                    |                          |                                                  |See `Spend Authorization Signature Changes`_ for details.            |  
+|preAuthActionGroup.nActionsOrchard``|                          |                                                  |Action Group in a transaction. This is computed as defined in Section|
+|                                    |                          |                                                  |4.15 of the Protocol Specification [#protocol-spendauthsig]_,        |  
+|                                    |                          |                                                  |using the SIGHASH as computed in `SIGHASH Computation Changes`_.     |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 
 The pre-authorization Action Group description data type, ``ActionGroupDescriptionPreAuth``, contains the following fields:
@@ -135,14 +136,6 @@ The pre-authorization Action Group description data type, ``ActionGroupDescripti
     :figclass: align-center
 
     An example Zcash transaction with a Swap Bundle (simplified, for reference only).
-
-Spend Authorization Signature Changes
--------------------------------------
-
-The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification [#protocol-spendauthsig]_, except that the signature is generated over the Action Group Hash, :math:`\mathsf{AGHash}`, which is defined to be
-:math:`\mathsf{AGHash} := \mathsf{BLAKE2b}\texttt{-}\mathsf{256}(\texttt{"ZcashActionGroup"}, \mathsf{preAuthActionGroup})`.
-
-This change ensures that no changes are required in the Action statement [#zip-0226-circuit-statement]_ to be proved.
 
 SIGHASH Computation Changes
 ---------------------------
