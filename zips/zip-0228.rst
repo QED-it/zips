@@ -42,7 +42,7 @@ This ZIP introduces Asset Swaps for Zcash Shielded Assets (ZSA). It builds on to
 Motivation
 ==========
 
-ZIP 227 and ZIP 226 equip Zcash with the ability to issue, transfer, and burn Custom Assets, enabling multi-asset support on the Zcash chain. This support opens the door for applications like asset swaps, which allow users to trade assets on Zcash without using centralized exchanges. Importantly, ZSA Swaps will allow users to keep full custody of their funds while trading their assets. In light of the number of “DeFi/smart contract hacks” and bankrupt exchanges which mismanaged user funds (e.g. FTX), providing users with a secure and privacy-preserving way to trade, while staying in control of their funds, is a tremendous improvement on the status quo in the realm of (privacy preserving) cryptocurrencies. Assets Swaps for ZSA is another milestone that would unleash a myriad of use cases on the Zcash ecosystem.
+ZIP 227 and ZIP 226 equip Zcash with the ability to issue, transfer, and burn Custom Assets, enabling multi-asset support on the Zcash chain. This support opens the door for applications like asset swaps, which allow users to trade assets on Zcash without using centralized exchanges. Importantly, ZSA Swaps will allow users to keep full custody of their funds while trading their assets. In light of the number of “DeFi/smart contract hacks” and bankrupt exchanges which mismanaged user funds, providing users with a secure and privacy-preserving way to trade, while staying in control of their funds, is a tremendous improvement on the status quo in the realm of (privacy preserving) cryptocurrencies. Assets Swaps for ZSA is another milestone that would unleash a myriad of use cases on the Zcash ecosystem.
 
 Overview
 ========
@@ -58,10 +58,10 @@ The proposed protocol allows trading parties in a peer-to-peer setting to send (
 
 
 A key challenge is that Swap Orders that match may contain Actions and Zero Knowledge Proofs generated using different blockchain states and roots of note commitment trees.
-In the current (NU5) protocol, each transaction contains a set of Actions and Proofs generated using a single anchor/Merkle root, and there is no way to combine independently generated halo2 proofs into a single combined proof.
+In the current (NU5) protocol, each Orchard bundle contains a set of Actions and Proofs generated using a single anchor/Merkle root.
 
 To enable combining Actions and Proofs from different blockchain states, the concept of an Action Group is introduced in this ZIP. An Action Group groups together Actions and Proofs generated using a common commitment tree root.
-Action Groups replace Actions in the Zcash transaction format. This allows for creating a single Zcash transaction from different sets of Actions and Proofs generated using different anchors and blockchain states.
+This allows for creating a single Zcash transaction from different sets of Actions and Proofs generated using different anchors and blockchain states.
 This Action Groups-based transaction structure enables a wide range of use-cases to be built on Zcash, such as: P2P ZSA Swaps, Zcash transaction relays or ZSA Swaps via a centralized Matcher - to name a few. (More details are under the `Matchers`_ heading in the `Other Considerations`_ section of this ZIP.)
 
 Specification: Protocol Changes
@@ -266,9 +266,8 @@ Rationale for Time Limit
 ````````````````````````
 
 Adding a ``timeLimit`` parameter to the Action Group object (or to the Action object) allows senders of Orders to set some expiry parameters on their orders to avoid granting trading counterparties an indefinite option on their trade intents. 
-In fact, if an order (e.g. “BUY 1 A1 for 100 A2”, i.e. “Proposed: 100 A2, Desired: 1 A1") cannot expire, it may stay on the Matcher's order book for a very long time. 
-This could provide the rest of the market with a great trading opportunity if the market value of A2 doubles to 1 A1 for 50 A2. 
-In this case, whoever sends a matching order “BUY 100 A2 for 1 A1”, i.e. “Proposed 1 A1, Desired: 100 A2") could match the old “1 A1 for 100 A2" order and pocket A2 at a discount from the current market value, at the expense of the traders who saw their orders stuck on the Matcher's order book for this extended period of time.
+In fact, if an order cannot expire, it may stay on the Matcher's order book for a very long time. 
+This could provide the rest of the market with a great trading opportunity based on the changing market values of the Assets present in an Order that has yet to be matched. 
 Setting a time limit for the Swap Orders helps alleviate this issue and provides a protection to the senders of Swap Orders.
 
 The ``timeLimit`` is an integer that represents the max block height in which a given Action Group can be included on the chain.
@@ -354,8 +353,11 @@ The ``SwapIO`` data type is used to represent the input and output of a Swap Ord
 Rationale for Swap Orders
 -------------------------
 
-In a Swap Order, senders only manipulate their funds. 
-This means that senders of Orders spend their notes (input) denominated in an Asset :math:`\mathsf{A}_1` and create a note for themself, to receive the desired amount of another Asset :math:`\mathsf{A}_2`.
+The reason for introducing Swap Orders that are transmitted off-chain is that the Actions involving any particular ZSA are shielded.
+Therefore, in order to allow parties to trade ZSAs and create matching Action Groups, they must communicate the details of their trade intent off-chain.
+
+The Swap Order is the construct by which parties reveal necessary information about the content of their offer. 
+The senders of Orders spend their notes (input) denominated in an Asset :math:`\mathsf{A}_1` and create a note for themself, to receive the desired amount of another Asset :math:`\mathsf{A}_2`.
 
 To support a Closed Ledger Order Book (CLOB)-like trading environment, the Order senders do not know in advance with whom their orders will be matched, so they do not know, in advance, who is the recipient of the funds they offer to swap. 
 As such, they cannot create notes for a recipient other than themself. 
@@ -364,7 +366,7 @@ To form an Order, the sender must generate Actions with output notes and associa
 Each Order can be seen as an “invalid" OrchardZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. 
 Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).
 
-Furthermore, each Order contains a specific Action that pays "matching fees" to the party performing the matching. 
+Furthermore, each Order can contain a specific Action that pays "matching fees" to the party performing the matching. 
 This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties.
 In the P2P case the matcher is simply the second party out of the two (See the `Fees`_ section for more details).
 
@@ -393,7 +395,7 @@ This precludes the possibility of replay attacks.
 Non-Malleability of the Time Limit
 ----------------------------------
 
-We protect against the malleation of the ``timeLimit`` field by a malicious matching party (in order to take advantage of the "free option" that it could obtain by extending the validity of an Order) by including the time limit inside the Action Group Hash that is signed using the Spend Authorization Signature (see more details in `Rationale for Time Limit`_).
+We protect against the malleation of the ``timeLimit`` field by a malicious matching party by including the time limit inside the Action Group Hash that is signed using the Spend Authorization Signature (see more details in `Rationale for Time Limit`_).
 The security of the Spend Authorization Signature and the collision resistance of the BLAKE2b-256 hash then ensures that the time limit remains the same as the one mandated by the creator of the Swap Order.
 
 Other Considerations
@@ -465,24 +467,13 @@ In practice though, modern CLOBs offer partial fills to their users, allowing tr
 Offering partial fills without making strong assumptions on the Matcher (e.g. “The Matcher is a market maker that takes the other side of each trade”) or on the availability of traders (e.g. “Traders stay online and stay connected to the Matcher to split their orders on-demand”) is hard.
 This is particularly at odds with the protocol in this ZIP, since the Matcher is non-custodian and thus only manipulates commitments and notes, which are generated before the matching occurs: traders commit to values, which may need to be changed - in the future - to align with the matching operation of the Matcher (done at a subsequent time).
 
-Some of the proposals to allow for this are:
+Some of the potential solutions to allow for this are:
 
 - The use of standard denomination for orders.
 - The inclusion of a special flag “partialFill = true” to flag to the Matcher that the trader is willing to stay online to split orders on demand.
 - Existence of a third party Market Maker providing liquidity to the many ZSA pairs traded on the system.
 
 All of these proposals have their pros and cons, and warrant further study and discussion.
-
-Fairness
---------
-
-It is important to provide a good execution for both sides of a Swap. 
-As such, one side should not have an advantage against the other. 
-Every trading party must be able to withdraw their trading intent (i.e., cancel their orders).
-The main considerations here are:
-
-- Provide a mechanism for time-limiting Swaps to reduce freezing up of Assets due to their being locked up in Swaps that have not been completed, and to align with dynamically changing “exchange rates” between different Assets.
-- Consider repercussions of, and possible mitigations for, the “free option” that becomes available to the party that performs the last step of the protocol. That is, it is possible for that party to abort the protocol at this last step if the Swap is no longer beneficial for it.
 
 Denial-of-Service (DoS) Prevention
 ----------------------------------
@@ -492,7 +483,7 @@ In fact, the presence of a fee in a Swap Order doesn't ensure this fee is payabl
 A trader, Alice, can promise to pay 1000 ZEC, but this promise has no value unless it can be verified. The same applies to fees. 
 The Matcher must be able to carry out quick validity checks on Swap Orders to assess their probability to form valid Swap Bundles when matched. 
 This includes, verifying the ability for traders to pay the fees they must pay as part of the protocol. 
-These checks are probabilistic (the state of the blockchain can change in the meantime), but provide some guarantees to the Matcher that it will be paid for its services.
+These checks provide some guarantees to the Matcher that the components of the Swap Order are valid.
 
 Some helpful checks in this regard will be:
 
@@ -500,7 +491,7 @@ Some helpful checks in this regard will be:
 - Verifying the ZKPs: “Does the order contain valid Actions?”
 - Verifying the :math:`\mathsf{rcv}` values and other extra data attached to the Swap Order.
 - Verifying the time limit: “Has the order expired?”
-- Verifying the fee payment: “Can the Order pay the promised fee?”
+- Verifying the fee payment: “Does the Order contain a valid amount for fees?”
 
 
 Test Vectors
