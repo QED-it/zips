@@ -110,32 +110,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                         <tbody>
                             <tr>
                                 <td><code>varies</code></td>
-                                <td><code>preAuthActionGroup</code></td>
-                                <td><code>ActionGroupDescriptionPreAuth</code></td>
-                                <td>The pre-authorization Action Group description, without authorizing signatures.</td>
-                            </tr>
-                            <tr>
-                                <td><code>64 *
-preAuthActionGroup.nActionsOrchard</code></td>
-                                <td><code>vSpendAuthSigsOrchard</code></td>
-                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
-                                <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. This is computed as defined in Section 4.15 of the Protocol Specification <a id="footnote-reference-12" class="footnote_reference" href="#protocol-spendauthsig">13</a>, using the SIGHASH as computed in <a href="#sighash-computation-changes">SIGHASH Computation Changes</a>.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>The pre-authorization Action Group description data type, <code>ActionGroupDescriptionPreAuth</code>, contains the following fields:</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Bytes</th>
-                                <th>Name</th>
-                                <th>Data Type</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>varies</code></td>
                                 <td><code>nActionsOrchard</code></td>
                                 <td><code>compactSize</code></td>
                                 <td>The number of Action descriptions in <code>vActionsOrchard</code>.</td>
@@ -144,25 +118,25 @@ preAuthActionGroup.nActionsOrchard</code></td>
                                 <td><code>852 * nActionsOrchard</code></td>
                                 <td><code>vActionsOrchard</code></td>
                                 <td><code>OrchardZsaAction[nActionsOrchard]</code></td>
-                                <td>A sequence of ZSA Swap Action descriptions in the Action Group. The ''OrchardZsaAction'' type is defined in ZIP 230 <a id="footnote-reference-13" class="footnote_reference" href="#zip-0230">8</a>.</td>
+                                <td>A sequence of ZSA Swap Action descriptions in the Action Group. The ''OrchardZsaAction'' type is defined in ZIP 230 <a id="footnote-reference-12" class="footnote_reference" href="#zip-0230">8</a>.</td>
                             </tr>
                             <tr>
                                 <td><code>1</code></td>
                                 <td><code>flagsOrchard</code></td>
                                 <td><code>byte</code></td>
-                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-14" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
+                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-13" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
                             </tr>
                             <tr>
                                 <td><code>32</code></td>
                                 <td><code>anchorOrchard</code></td>
                                 <td><code>byte[32]</code></td>
-                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-15" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
+                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-14" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
                             </tr>
                             <tr>
                                 <td><code>varies</code></td>
                                 <td><code>sizeProofsOrchard</code></td>
                                 <td><code>compactSize</code></td>
-                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
+                                <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-15" class="footnote_reference" href="#protocol-txnencoding">14</a>.</td>
                             </tr>
                             <tr>
                                 <td><code>sizeProofsOrchard</code></td>
@@ -175,6 +149,13 @@ preAuthActionGroup.nActionsOrchard</code></td>
                                 <td><code>timeLimit</code></td>
                                 <td><code>uint32</code></td>
                                 <td>The block number (in the future) after which the Actions of the Action Group become invalid and should be rejected by consensus.</td>
+                            </tr>
+                            <tr>
+                                <td><code>64 *
+preAuthActionGroup.nActionsOrchard</code></td>
+                                <td><code>vSpendAuthSigsOrchard</code></td>
+                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
+                                <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. This is computed as defined in Section 4.15 of the Protocol Specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-spendauthsig">13</a>, using the SIGHASH as computed in <a href="#sighash-computation-changes">SIGHASH Computation Changes</a>.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -218,6 +199,9 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                         <pre>BLAKE2b-256("ZTxIdOrcActGHash", [])</pre>
                     </section>
                 </section>
+            </section>
+            <section id="spend-authorization-signature-changes"><h3><span class="section-heading">Spend Authorization Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#spend-authorization-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification <a id="footnote-reference-19" class="footnote_reference" href="#protocol-spendauthsig">13</a>, except that the signature is generated over <code>orchard_action_groups_digest</code>, as defined in <a href="#t-4a-orchard-action-groups-digest">T.4a: orchard_action_groups_digest</a>.</p>
             </section>
             <section id="binding-signature-changes"><h3><span class="section-heading">Binding Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#binding-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The binding signature is generated using the Orchard Binding Signature scheme, by signing the SIGHASH, computed as described in the <a href="#sighash-computation-changes">SIGHASH Computation Changes</a> section, using the signing key
@@ -283,13 +267,13 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     <p>The <code>timeLimit</code> is an integer that represents the max block height in which a given Action Group can be included on the chain. As such, the time limit truly represents the settlement time limit, not the execution time limit. This distinction is important because in our example, execution is happening offchain on the Matcher and settlement happens on the chain (i.e. introducing the Matcher to create bundles and match SO's together adds a step to the lifecycle of the trade and decouples execution and settlement, which otherwise happen at the same time, on-chain). So, if we want the time limit to be part of the validity checks of a transaction on Zcash, we have to treat the time limit as a settlement parameter rather than an execution one. As a result, it is plausible that the party performing the matching and sending it for settlement will not match orders having a time limit that is near enough that it might not get settled on time due to the expected delay between the matching and the inclusion within a block.</p>
                 </section>
                 <section id="rationale-for-spend-authorization-signature-changes"><h4><span class="section-heading">Rationale for Spend Authorization Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-spend-authorization-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>In the current (NU5) Zcash protocol, each Action includes a Spend Authorization Signature <a id="footnote-reference-19" class="footnote_reference" href="#protocol-spendauthsig">13</a> that binds a specific spend instruction to a specific transaction and prevents replay attacks. However, in the context of Asset Swaps, there are two problems that prevent this mechanism from being carried over unchanged.</p>
+                    <p>In the current (NU5) Zcash protocol, each Action includes a Spend Authorization Signature <a id="footnote-reference-20" class="footnote_reference" href="#protocol-spendauthsig">13</a> that binds a specific spend instruction to a specific transaction and prevents replay attacks. However, in the context of Asset Swaps, there are two problems that prevent this mechanism from being carried over unchanged.</p>
                     <ul>
-                        <li>The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.</li>
+                        <li>The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP 244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.</li>
                         <li>The <code>timeLimit</code> parameter is a new addition to the protocol, and is therefore not included in the existing SIGHASH. Swap Orders need to be made non-malleable in order to ensure that the party performing the matching cannot change the time limit unilaterally.</li>
                     </ul>
-                    <p>To make sure the time limit isn't malleable, we have the Order sender sign the Order content (i.e. the Action Group of the Order). Thus, the sender “seals” the time limit within the Action Group, with the signature verification key being derived in the circuit. This effectively links the time limit parameter to the Actions proof. A party trying to tweak the time limit of received orders while matching orders will then need to generate a new proof for the Actions in the Order, which isn't possible without knowing the full witness.</p>
-                    <p>This approach is natural and aligns with the goal of the protocol. Signing together all the contents of the Order prevents the "terms" of the Order from being modified. This ensures that the party performing the matching and settlement is only given the authority to match the Order with other Orders to create a valid transaction, and does not get custody of the Assets in the Order.</p>
+                    <p>To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. The <code>orchard_action_groups_digest</code> contains this information, which is why we use this field from the SIGHASH computation. A party trying to tweak the time limit of received orders while matching orders will then need to be able to successfully forge the sender's Spend Authorization Signature.</p>
+                    <p>This approach is natural and aligns with the goal of the protocol. Signing together the contents of the Action Group prevents the "terms" of the Order from being modified. This ensures that the party performing the matching and settlement is only given the authority to match the Order with other Orders to create a valid transaction, and does not get custody of the Assets in the Order.</p>
                 </section>
                 <section id="rationale-for-sighash-computation-changes"><h4><span class="section-heading">Rationale for SIGHASH Computation Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-sighash-computation-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The protocol specified in this ZIP makes certain changes to the transaction format, such as using the Action Groups level of abstraction, and adding a new <code>timeLimit</code> field. The computation of SIGHASH is updated so as to capture all these changes into the hash, so as to bind all the parts of a transaction and make it non-malleable.</p>
@@ -365,7 +349,7 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                         <td><code>32</code></td>
                         <td><code>asset_base</code></td>
                         <td><code>byte[32]</code></td>
-                        <td>The Asset Base <a id="footnote-reference-20" class="footnote_reference" href="#zip-0227-assetbase">7</a> of the input/output of the Swap Order.</td>
+                        <td>The Asset Base <a id="footnote-reference-21" class="footnote_reference" href="#zip-0227-assetbase">7</a> of the input/output of the Swap Order.</td>
                     </tr>
                     <tr>
                         <td><code>8</code></td>
@@ -385,10 +369,10 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     <span class="math">\(\mathsf{d}\)</span>
                  and diversified transmission key
                     <span class="math">\(\mathsf{pk_d}\)</span>
-                 <a id="footnote-reference-21" class="footnote_reference" href="#protocol-notes">11</a>.</p>
+                 <a id="footnote-reference-22" class="footnote_reference" href="#protocol-notes">11</a>.</p>
                 <p>Each Order can be seen as an “invalid" ZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).</p>
                 <p>Furthermore, each Order contains a specific Action that pays "matching fees" to the party performing the matching. This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties. In the P2P case the matcher is simply the second party out of the two (See the <a href="#fees">Fees</a> section for more details).</p>
-                <p>ZIP 226 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226">4</a>, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base. This ZIP continues with the same idea, i.e. the manipulation of a single Asset Base per Action. Therefore, Swap Orders are expected to generally have at least three Actions:</p>
+                <p>ZIP 226 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base. This ZIP continues with the same idea, i.e. the manipulation of a single Asset Base per Action. Therefore, Swap Orders are expected to generally have at least three Actions:</p>
                 <ul>
                     <li>One Action for the Proposed Asset.</li>
                     <li>One Action for the Desired Asset.</li>
@@ -447,7 +431,7 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                 </section>
             </section>
             <section id="clob-and-matching-policies"><h3><span class="section-heading">CLOB and Matching Policies</span><span class="section-anchor"> <a rel="bookmark" href="#clob-and-matching-policies"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The Matcher-based trading protocol for ZSA is primarily modeled after CLOB-based execution <a id="footnote-reference-23" class="footnote_reference" href="#clob">15</a>. The Matcher is assumed to receive Swap Orders, add and order them in a data structure and match them when their terms align. Generally, sorting in a CLOB is made according to: 1st prices and 2nd the time at which an order is received by the Matcher.</p>
+                <p>The Matcher-based trading protocol for ZSA is primarily modeled after CLOB-based execution <a id="footnote-reference-24" class="footnote_reference" href="#clob">15</a>. The Matcher is assumed to receive Swap Orders, add and order them in a data structure and match them when their terms align. Generally, sorting in a CLOB is made according to: 1st prices and 2nd the time at which an order is received by the Matcher.</p>
                 <p>We can identify different ways to “consume” the CLOB, i.e., match Swap Orders together:</p>
                 <ul>
                     <li>Match on exact same quantities for proposed and desired assets. The check is: (
