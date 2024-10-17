@@ -96,38 +96,30 @@ The ``ActionGroupDescription`` data type contains the following fields:
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                              | Name                     | Data Type                                        | Description                                                         |
 +====================================+==========================+==================================================+=====================================================================+
-|``varies``                          |``preAuthActionGroup``    |``ActionGroupDescriptionPreAuth``                 |The pre-authorization Action Group description, without authorizing  |  
-|                                    |                          |                                                  |signatures.                                                          |  
+|``varies``                          |``nActionsOrchard``       |``compactSize``                                   |The number of Action descriptions in ``vActionsOrchard``.            |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``852 * nActionsOrchard``           |``vActionsOrchard``       |``OrchardZsaAction[nActionsOrchard]``             |A sequence of ZSA Swap Action descriptions in the Action Group.      |  
+|                                    |                          |                                                  |The ''OrchardZsaAction'' type is defined in ZIP 230 [#zip-0230]_.    |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``1``                               |``flagsOrchard``          |``byte``                                          |As defined in Section 7.1 of the Protocol                            |  
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``32``                              |``anchorOrchard``         |``byte[32]``                                      |As defined in Section 7.1 of the Protocol                            |  
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``varies``                          |``sizeProofsOrchard``     |``compactSize``                                   |As defined in Section 7.1 of the Protocol                            |  
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``sizeProofsOrchard``               |``proofsOrchard``         |``byte[sizeProofsOrchard]``                       |The aggregated zk-SNARK proof for all Actions in the Action Group.   |  
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``4``                               |``timeLimit``             |``uint32``                                        |The block number (in the future) after which the Actions of the      |  
+|                                    |                          |                                                  |Action Group become invalid and should be rejected by consensus.     |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 |``64 *                              |``vSpendAuthSigsOrchard`` |``byte[64][preAuthActionGroup.nActionsOrchard]``  |Authorizing signatures for the inclusion of each Action of the       |  
-|preAuthActionGroup.nActionsOrchard``|                          |                                                  |Action Group in a transaction.                                       |  
-|                                    |                          |                                                  |See `Spend Authorization Signature Changes`_ for details.            |  
+|preAuthActionGroup.nActionsOrchard``|                          |                                                  |Action Group in a transaction. This is computed as defined in Section|
+|                                    |                          |                                                  |4.15 of the Protocol Specification [#protocol-spendauthsig]_,        |  
+|                                    |                          |                                                  |using the SIGHASH as computed in `SIGHASH Computation Changes`_.     |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-
-The pre-authorization Action Group description data type, ``ActionGroupDescriptionPreAuth``, contains the following fields:
-
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-| Bytes                       | Name                     | Data Type                                        | Description                                                         |
-+=============================+==========================+==================================================+=====================================================================+
-|``varies``                   |``nActionsOrchard``       |``compactSize``                                   |The number of Action descriptions in ``vActionsOrchard``.            |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``852 * nActionsOrchard``    |``vActionsOrchard``       |``OrchardZsaAction[nActionsOrchard]``             |A sequence of ZSA Swap Action descriptions in the Action Group.      |  
-|                             |                          |                                                  |The ''OrchardZsaAction'' type is defined in ZIP 230 [#zip-0230]_.    |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``1``                        |``flagsOrchard``          |``byte``                                          |As defined in Section 7.1 of the Protocol                            |  
-|                             |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``32``                       |``anchorOrchard``         |``byte[32]``                                      |As defined in Section 7.1 of the Protocol                            |  
-|                             |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``sizeProofsOrchard``     |``compactSize``                                   |As defined in Section 7.1 of the Protocol                            |  
-|                             |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``sizeProofsOrchard``        |``proofsOrchard``         |``byte[sizeProofsOrchard]``                       |The aggregated zk-SNARK proof for all Actions in the Action Group.   |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``4``                        |``timeLimit``             |``uint32``                                        |The block number (in the future) after which the Actions of the      |  
-|                             |                          |                                                  |Action Group become invalid and should be rejected by consensus.     |  
-+-----------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 
 .. figure:: ../rendered/assets/images/zip-0228-swap-bundle.png
     :width: 1000px
@@ -135,14 +127,6 @@ The pre-authorization Action Group description data type, ``ActionGroupDescripti
     :figclass: align-center
 
     An example Zcash transaction with a Swap Bundle (simplified, for reference only).
-
-Spend Authorization Signature Changes
--------------------------------------
-
-The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification [#protocol-spendauthsig]_, except that the signature is generated over the Action Group Hash, :math:`\mathsf{AGHash}`, which is defined to be
-:math:`\mathsf{AGHash} := \mathsf{BLAKE2b}\texttt{-}\mathsf{256}(\texttt{"ZcashActionGroup"}, \mathsf{preAuthActionGroup})`.
-
-This change ensures that no changes are required in the Action statement [#zip-0226-circuit-statement]_ to be proved.
 
 SIGHASH Computation Changes
 ---------------------------
@@ -198,6 +182,11 @@ The personalization field of this hash is set to::
 In the case that the transaction has no Action Groups, ``orchard_action_groups_digest`` is ::
 
     BLAKE2b-256("ZTxIdOrcActGHash", [])
+
+Spend Authorization Signature Changes
+-------------------------------------
+
+The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification [#protocol-spendauthsig]_, except that the signature is generated over ``orchard_action_groups_digest``, as defined in `T.4a: orchard_action_groups_digest`_.
 
 Binding Signature Changes
 -------------------------
@@ -282,16 +271,15 @@ Rationale for Spend Authorization Signature Changes
 In the current (NU5) Zcash protocol, each Action includes a Spend Authorization Signature [#protocol-spendauthsig]_ that binds a specific spend instruction to a specific transaction and prevents replay attacks.
 However, in the context of Asset Swaps, there are two problems that prevent this mechanism from being carried over unchanged.
 
-- The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
+- The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP 244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
 - The ``timeLimit`` parameter is a new addition to the protocol, and is therefore not included in the existing SIGHASH. Swap Orders need to be made non-malleable in order to ensure that the party performing the matching cannot change the time limit unilaterally.
 
-To make sure the time limit isn't malleable, we have the Order sender sign the Order content (i.e. the Action Group of the Order). 
-Thus, the sender “seals” the time limit within the Action Group, with the signature verification key being derived in the circuit. 
-This effectively links the time limit parameter to the Actions proof.
-A party trying to tweak the time limit of received orders while matching orders will then need to generate a new proof for the Actions in the Order, which isn't possible without knowing the full witness.
+To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. 
+The ``orchard_action_groups_digest`` contains this information, which is why we use this field from the SIGHASH computation. 
+A party trying to tweak the time limit of received orders while matching orders will then need to be able to successfully forge the sender's Spend Authorization Signature.
 
 This approach is natural and aligns with the goal of the protocol.
-Signing together all the contents of the Order prevents the "terms" of the Order from being modified.
+Signing together the contents of the Action Group prevents the "terms" of the Order from being modified.
 This ensures that the party performing the matching and settlement is only given the authority to match the Order with other Orders to create a valid transaction, and does not get custody of the Assets in the Order.
 
 Rationale for SIGHASH Computation Changes

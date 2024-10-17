@@ -110,32 +110,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                         <tbody>
                             <tr>
                                 <td><code>varies</code></td>
-                                <td><code>preAuthActionGroup</code></td>
-                                <td><code>ActionGroupDescriptionPreAuth</code></td>
-                                <td>The pre-authorization Action Group description, without authorizing signatures.</td>
-                            </tr>
-                            <tr>
-                                <td><code>64 *
-preAuthActionGroup.nActionsOrchard</code></td>
-                                <td><code>vSpendAuthSigsOrchard</code></td>
-                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
-                                <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. See <a href="#spend-authorization-signature-changes">Spend Authorization Signature Changes</a> for details.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <p>The pre-authorization Action Group description data type, <code>ActionGroupDescriptionPreAuth</code>, contains the following fields:</p>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Bytes</th>
-                                <th>Name</th>
-                                <th>Data Type</th>
-                                <th>Description</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td><code>varies</code></td>
                                 <td><code>nActionsOrchard</code></td>
                                 <td><code>compactSize</code></td>
                                 <td>The number of Action descriptions in <code>vActionsOrchard</code>.</td>
@@ -176,6 +150,13 @@ preAuthActionGroup.nActionsOrchard</code></td>
                                 <td><code>uint32</code></td>
                                 <td>The block number (in the future) after which the Actions of the Action Group become invalid and should be rejected by consensus.</td>
                             </tr>
+                            <tr>
+                                <td><code>64 *
+preAuthActionGroup.nActionsOrchard</code></td>
+                                <td><code>vSpendAuthSigsOrchard</code></td>
+                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
+                                <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. This is computed as defined in Section 4.15 of the Protocol Specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-spendauthsig">13</a>, using the SIGHASH as computed in <a href="#sighash-computation-changes">SIGHASH Computation Changes</a>.</td>
+                            </tr>
                         </tbody>
                     </table>
                     <figure class="align-center" align="center">
@@ -184,16 +165,8 @@ preAuthActionGroup.nActionsOrchard</code></td>
                     </figure>
                 </section>
             </section>
-            <section id="spend-authorization-signature-changes"><h3><span class="section-heading">Spend Authorization Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#spend-authorization-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-spendauthsig">13</a>, except that the signature is generated over the Action Group Hash,
-                    <span class="math">\(\mathsf{AGHash}\)</span>
-                , which is defined to be
-                    <span class="math">\(\mathsf{AGHash} := \mathsf{BLAKE2b}\texttt{-}\mathsf{256}(\texttt{"ZcashActionGroup"}, \mathsf{preAuthActionGroup})\)</span>
-                .</p>
-                <p>This change ensures that no changes are required in the Action statement <a id="footnote-reference-17" class="footnote_reference" href="#zip-0226-circuit-statement">5</a> to be proved.</p>
-            </section>
             <section id="sighash-computation-changes"><h3><span class="section-heading">SIGHASH Computation Changes</span><span class="section-anchor"> <a rel="bookmark" href="#sighash-computation-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The addition of Action Groups to the Zcash transaction as another level of abstraction requires a change in the way transactions are hashed to compute the SIGHASH in ZIP 244, specifically in the <code>orchard_digest</code> section <a id="footnote-reference-18" class="footnote_reference" href="#zip-0244-orchard-digest">10</a>. We update the structure of the <code>orchard_digest</code> component of the SIGHASH as follows:</p>
+                <p>The addition of Action Groups to the Zcash transaction as another level of abstraction requires a change in the way transactions are hashed to compute the SIGHASH in ZIP 244, specifically in the <code>orchard_digest</code> section <a id="footnote-reference-17" class="footnote_reference" href="#zip-0244-orchard-digest">10</a>. We update the structure of the <code>orchard_digest</code> component of the SIGHASH as follows:</p>
                 <pre>orchard_digest
 ├── orchard_action_groups_digest
 │   ├── orchard_actions_compact_digest
@@ -219,13 +192,16 @@ T.4a.iii: orchard_actions_noncompact_digest   (32-byte hash output)
 T.4a.iv : flagsOrchard                        (1 byte)
 T.4a.v  : anchorOrchard                       (32 bytes)
 T.4a.vi : timeLimit                           (4 bytes)</pre>
-                        <p>The content of T.4a.i, T.4a.ii, and T.4a.iii are the same as T.4a, T.4b, and T.4c of the <code>txid_digest</code> defined in ZIP 244 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0244-orchard-digest">10</a>, over the Actions in the Action Group, and therefore are not expanded on for the sake of brevity.</p>
+                        <p>The content of T.4a.i, T.4a.ii, and T.4a.iii are the same as T.4a, T.4b, and T.4c of the <code>txid_digest</code> defined in ZIP 244 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0244-orchard-digest">10</a>, over the Actions in the Action Group, and therefore are not expanded on for the sake of brevity.</p>
                         <p>The personalization field of this hash is set to:</p>
                         <pre>"ZTxIdOrcActGHash"</pre>
                         <p>In the case that the transaction has no Action Groups, <code>orchard_action_groups_digest</code> is</p>
                         <pre>BLAKE2b-256("ZTxIdOrcActGHash", [])</pre>
                     </section>
                 </section>
+            </section>
+            <section id="spend-authorization-signature-changes"><h3><span class="section-heading">Spend Authorization Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#spend-authorization-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>The spend authorization signature is computed in the manner specified in Section 4.15 of the protocol specification <a id="footnote-reference-19" class="footnote_reference" href="#protocol-spendauthsig">13</a>, except that the signature is generated over <code>orchard_action_groups_digest</code>, as defined in <a href="#t-4a-orchard-action-groups-digest">T.4a: orchard_action_groups_digest</a>.</p>
             </section>
             <section id="binding-signature-changes"><h3><span class="section-heading">Binding Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#binding-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The binding signature is generated using the Orchard Binding Signature scheme, by signing the SIGHASH, computed as described in the <a href="#sighash-computation-changes">SIGHASH Computation Changes</a> section, using the signing key
@@ -302,11 +278,11 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                 <section id="rationale-for-spend-authorization-signature-changes"><h4><span class="section-heading">Rationale for Spend Authorization Signature Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-spend-authorization-signature-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>In the current (NU5) Zcash protocol, each Action includes a Spend Authorization Signature <a id="footnote-reference-20" class="footnote_reference" href="#protocol-spendauthsig">13</a> that binds a specific spend instruction to a specific transaction and prevents replay attacks. However, in the context of Asset Swaps, there are two problems that prevent this mechanism from being carried over unchanged.</p>
                     <ul>
-                        <li>The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.</li>
+                        <li>The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a SIGHASH as per ZIP 244. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.</li>
                         <li>The <code>timeLimit</code> parameter is a new addition to the protocol, and is therefore not included in the existing SIGHASH. Swap Orders need to be made non-malleable in order to ensure that the party performing the matching cannot change the time limit unilaterally.</li>
                     </ul>
-                    <p>To make sure the time limit isn't malleable, we have the Order sender sign the Order content (i.e. the Action Group of the Order). Thus, the sender “seals” the time limit within the Action Group, with the signature verification key being derived in the circuit. This effectively links the time limit parameter to the Actions proof. A party trying to tweak the time limit of received orders while matching orders will then need to generate a new proof for the Actions in the Order, which isn't possible without knowing the full witness.</p>
-                    <p>This approach is natural and aligns with the goal of the protocol. Signing together all the contents of the Order prevents the "terms" of the Order from being modified. This ensures that the party performing the matching and settlement is only given the authority to match the Order with other Orders to create a valid transaction, and does not get custody of the Assets in the Order.</p>
+                    <p>To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. The <code>orchard_action_groups_digest</code> contains this information, which is why we use this field from the SIGHASH computation. A party trying to tweak the time limit of received orders while matching orders will then need to be able to successfully forge the sender's Spend Authorization Signature.</p>
+                    <p>This approach is natural and aligns with the goal of the protocol. Signing together the contents of the Action Group prevents the "terms" of the Order from being modified. This ensures that the party performing the matching and settlement is only given the authority to match the Order with other Orders to create a valid transaction, and does not get custody of the Assets in the Order.</p>
                 </section>
                 <section id="rationale-for-sighash-computation-changes"><h4><span class="section-heading">Rationale for SIGHASH Computation Changes</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-sighash-computation-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>The protocol specified in this ZIP makes certain changes to the transaction format, such as using the Action Groups level of abstraction, and adding a new <code>timeLimit</code> field. The computation of SIGHASH is updated so as to capture all these changes into the hash, so as to bind all the parts of a transaction and make it non-malleable.</p>
