@@ -151,10 +151,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/780">https://githu
                                 <td>The block number (in the future) after which the Actions of the Action Group become invalid and should be rejected by consensus.</td>
                             </tr>
                             <tr>
-                                <td><code>64 *
-preAuthActionGroup.nActionsOrchard</code></td>
+                                <td><code>64 * nActionsOrchard</code></td>
                                 <td><code>vSpendAuthSigsOrchard</code></td>
-                                <td><code>byte[64][preAuthActionGroup.nActionsOrchard]</code></td>
+                                <td><code>byte[64][nActionsOrchard]</code></td>
                                 <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction. This is computed as defined in Section 4.15 of the Protocol Specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-spendauthsig">13</a>, using the SIGHASH as computed in <a href="#sighash-computation-changes">SIGHASH Computation Changes</a>.</td>
                             </tr>
                         </tbody>
@@ -226,13 +225,9 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
             <section id="consensus-rule-changes"><h3><span class="section-heading">Consensus Rule Changes</span><span class="section-anchor"> <a rel="bookmark" href="#consensus-rule-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The transaction verification becomes a nested loop, iterating over all Action Groups and verifying the Actions they contain. Each spend authorization signature MUST be a valid
                     <span class="math">\(\mathsf{SpendAuthSig^{Orchard}}\)</span>
-                 signature over
-                    <span class="math">\(\mathsf{AGHash}\)</span>
-                 using
+                 signature over <code>orchard_action_groups_digest</code> using
                     <span class="math">\(\mathsf{rk}\)</span>
-                 as the validating key (That is, the signature is over
-                    <span class="math">\(\mathsf{AGHash}\)</span>
-                 instead of
+                 as the validating key (That is, the signature is over <code>orchard_action_groups_digest</code> instead of
                     <span class="math">\(\mathsf{SigHash}\)</span>
                 ). The time limit also needs to be checked during verification. Specifically, the consensus rule becomes (if any checks fail, the transaction MUST be rejected):</p>
                 <blockquote>
@@ -240,11 +235,11 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                         <li>for all AG in ActionGroups do:
                             <ul>
                                 <li>check that AG.timeLimit &lt;= current block height</li>
+                                <li>compute <code>orchard_action_groups_digest</code> as per <a href="#t-4a-orchard-action-groups-digest">T.4a: orchard_action_groups_digest</a>.</li>
                                 <li>for (i = 0; i &lt; AG.nActionsOrchard; i++):
                                     <ul>
                                         <li>check the result of ZKAction.Verify on the proof AG.proofsOrchard[i]</li>
-                                        <li>hash[i] = BLAKE2b-256("ZcashActionGroup", vActionGroupsOrchard[i].preAuthActionGroup)</li>
-                                        <li>check SpendAuthSig.Validate(AG.vActionsOrchard[i].rk, hash[i], AG.vSpendAuthSigsOrchard[i])</li>
+                                        <li>check SpendAuthSig.Validate(AG.vActionsOrchard[i].rk, <code>orchard_action_groups_digest</code>, AG.vSpendAuthSigsOrchard[i])</li>
                                     </ul>
                                 </li>
                             </ul>
