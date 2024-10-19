@@ -146,7 +146,7 @@ We update the structure of the ``orchard_digest`` component of the SIGHASH as fo
 
 T.4: orchard_digest
 ```````````````````
-In the case that Orchard actions are present in the transaction, this digest is
+In the case that OrchardZSA Action Groups are present in the transaction, this digest is
 a BLAKE2b-256 hash of the following values ::
 
     T.4a: orchard_action_groups_digest   (32-byte hash output)
@@ -197,6 +197,7 @@ The party performing the matching has some Swap Orders :math:`\mathsf{SO}_i`, ea
 The party generates the :math:`\mathsf{bsk}` for the binding signature by summing up the :math:`\mathsf{bsk}_i` values of the Swap Orders that are matched into the Swap Bundle. 
 For example, if Swap Orders :math:`\mathsf{SO}_i` and :math:`\mathsf{SO}_j` are matched, then the :math:`\mathsf{bsk} = \mathsf{bsk}_i + \mathsf{bsk}_j`.
 The consensus check remains the same, using these updated values.
+The binding signature is verified against the value commitments of all Actions in all Action Groups.
 
 Consensus Rule Changes
 ----------------------
@@ -348,16 +349,16 @@ Therefore, in order to allow parties to trade ZSAs and create matching Action Gr
 The Swap Order is the construct by which parties reveal necessary information about the content of their offer. 
 The senders of Orders spend their notes (input) denominated in an Asset :math:`\mathsf{A}_1` and create a note for themself, to receive the desired amount of another Asset :math:`\mathsf{A}_2`.
 
-To support a Closed Ledger Order Book (CLOB)-like trading environment, the Order senders do not know in advance with whom their orders will be matched, so they do not know, in advance, who is the recipient of the funds they offer to swap. 
+The Order senders do not know in advance with whom their orders will be matched, so they do not know, in advance, who is the recipient of the funds they offer to swap. 
 As such, they cannot create notes for a recipient other than themself. 
 To form an Order, the sender must generate Actions with output notes and associated commitments, that use their own diversifier :math:`\mathsf{d}` and diversified transmission key :math:`\mathsf{pk_d}` [#protocol-notes]_.
 
-Each Order can be seen as an “invalid" OrchardZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. 
+Each Order can be seen as an “incomplete" OrchardZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. 
 Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).
 
 Furthermore, each Order can contain a specific Action that pays "matching fees" to the party performing the matching. 
 This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties.
-In the P2P case the matcher is simply the second party out of the two (See the `Fees`_ section for more details).
+In the P2P case the matcher is simply the second party out of the two.
 
 ZIP 226 [#zip-0226]_, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. 
 The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base.
