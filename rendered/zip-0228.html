@@ -248,7 +248,7 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                 </blockquote>
             </section>
             <section id="fees"><h3><span class="section-heading">Fees</span><span class="section-anchor"> <a rel="bookmark" href="#fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>We distinguish between two types of fees for Asset Swaps, namely Miner Fees and Matcher Fees.</p>
+                <p>Each Swap Order can contain an Action that pays fees to the party performing the matching. This Action, paying fees, in ZEC, to the matcher, uses the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties. In the P2P case the matcher is simply the second party out of the two. We distinguish between two types of fees for Asset Swaps, namely Miner Fees and Matcher Fees.</p>
                 <section id="miner-fees"><h4><span class="section-heading">Miner Fees</span><span class="section-anchor"> <a rel="bookmark" href="#miner-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>These are the fees paid to miners for including the transaction in a block. Miner fees are relevant at the time of settlement of the Swap Bundle on the chain. These continue to follow the same logic as in the OrchardZSA Protocol, and are paid in ZEC.</p>
                 </section>
@@ -379,7 +379,6 @@ T.4a.vi : timeLimit                           (4 bytes)</pre>
                     <span class="math">\(\mathsf{pk_d}\)</span>
                  <a id="footnote-reference-22" class="footnote_reference" href="#protocol-notes">11</a>.</p>
                 <p>Each Order can be seen as an “incomplete" OrchardZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).</p>
-                <p>Furthermore, each Order can contain a specific Action that pays "matching fees" to the party performing the matching. This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties. In the P2P case the matcher is simply the second party out of the two.</p>
                 <p>ZIP 226 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0226">4</a>, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base. This ZIP continues with the same idea, i.e. the manipulation of a single Asset Base per Action. Therefore, Swap Orders are expected to generally have at least three Actions:</p>
                 <ul>
                     <li>One Action for the Proposed Asset.</li>
