@@ -220,6 +220,9 @@ Specifically, the consensus rule becomes (if any checks fail, the transaction MU
 Fees
 ----
 
+Each Swap Order can contain an Action that pays fees to the party performing the matching. 
+This Action, paying fees, in ZEC, to the matcher, uses the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties.
+In the P2P case the matcher is simply the second party out of the two.
 We distinguish between two types of fees for Asset Swaps, namely Miner Fees and Matcher Fees.
 
 Miner Fees 
@@ -355,10 +358,6 @@ To form an Order, the sender must generate Actions with output notes and associa
 
 Each Order can be seen as an “incomplete" OrchardZSA transaction to oneself, which is unbalanced w.r.t each ZSA AssetBase. 
 Each Order only “becomes valid” in the context of a Swap Bundle, whose overall value is balanced across Asset Bases (i.e. the two Orders balance each other).
-
-Furthermore, each Order can contain a specific Action that pays "matching fees" to the party performing the matching. 
-This Action, paying fees, in ZEC, to the matcher, is generated using the matcher's details to generate output notes, since we assume, generally, that the matcher is known by all trading parties.
-In the P2P case the matcher is simply the second party out of the two.
 
 ZIP 226 [#zip-0226]_, that this ZIP builds on, introduces changes to the NU5 circuit to include support for different Assets. 
 The structure there requires that the input and output notes of the OrchardZSA Action must have the same Asset Base.
