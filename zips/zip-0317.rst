@@ -309,12 +309,11 @@ Revision 1: ZSA Fee calculation
 -------------------------------
 In addition to the parameters defined in the `Fee calculation`_ section, the ZSA protocol upgrade defines the following additional parameters:
 
-===================================== ================================ ===============================================
-Parameter                             Value                            Units
-===================================== ================================ ===============================================
-:math:`issuance\_fee`                 :math:`100 \cdot marginal\_fee`  zatoshis per issuance action (as defined below)
-:math:`finalize\_fee`                 :math:`20 \cdot marginal\_fee`   zatoshis per issuance action (as defined below)
-===================================== ================================ ===============================================
+===================================== ==========================================================================
+Parameter                             Value                          
+===================================== ==========================================================================
+:math:`issuance\_fee`                 :math:`100 \cdot marginal\_fee` per issuance action (as defined below)
+===================================== ==========================================================================
 
 Wallets implementing this specification SHOULD use a conventional fee, viz. :math:`zsa\_conventional\_fee`, that is
 calculated in zatoshis per the following formula:
@@ -325,25 +324,33 @@ calculated in zatoshis per the following formula:
      zsa\_logical\_actions  &=& logical\_actions \;+ \\
                        & & nTotalOutputsZsaIssuance \\
      zsa\_conventional\_fee &=& marginal\_fee \cdot \mathsf{max}(grace\_actions, zsa\_logical\_actions) \;+ \\
-                       & & issuance\_fee \cdot nIssueActions \;- \\
-                       & & finalize\_fee \cdot nFinalizeActions
+                       & & issuance\_fee \cdot nCreateActions
    \end{array}
 
 The inputs to this formula are taken from transaction fields defined in the Zcash protocol
-specification [#protocol-txnencoding]_. They are defined in the `Fee calculation`_ section above, with additional definitions in the table below. Note that :math:`nOrchardActions` is redefined and now combines both the Orchard actions for ZEC values as well as ZSA transfer actions for transfer of Assets. 
+specification [#protocol-txnencoding]_ and the global . They are defined in the `Fee calculation`_ section above, with additional definitions in the table below. 
+Note that :math:`nOrchardActions` is redefined and now combines the actions for native ZEC as well as ZSA transfer actions for Custom Assets. 
 
-================================ ====== ========================================================================
+================================ ====== =============================================================================================================
 Input                            Units  Description
-================================ ====== ========================================================================
-:math:`nOrchardActions`          number the number of ZSA transfer actions (including ZEC actions)
+================================ ====== =============================================================================================================
+:math:`nOrchardActions`          number the number of OrchardZSA transfer actions (including ZEC actions)
 :math:`nTotalOutputsZsaIssuance` number the total number of ZSA issuance outputs (added across issuance actions)
-:math:`nIssueActions`            number the number of ZSA issuance actions
-:math:`nFinalizeActions`         number the number of ZSA issuance actions that set the ``finalize`` flag
-================================ ====== ========================================================================
+:math:`nCreateActions`           number the number of ZSA issuance actions that issue a Custom Asset that is not present in the Global Issuance State
+================================ ====== =============================================================================================================
 
 It is not a consensus requirement that fees follow this formula; however,
 wallets SHOULD create transactions that pay this fee, in order to reduce
 information leakage, unless overridden by the user.
+
+Rationale for ZSA Fee calculation
+'''''''''''''''''''''''''''''''''
+
+The ZSA fee calculation accounts for the additions to the Global Issuance State that are required for the ZSA protocol.
+Every newly created Custom Asset adds a new row to the Global Issuance State. 
+Subsequent issuance, finalization, or burn of existing Custom Assets only changes the values in the corresponding row.
+ 
+This explains the need for a higher fee for the creation of entirely new Custom Assets, in order to disincentivize the creation of "junk" assets. 
 
 
 Transaction relaying
@@ -607,7 +614,8 @@ default value for ``-minrelaytxfee``).
 Revision 1: Deployment of ZSA changes
 -------------------------------------
 
-The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of the deployment of the ZSA protocol (ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_), which is currently projected to be with Network Upgrade 7.
+The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of deployment 
+of the ZSA protocol (ZIP 226 [#zip-0226]_ and ZIP 227 [#zip-0227]_), which is currently projected to be with Network Upgrade 7.
 
 
 Considered Alternatives

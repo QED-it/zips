@@ -299,7 +299,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
                         <tr>
                             <th>Parameter</th>
                             <th>Value</th>
-                            <th>Units</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -309,17 +308,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
                             </td>
                             <td>
                                 <span class="math">\(100 \cdot marginal\_fee\)</span>
-                            </td>
-                            <td>zatoshis per issuance action (as defined below)</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="math">\(finalize\_fee\)</span>
-                            </td>
-                            <td>
-                                <span class="math">\(20 \cdot marginal\_fee\)</span>
-                            </td>
-                            <td>zatoshis per issuance action (as defined below)</td>
+                             per issuance action (as defined below)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -330,12 +319,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
   zsa\_logical\_actions  &amp;=&amp; logical\_actions \;+ \\
                     &amp; &amp; nTotalOutputsZsaIssuance \\
   zsa\_conventional\_fee &amp;=&amp; marginal\_fee \cdot \mathsf{max}(grace\_actions, zsa\_logical\_actions) \;+ \\
-                    &amp; &amp; issuance\_fee \cdot nIssueActions \;- \\
-                    &amp; &amp; finalize\_fee \cdot nFinalizeActions
+                    &amp; &amp; issuance\_fee \cdot nCreateActions
 \end{array}\)</div>
-                <p>The inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-13" class="footnote_reference" href="#protocol-txnencoding">3</a>. They are defined in the <a href="#fee-calculation">Fee calculation</a> section above, with additional definitions in the table below. Note that
+                <p>The inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-13" class="footnote_reference" href="#protocol-txnencoding">3</a> and the global . They are defined in the <a href="#fee-calculation">Fee calculation</a> section above, with additional definitions in the table below. Note that
                     <span class="math">\(nOrchardActions\)</span>
-                 is redefined and now combines both the Orchard actions for ZEC values as well as ZSA transfer actions for transfer of Assets.</p>
+                 is redefined and now combines the actions for native ZEC as well as ZSA transfer actions for Custom Assets.</p>
                 <table>
                     <thead>
                         <tr>
@@ -350,7 +338,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
                                 <span class="math">\(nOrchardActions\)</span>
                             </td>
                             <td>number</td>
-                            <td>the number of ZSA transfer actions (including ZEC actions)</td>
+                            <td>the number of OrchardZSA transfer actions (including ZEC actions)</td>
                         </tr>
                         <tr>
                             <td>
@@ -361,21 +349,18 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
                         </tr>
                         <tr>
                             <td>
-                                <span class="math">\(nIssueActions\)</span>
+                                <span class="math">\(nCreateActions\)</span>
                             </td>
                             <td>number</td>
-                            <td>the number of ZSA issuance actions</td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <span class="math">\(nFinalizeActions\)</span>
-                            </td>
-                            <td>number</td>
-                            <td>the number of ZSA issuance actions that set the <code>finalize</code> flag</td>
+                            <td>the number of ZSA issuance actions that issue a Custom Asset that is not present in the Global Issuance State</td>
                         </tr>
                     </tbody>
                 </table>
                 <p>It is not a consensus requirement that fees follow this formula; however, wallets SHOULD create transactions that pay this fee, in order to reduce information leakage, unless overridden by the user.</p>
+                <section id="rationale-for-zsa-fee-calculation"><h4><span class="section-heading">Rationale for ZSA Fee calculation</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-zsa-fee-calculation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>The ZSA fee calculation accounts for the additions to the Global Issuance State that are required for the ZSA protocol. Every newly created Custom Asset adds a new row to the Global Issuance State. Subsequent issuance, finalization, or burn of existing Custom Assets only changes the values in the corresponding row.</p>
+                    <p>This explains the need for a higher fee for the creation of entirely new Custom Assets, in order to disincentivize the creation of "junk" assets.</p>
+                </section>
             </section>
             <section id="transaction-relaying"><h3><span class="section-heading">Transaction relaying</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-relaying"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>zcashd, zebrad, and potentially other node implementations, implement fee-based restrictions on relaying of mempool transactions. Nodes that normally relay transactions are expected to do so for transactions that pay at least the conventional fee as specified in this ZIP, unless there are other reasons not to do so for robustness or denial-of-service mitigation.</p>
@@ -570,7 +555,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/631">https://githu
                 <p><cite>zebra</cite> uses a similar relay threshold rule to <cite>zcashd</cite>, but additionally enforces a minimum fee of 100 zatoshis (this differs from <cite>zcashd</cite> only for valid transactions of less than 1000 bytes, assuming that <cite>zcashd</cite> uses its default value for <code>-minrelaytxfee</code>).</p>
             </section>
             <section id="revision-1-deployment-of-zsa-changes"><h3><span class="section-heading">Revision 1: Deployment of ZSA changes</span><span class="section-anchor"> <a rel="bookmark" href="#revision-1-deployment-of-zsa-changes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of the deployment of the ZSA protocol (ZIP 226 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0226">6</a> and ZIP 227 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0227">7</a>), which is currently projected to be with Network Upgrade 7.</p>
+                <p>The parts of this ZIP that list out changes to the fee mechanism for the ZSA protocol SHOULD be deployed at the time of deployment of the ZSA protocol (ZIP 226 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0226">6</a> and ZIP 227 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0227">7</a>), which is currently projected to be with Network Upgrade 7.</p>
             </section>
         </section>
         <section id="considered-alternatives"><h2><span class="section-heading">Considered Alternatives</span><span class="section-anchor"> <a rel="bookmark" href="#considered-alternatives"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
