@@ -78,7 +78,7 @@ while still allowing low fees for regular transaction use cases.
 Revision 1:
 -----------
 
-The upgrade to the ZSA protocol will also need to define a fee structure consistent with the above objectives. 
+The upgrade introducing the ZSA protocol will also need to define a fee structure consistent with the above objectives. 
 This involves adaptation for the transfer protocol [#zip-0226]_, as well as additional considerations for the issuance protocol [#zip-0227]_ such as fees for asset issuance. 
 
 Specifically, the ZSA Transfer and Burn mechanism should follow the same fee mechanism in order to not discriminate between transfer bundle types. 
