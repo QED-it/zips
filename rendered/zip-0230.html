@@ -687,14 +687,15 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             </table>
             <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-20" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
                 <span class="math">\(nOrchardActions\)</span>
-             is redefined in the above table, and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets.</p>
+            , that is used in the computation of
+                <span class="math">\(logical\_actions\)</span>
+            , is redefined in the above table, and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets.</p>
             <p>The formula for the computation of the
                 <span class="math">\(zsa\_logical\_actions\)</span>
-             is:</p>
-            <div class="math">\(\begin{array}{rcl}
-  zsa\_logical\_actions  &amp;=&amp; logical\_actions \;+ \\
-                    &amp; &amp; nTotalOutputsZsaIssuance
-\end{array}\)</div>
+             (with the updated computation of
+                <span class="math">\(logical\_actions\)</span>
+             as described above) is:</p>
+            <div class="math">\(zsa\_logical\_actions  = logical\_actions \;+ nTotalOutputsZsaIssuance\)</div>
             <p>The formula for the computation of the
                 <span class="math">\(zsa\_conventional\_fee\)</span>
              is:</p>

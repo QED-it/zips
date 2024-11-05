@@ -410,16 +410,12 @@ Input                            Units  Description
 
 The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification [#protocol-txnencoding]_ and the global state.
 They are defined in the Fee calculation section of ZIP 317 [#zip-0317-fee-calc]_.
-Note that :math:`nOrchardActions` is redefined in the above table, and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets. 
+Note that :math:`nOrchardActions`, that is used in the computation of :math:`logical\_actions`, is redefined in the above table, and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets. 
 
-The formula for the computation of the :math:`zsa\_logical\_actions` is:
+The formula for the computation of the :math:`zsa\_logical\_actions` (with the updated computation of :math:`logical\_actions` as described above) is:
 
 .. math::
-   \begin{array}{rcl}
-     zsa\_logical\_actions  &=& logical\_actions \;+ \\
-                       & & nTotalOutputsZsaIssuance
-   \end{array}
-
+     zsa\_logical\_actions  = logical\_actions \;+ nTotalOutputsZsaIssuance
 
 The formula for the computation of the :math:`zsa\_conventional\_fee` is:
 
