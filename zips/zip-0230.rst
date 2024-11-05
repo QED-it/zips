@@ -398,28 +398,39 @@ Parameter                             Value
 ===================================== ==========================================================================
 
 Wallets implementing this specification SHOULD use a conventional fee, viz. :math:`zsa\_conventional\_fee`, that is
-calculated in zatoshis per the following formula:
+calculated in zatoshis. Additional definitions that are used in the formula for the calculation are in the table below:
+
+================================ ====== ====================================================================================================================
+Input                            Units  Description
+================================ ====== ====================================================================================================================
+:math:`nOrchardActions`          number the number of OrchardZSA transfer actions (including ZEC actions)
+:math:`nTotalOutputsZsaIssuance` number the total number of OrchardZSA issuance outputs (added across issuance actions)
+:math:`nCreateActions`           number the number of OrchardZSA issuance actions that issue a Custom Asset that is not present in the Global Issuance State
+================================ ====== ====================================================================================================================
+
+The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification [#protocol-txnencoding]_ and the global state.
+They are defined in the Fee calculation section of ZIP 317 [#zip-0317-fee-calc]_.
+Note that :math:`nOrchardActions` is redefined in the above table, and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets. 
+
+The formula for the computation of the :math:`zsa\_logical\_actions` is:
 
 .. math::
    \begin{array}{rcl}
      zsa\_logical\_actions  &=& logical\_actions \;+ \\
-                       & & nTotalOutputsZsaIssuance \\
+                       & & nTotalOutputsZsaIssuance
+   \end{array}
+
+
+The formula for the computation of the :math:`zsa\_conventional\_fee` is:
+
+.. math::
+   \begin{array}{rcl}
      zsa\_conventional\_fee &=& marginal\_fee \cdot \mathsf{max}(grace\_actions, zsa\_logical\_actions) \;+ \\
                        & & issuance\_fee \cdot nCreateActions
    \end{array}
 
-   
-The inputs to this formula are taken from transaction fields defined in the Zcash protocol specification [#protocol-txnencoding]_ and the global state. 
-They are defined in the Fee calculation section of ZIP 317 [#zip-0317-fee-calc]_, with additional definitions in the table below. 
-Note that :math:`nOrchardActions` is redefined and now combines the actions for native ZEC as well as OrchardZSA transfer actions for Custom Assets. 
 
-================================ ====== =============================================================================================================
-Input                            Units  Description
-================================ ====== =============================================================================================================
-:math:`nOrchardActions`          number the number of OrchardZSA transfer actions (including ZEC actions)
-:math:`nTotalOutputsZsaIssuance` number the total number of OrchardZSA issuance outputs (added across issuance actions)
-:math:`nCreateActions`           number the number of OrchardZSA issuance actions that issue a Custom Asset that is not present in the Global Issuance State
-================================ ====== =============================================================================================================
+
 
 It is not a consensus requirement that fees follow this formula; however,
 wallets SHOULD create transactions that pay this fee, in order to reduce
