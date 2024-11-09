@@ -214,67 +214,21 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                         <tr>
                             <td><code>varies</code></td>
-                            <td><code>nActionsOrchard</code></td>
+                            <td><code>nActionGroupsOrchard</code></td>
                             <td><code>compactSize</code></td>
-                            <td>The number of Orchard-ZSA Action descriptions in <code>vActionsOrchard</code>.</td>
+                            <td>The number of Action Group descriptions in <code>vActionGroupsOrchard</code>. This has a value of either <code>0</code> or <code>1</code>.</td>
                         </tr>
                         <tr>
-                            <td><code>852 * nActionsOrchard</code></td>
-                            <td><code>vActionsOrchard</code></td>
-                            <td><code>OrchardZsaAction[nActionsOrchard]</code></td>
-                            <td>A sequence of Orchard-ZSA Action descriptions, encoded per the <cite>Orchard-ZSA Action Description Encoding</cite>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>1</code></td>
-                            <td><code>flagsOrchard</code></td>
-                            <td><code>byte</code></td>
-                            <td>
-                                <dl>
-                                    <dt>An 8-bit value representing a set of flags. Ordered from LSB to MSB:</dt>
-                                    <dd>
-                                        <ul>
-                                            <li><code>enableSpendsOrchard</code></li>
-                                            <li><code>enableOutputsOrchard</code></li>
-                                            <li><code>enableZSAs</code></li>
-                                            <li>The remaining bits are set to
-                                                <span class="math">\(0\!\)</span>
-                                            .</li>
-                                        </ul>
-                                    </dd>
-                                </dl>
-                            </td>
+                            <td><code>varies</code></td>
+                            <td><code>vActionGroupsOrchard</code></td>
+                            <td><code>ActionGroupDescription[nActionGroupsOrchard]</code></td>
+                            <td>A sequence of Action Group descriptions, encoded as per the <a href="#orchardzsa-action-group-description">OrchardZSA Action Group Description</a>.</td>
                         </tr>
                         <tr>
                             <td><code>8</code></td>
                             <td><code>valueBalanceOrchard</code></td>
                             <td><code>int64</code></td>
                             <td>The net value of Orchard spends minus outputs.</td>
-                        </tr>
-                        <tr>
-                            <td><code>32</code></td>
-                            <td><code>anchorOrchard</code></td>
-                            <td><code>byte[32]</code></td>
-                            <td>A root of the Orchard note commitment tree at some block height in the past.</td>
-                        </tr>
-                        <tr>
-                            <td><code>varies</code></td>
-                            <td><code>sizeProofsOrchardZSA</code></td>
-                            <td><code>compactSize</code></td>
-                            <td>Length in bytes of <code>proofsOrchardZSA</code>. Value is <strong>(TO UPDATE)</strong>
-                                <span class="math">\(2720 + 2272 \cdot \mathtt{nActionsOrchard}\!\)</span>
-                            .</td>
-                        </tr>
-                        <tr>
-                            <td><code>sizeProofsOrchardZSA</code></td>
-                            <td><code>proofsOrchardZSA</code></td>
-                            <td><code>byte[sizeProofsOrchardZSA]</code></td>
-                            <td>Encoding of aggregated zk-SNARK proofs for Orchard-ZSA Actions.</td>
-                        </tr>
-                        <tr>
-                            <td><code>64 * nActionsOrchard</code></td>
-                            <td><code>vSpendAuthSigsOrchard</code></td>
-                            <td><code>byte[64 * nActionsOrchard]</code></td>
-                            <td>Authorizing signatures for each Orchard-ZSA Action.</td>
                         </tr>
                         <tr>
                             <td><code>varies</code></td>
@@ -336,14 +290,13 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                     .</li>
                     <li>The elements of <code>vSpendProofsSapling</code> and <code>vSpendAuthSigsSapling</code> have a 1:1 correspondence to the elements of <code>vSpendsSapling</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>SpendDescriptionV6</code> at the same index.</li>
                     <li>The elements of <code>vOutputProofsSapling</code> have a 1:1 correspondence to the elements of <code>vOutputsSapling</code> and MUST be ordered such that the proof at a given index corresponds to the <code>OutputDescriptionV6</code> at the same index.</li>
-                    <li>The fields <code>flagsOrchard</code>, <code>valueBalanceOrchard</code>, <code>anchorOrchard</code>, <code>sizeProofsOrchardZSA</code>, <code>proofsOrchardZSA</code>, and <code>bindingSigOrchard</code> are present if and only if
-                        <span class="math">\(\mathtt{nActionsOrchard} &gt; 0\!\)</span>
+                    <li>The fields <code>valueBalanceOrchard</code> and <code>bindingSigOrchard</code> are present if and only if
+                        <span class="math">\(\mathtt{nActionGroupsOrchard} &gt; 0\!\)</span>
                     . If <code>valueBalanceOrchard</code> is not present, then
                         <span class="math">\(\mathsf{v^{balanceOrchard}}\)</span>
                      is defined to be
                         <span class="math">\(0\!\)</span>
                     .</li>
-                    <li>The proofs aggregated in <code>proofsOrchardZSA</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardZsaAction</code> at the same index.</li>
                     <li>The fields <code>ik</code> and <code>issueAuthSig</code> are present if and only if
                         <span class="math">\(\mathtt{nIssueActions} &gt; 0\!\)</span>
                     .</li>
@@ -351,7 +304,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         <span class="math">\(0\!\)</span>
                     .</li>
                 </ul>
-                <p>The encodings of <code>tx_in</code>, and <code>tx_out</code> are as in a version 4 transaction (i.e. unchanged from Canopy). The encodings of <code>SpendDescriptionV6</code>, <code>OutputDescriptionV6</code> , <code>OrchardZsaAction</code>, <code>AssetBurn</code> and <code>IssueAction</code> are described below. The encoding of Sapling Spends and Outputs has changed relative to prior versions in order to better separate data that describe the effects of the transaction from the proofs of and commitments to those effects, and for symmetry with this separation in the Orchard-related parts of the transaction format.</p>
+                <p>The encodings of <code>tx_in</code>, and <code>tx_out</code> are as in a version 4 transaction (i.e. unchanged from Canopy). The encodings of <code>SpendDescriptionV6</code>, <code>OutputDescriptionV6</code> , <code>ActionGroupDescription</code>, <code>AssetBurn</code> and <code>IssueAction</code> are described below. The encoding of Sapling Spends and Outputs has changed relative to prior versions in order to better separate data that describe the effects of the transaction from the proofs of and commitments to those effects, and for symmetry with this separation in the Orchard-related parts of the transaction format.</p>
             </section>
             <section id="sapling-spend-description-spenddescriptionv6"><h3><span class="section-heading">Sapling Spend Description (<code>SpendDescriptionV6</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#sapling-spend-description-spenddescriptionv6"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <table>
@@ -433,6 +386,73 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                 </table>
                 <p>The encodings of each of these elements are defined in §7.4 ‘Output Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-16" class="footnote_reference" href="#protocol-outputdesc">4</a>.</p>
             </section>
+            <section id="orchardzsa-action-group-description"><h3><span class="section-heading">OrchardZSA Action Group Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-action-group-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>The OrchardZSA Action Group Description is encoded in a transaction as an instance of an <code>ActionGroupDescription</code> type:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bytes</th>
+                            <th>Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>nActionsOrchard</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>The number of Action descriptions in <code>vActionsOrchard</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>852 * nActionsOrchard</code></td>
+                            <td><code>vActionsOrchard</code></td>
+                            <td><code>OrchardZsaAction[nActionsOrchard]</code></td>
+                            <td>A sequence of ZSA Swap Action descriptions in the Action Group.</td>
+                        </tr>
+                        <tr>
+                            <td><code>1</code></td>
+                            <td><code>flagsOrchard</code></td>
+                            <td><code>byte</code></td>
+                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-17" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>32</code></td>
+                            <td><code>anchorOrchard</code></td>
+                            <td><code>byte[32]</code></td>
+                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-18" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>varies</code></td>
+                            <td><code>sizeProofsOrchard</code></td>
+                            <td><code>compactSize</code></td>
+                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-19" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>sizeProofsOrchard</code></td>
+                            <td><code>proofsOrchard</code></td>
+                            <td><code>byte[sizeProofsOrchard]</code></td>
+                            <td>The aggregated zk-SNARK proof for all Actions in the Action Group.</td>
+                        </tr>
+                        <tr>
+                            <td><code>4</code></td>
+                            <td><code>timeLimit</code></td>
+                            <td><code>uint32</code></td>
+                            <td>This is set to be a value of <code>0</code>.</td>
+                        </tr>
+                        <tr>
+                            <td><code>64 * nActionsOrchard</code></td>
+                            <td><code>vSpendAuthSigsOrchard</code></td>
+                            <td><code>byte[64][nActionsOrchard]</code></td>
+                            <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p>The encoding of <code>OrchardZsaAction</code> is described below.</p>
+                <ul>
+                    <li>The proofs aggregated in <code>proofsOrchardZSA</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardZsaAction</code> at the same index.</li>
+                </ul>
+            </section>
             <section id="orchard-zsa-action-description-orchardzsaaction"><h3><span class="section-heading">Orchard-ZSA Action Description (<code>OrchardZsaAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-action-description-orchardzsaaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <table>
                     <thead>
@@ -474,7 +494,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td><code>32</code></td>
                             <td><code>ephemeralKey</code></td>
                             <td><code>byte[32]</code></td>
-                            <td>An encoding of an ephemeral Pallas public key</td>
+                            <td>An encoding of an ephemeral Pallas public key.</td>
                         </tr>
                         <tr>
                             <td><code>612</code></td>
@@ -490,7 +510,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-17" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-20" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
             </section>
             <section id="orchard-zsa-asset-burn-description"><h3><span class="section-heading">Orchard-ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance of an <code>AssetBurn</code> type:</p>
@@ -520,7 +540,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-18" class="footnote_reference" href="#zip-0226">7</a>.</p>
+                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0226">7</a>.</p>
             </section>
             <section id="issuance-action-description-issueaction"><h3><span class="section-heading">Issuance Action Description (<code>IssueAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action-description-issueaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -639,7 +659,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             </section>
         </section>
         <section id="orchardzsa-fee-calculation"><h2><span class="section-heading">OrchardZSA Fee Calculation</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-fee-calculation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
+            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
             <table>
                 <thead>
                     <tr>
@@ -693,7 +713,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                     </tr>
                 </tbody>
             </table>
-            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-20" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
+            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-23" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
                 <span class="math">\(nOrchardActions\)</span>
             , that is used in the computation of
                 <span class="math">\(logical\_actions\)</span>
