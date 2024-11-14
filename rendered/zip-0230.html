@@ -443,8 +443,8 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         <tr>
                             <td><code>64 * nActionsOrchard</code></td>
                             <td><code>vSpendAuthSigsOrchard</code></td>
-                            <td><code>byte[64][nActionsOrchard]</code></td>
-                            <td>Authorizing signatures for the inclusion of each Action of the Action Group in a transaction.</td>
+                            <td><code>byte[64 * nActionsOrchard]</code></td>
+                            <td>Authorizing signatures for each Action of the Action Group in a transaction.</td>
                         </tr>
                     </tbody>
                 </table>
@@ -452,6 +452,9 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                 <ul>
                     <li>The proofs aggregated in <code>proofsOrchardZSA</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardZsaAction</code> at the same index.</li>
                 </ul>
+                <section id="rationale-for-timelimit"><h4><span class="section-heading">Rationale for timeLimit</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-timelimit"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>We introduce the <code>timeLimit</code> field in this transaction format in order to be forward compatible with Swaps over ZSAs <a id="footnote-reference-20" class="problematic" href="#system-message-2">[#zip-0228]_</a>. For the OrchardZSA protocol, which does not make use of a time limit for transactions, we set the value of <code>timeLimit</code> to be <code>0</code> by consensus. This serves as a default value to represent the situation where there is no specified time limit.</p>
+                </section>
             </section>
             <section id="orchard-zsa-action-description-orchardzsaaction"><h3><span class="section-heading">Orchard-ZSA Action Description (<code>OrchardZsaAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-action-description-orchardzsaaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <table>
@@ -510,7 +513,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-20" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-21" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
             </section>
             <section id="orchard-zsa-asset-burn-description"><h3><span class="section-heading">Orchard-ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance of an <code>AssetBurn</code> type:</p>
@@ -540,7 +543,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0226">7</a>.</p>
+                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226">7</a>.</p>
             </section>
             <section id="issuance-action-description-issueaction"><h3><span class="section-heading">Issuance Action Description (<code>IssueAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action-description-issueaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -659,7 +662,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             </section>
         </section>
         <section id="orchardzsa-fee-calculation"><h2><span class="section-heading">OrchardZSA Fee Calculation</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-fee-calculation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
+            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
             <table>
                 <thead>
                     <tr>
@@ -713,7 +716,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                     </tr>
                 </tbody>
             </table>
-            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-23" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
+            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-24" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
                 <span class="math">\(nOrchardActions\)</span>
             , that is used in the computation of
                 <span class="math">\(logical\_actions\)</span>
@@ -834,6 +837,17 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                 </tbody>
             </table>
         </section>
+    </section>
+    <section class="system-messages">
+        <h1>Docutils System Messages</h1>
+        <div id="system-message-1">
+            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 315)</h1>
+            <p>Too many autonumbered footnote references: only 0 corresponding footnotes available.</p>
+        </div>
+        <div id="system-message-2">
+            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 315) <a href="#footnote-reference-20">footnote-reference-20</a></h1>
+            <p>Unknown target name: "zip-0228".</p>
+        </div>
     </section>
 </body>
 </html>

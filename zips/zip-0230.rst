@@ -298,8 +298,8 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 |                                    |                          |                                                  |Action Group become invalid and should be rejected by consensus.     |
 |                                    |                          |                                                  |This is set to be a value of ``0``.                                  |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``64 * nActionsOrchard``            |``vSpendAuthSigsOrchard`` |``byte[64][nActionsOrchard]``                     |Authorizing signatures for the inclusion of each Action of the       |  
-|                                    |                          |                                                  |Action Group in a transaction.                                       |
+|``64 * nActionsOrchard``            |``vSpendAuthSigsOrchard`` |``byte[64 * nActionsOrchard]``                    |Authorizing signatures for each Action of the Action Group in a      |  
+|                                    |                          |                                                  |transaction.                                                         |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 
 The encoding of ``OrchardZsaAction`` is described below.
@@ -309,6 +309,12 @@ The encoding of ``OrchardZsaAction`` is described below.
   ``vActionsOrchard`` and MUST be ordered such that the proof or signature at a given
   index corresponds to the ``OrchardZsaAction`` at the same index.
 
+Rationale for timeLimit
+```````````````````````
+
+We introduce the ``timeLimit`` field in this transaction format in order to be forward compatible with Swaps over ZSAs [#zip-0228]_.
+For the OrchardZSA protocol, which does not make use of a time limit for transactions, we set the value of ``timeLimit`` to be ``0`` by consensus.
+This serves as a default value to represent the situation where there is no specified time limit.
 
 Orchard-ZSA Action Description (``OrchardZsaAction``)
 -----------------------------------------------------
