@@ -216,7 +216,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                             <td><code>varies</code></td>
                             <td><code>nActionGroupsOrchard</code></td>
                             <td><code>compactSize</code></td>
-                            <td>The number of Action Group descriptions in <code>vActionGroupsOrchard</code>. This has a value of either <code>0</code> or <code>1</code>.</td>
+                            <td>The number of Action Group descriptions in <code>vActionGroupsOrchard</code>. This MUST have a value of either <code>0</code> or <code>1</code>.</td>
                         </tr>
                         <tr>
                             <td><code>varies</code></td>
@@ -388,72 +388,42 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             </section>
             <section id="orchardzsa-action-group-description"><h3><span class="section-heading">OrchardZSA Action Group Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-action-group-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The OrchardZSA Action Group Description is encoded in a transaction as an instance of an <code>ActionGroupDescription</code> type:</p>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Bytes</th>
-                            <th>Name</th>
-                            <th>Data Type</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><code>varies</code></td>
-                            <td><code>nActionsOrchard</code></td>
-                            <td><code>compactSize</code></td>
-                            <td>The number of Action descriptions in <code>vActionsOrchard</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>852 * nActionsOrchard</code></td>
-                            <td><code>vActionsOrchard</code></td>
-                            <td><code>OrchardZsaAction[nActionsOrchard]</code></td>
-                            <td>A sequence of ZSA Swap Action descriptions in the Action Group.</td>
-                        </tr>
-                        <tr>
-                            <td><code>1</code></td>
-                            <td><code>flagsOrchard</code></td>
-                            <td><code>byte</code></td>
-                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-17" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>32</code></td>
-                            <td><code>anchorOrchard</code></td>
-                            <td><code>byte[32]</code></td>
-                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-18" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>varies</code></td>
-                            <td><code>sizeProofsOrchard</code></td>
-                            <td><code>compactSize</code></td>
-                            <td>As defined in Section 7.1 of the Protocol Specification <a id="footnote-reference-19" class="footnote_reference" href="#protocol-txnencoding">6</a>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>sizeProofsOrchard</code></td>
-                            <td><code>proofsOrchard</code></td>
-                            <td><code>byte[sizeProofsOrchard]</code></td>
-                            <td>The aggregated zk-SNARK proof for all Actions in the Action Group.</td>
-                        </tr>
-                        <tr>
-                            <td><code>4</code></td>
-                            <td><code>timeLimit</code></td>
-                            <td><code>uint32</code></td>
-                            <td>The block number (in the future) after which the Actions of the Action Group become invalid and should be rejected by consensus. This is set to be a value of <code>0</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><code>64 * nActionsOrchard</code></td>
-                            <td><code>vSpendAuthSigsOrchard</code></td>
-                            <td><code>byte[64 * nActionsOrchard]</code></td>
-                            <td>Authorizing signatures for each Action of the Action Group in a transaction.</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div>
+                    <h1>System Message: ERROR/3 (zips/zip-0230.rst line 279)</h1>
+                    <p>Malformed table.</p>
+                    <pre>+------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+| Bytes                              | Name                     | Data Type                                        | Description                                                         |
++====================================+==========================+==================================================+=====================================================================+
+|``varies``                          |``nActionsOrchard``       |``compactSize``                                   |The number of Action descriptions in ``vActionsOrchard``.            |
+|                                    |                          |                                                  |This MUST have a value strictly greater than ``0``.                  |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``852 * nActionsOrchard``           |``vActionsOrchard``       |``OrchardZsaAction[nActionsOrchard]``             |A sequence of ZSA Swap Action descriptions in the Action Group.      |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``1``                               |``flagsOrchard``          |``byte``                                          |As defined in Section 7.1 of the Protocol                            |
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``32``                              |``anchorOrchard``         |``byte[32]``                                      |As defined in Section 7.1 of the Protocol                            |
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``varies``                          |``sizeProofsOrchard``     |``compactSize``                                   |As defined in Section 7.1 of the Protocol                            |
+|                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``sizeProofsOrchard``               |``proofsOrchard``         |``byte[sizeProofsOrchard]``                       |The aggregated zk-SNARK proof for all Actions in the Action Group.   |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``4``                               |``timeLimit``             |``uint32``                                        |The block number (in the future) after which the Actions of the      |
+|                                    |                          |                                                  |Action Group become invalid and should be rejected by consensus.     |
+|                                    |                          |                                                  |This MUST have a value of ``0``.                                  |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
+|``64 * nActionsOrchard``            |``vSpendAuthSigsOrchard`` |``byte[64 * nActionsOrchard]``                    |Authorizing signatures for each Action of the Action Group in a      |
+|                                    |                          |                                                  |transaction.                                                         |
++------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+</pre>
+                </div>
                 <p>The encoding of <code>OrchardZsaAction</code> is described below.</p>
                 <ul>
                     <li>The proofs aggregated in <code>proofsOrchardZSA</code>, and the elements of <code>vSpendAuthSigsOrchard</code>, each have a 1:1 correspondence to the elements of <code>vActionsOrchard</code> and MUST be ordered such that the proof or signature at a given index corresponds to the <code>OrchardZsaAction</code> at the same index.</li>
                 </ul>
                 <section id="rationale-for-timelimit"><h4><span class="section-heading">Rationale for timeLimit</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-timelimit"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>We introduce the <code>timeLimit</code> field in this transaction format in order to be forward compatible with Swaps over ZSAs <a id="footnote-reference-20" class="problematic" href="#system-message-2">[#zip-0228]_</a>. For the OrchardZSA protocol, which does not make use of a time limit for transactions, we set the value of <code>timeLimit</code> to be <code>0</code> by consensus. This serves as a default value to represent the situation where there is no specified time limit.</p>
+                    <p>We introduce the <code>timeLimit</code> field in this transaction format in order to be forward compatible with Swaps over ZSAs <a id="footnote-reference-17" class="problematic" href="#system-message-2">[#zip-0228]_</a>. For the OrchardZSA protocol, which does not make use of a time limit for transactions, we set the value of <code>timeLimit</code> to be <code>0</code> by consensus. This serves as a default value to represent the situation where there is no specified time limit.</p>
                 </section>
             </section>
             <section id="orchard-zsa-action-description-orchardzsaaction"><h3><span class="section-heading">Orchard-ZSA Action Description (<code>OrchardZsaAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-action-description-orchardzsaaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
@@ -513,7 +483,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-21" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
+                <p>The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ of the Zcash Protocol Specification <a id="footnote-reference-18" class="footnote_reference" href="#protocol-actiondesc">5</a>.</p>
             </section>
             <section id="orchard-zsa-asset-burn-description"><h3><span class="section-heading">Orchard-ZSA Asset Burn Description</span><span class="section-anchor"> <a rel="bookmark" href="#orchard-zsa-asset-burn-description"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance of an <code>AssetBurn</code> type:</p>
@@ -543,7 +513,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                         </tr>
                     </tbody>
                 </table>
-                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0226">7</a>.</p>
+                <p>The encodings of each of these elements are defined in ZIP 226 <a id="footnote-reference-19" class="footnote_reference" href="#zip-0226">7</a>.</p>
             </section>
             <section id="issuance-action-description-issueaction"><h3><span class="section-heading">Issuance Action Description (<code>IssueAction</code>)</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action-description-issueaction"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -662,7 +632,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
             </section>
         </section>
         <section id="orchardzsa-fee-calculation"><h2><span class="section-heading">OrchardZSA Fee Calculation</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-fee-calculation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-23" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
+            <p>In addition to the parameters defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-20" class="footnote_reference" href="#zip-0317-fee-calc">11</a>, the OrchardZSA protocol upgrade defines the following additional parameters:</p>
             <table>
                 <thead>
                     <tr>
@@ -716,7 +686,7 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
                     </tr>
                 </tbody>
             </table>
-            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-24" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
+            <p>The other inputs to this formula are taken from transaction fields defined in the Zcash protocol specification <a id="footnote-reference-21" class="footnote_reference" href="#protocol-txnencoding">6</a> and the global state. They are defined in the Fee calculation section of ZIP 317 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0317-fee-calc">11</a>. Note that
                 <span class="math">\(nOrchardActions\)</span>
             , that is used in the computation of
                 <span class="math">\(logical\_actions\)</span>
@@ -841,11 +811,11 @@ Discussions-To: &lt;<a href="https://github.com/zcash/zips/issues/686">https://g
     <section class="system-messages">
         <h1>Docutils System Messages</h1>
         <div id="system-message-1">
-            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 315)</h1>
+            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 316)</h1>
             <p>Too many autonumbered footnote references: only 0 corresponding footnotes available.</p>
         </div>
         <div id="system-message-2">
-            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 315) <a href="#footnote-reference-20">footnote-reference-20</a></h1>
+            <h1>System Message: ERROR/3 (zips/zip-0230.rst line 316) <a href="#footnote-reference-17">footnote-reference-17</a></h1>
             <p>Unknown target name: "zip-0228".</p>
         </div>
     </section>
