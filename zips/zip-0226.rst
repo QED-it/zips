@@ -373,6 +373,11 @@ For each Action Group, the following elements are included in the hash::
     T.4a.v  : anchorOrchard                       (32 bytes)
     T.4a.vi : timeLimit                           (4 bytes)
 
+The personalization field of this hash is set to::
+
+    "ZTxIdOrcActGHash"
+
+
 T.4a.i: orchard_actions_compact_digest
 ......................................
 
