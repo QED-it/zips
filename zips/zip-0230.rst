@@ -24,7 +24,7 @@ Terminology
 The key words "MUST", "SHOULD", and "MAY" in this document are to be interpreted as
 described in BCP 14 [#BCP14]_ when, and only when, they appear in all capitals.
 
-The terms "Zcash Shielded Asset", "ZSA" and "Asset" in this document are to be interpreted as described in ZIP 226 [#zip-0226]_.
+The terms "Zcash Shielded Asset", "OrchardZSA", "ZSA" and "Asset" in this document are to be interpreted as described in ZIP 226 [#zip-0226]_.
 
 The term "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
 
@@ -40,7 +40,7 @@ Abstract
 ========
 
 This proposal defines a new Zcash peer-to-peer transaction format, which includes
-data that supports the Orchard-ZSA protocol and all operations related to Zcash
+data that supports the OrchardZSA protocol and all operations related to Zcash
 Shielded Assets (ZSAs). The new format adds and describes new fields containing
 ZSA-specific elements. Like the existing v5 transaction format, it keeps well-bounded
 regions of the serialized form to serve each pool of funds.
@@ -57,7 +57,7 @@ The fee mechanism is defined in terms of modifications to the Proportionak Trans
 Motivation
 ==========
 
-The Orchard-ZSA protocol requires serialized data elements that are distinct from
+The OrchardZSA protocol requires serialized data elements that are distinct from
 any previous Zcash transaction. Since ZIP 244 was activated in NU5, the
 v5 and later serialized transaction formats are not consensus-critical.
 Thus, this ZIP defines format that can easily accommodate future extensions,
@@ -76,7 +76,7 @@ This motivates further the addition of an Issuance-specific fee.
 Requirements
 ============
 
-The new format must fully support the Orchard-ZSA protocol.
+The new format must fully support the OrchardZSA protocol.
 
 The new format should lend itself to future extension or pruning to add or remove
 value pools.
@@ -169,7 +169,7 @@ Transaction Format
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
 |``64``                              |``bindingSigSapling``     |``byte[64]``                                      |A Sapling binding signature on the SIGHASH transaction hash.               |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
-| **Orchard-ZSA Transaction Fields**                                                                                                                                                           |
+| **OrchardZSA Transaction Fields**                                                                                                                                                            |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
 |``varies``                          |``nActionGroupsOrchard``  |``compactSize``                                   |The number of Action Group descriptions in ``vActionGroupsOrchard``.       |  
 |                                    |                          |                                                  |This MUST have a value of either ``0`` or ``1``.                           |  
@@ -182,11 +182,11 @@ Transaction Format
 | ``varies``                         | ``nAssetBurn``           | ``compactSize``                                  | The number of Assets burnt.                                               |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
 | ``40 * nAssetBurn``                | ``vAssetBurn``           | ``AssetBurn[nAssetBurn]``                        | A sequence of Asset Burn descriptions,                                    |
-|                                    |                          |                                                  | encoded per `Orchard-ZSA Asset Burn Description`_.                        |
+|                                    |                          |                                                  | encoded per `OrchardZSA Asset Burn Description`_.                         |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
-|``64``                              |``bindingSigOrchard``     |``byte[64]``                                      |An Orchard-ZSA binding signature on the SIGHASH transaction hash.          |
+|``64``                              |``bindingSigOrchard``     |``byte[64]``                                      |An OrchardZSA binding signature on the SIGHASH transaction hash.           |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
-| **Orchard-ZSA Issuance Fields**                                                                                                                                                              |
+| **OrchardZSA Issuance Fields**                                                                                                                                                               |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
 |``varies``                          |``nIssueActions``         |``compactSize``                                   |The number of issuance actions in the bundle.                              |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------------+
@@ -282,7 +282,7 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 |``varies``                          |``nActionsOrchard``       |``compactSize``                                   |The number of Action descriptions in ``vActionsOrchard``.            |  
 |                                    |                          |                                                  |This MUST have a value strictly greater than ``0``.                  |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
-|``852 * nActionsOrchard``           |``vActionsOrchard``       |``OrchardZsaAction[nActionsOrchard]``             |A sequence of ZSA Swap Action descriptions in the Action Group.      |  
+|``852 * nActionsOrchard``           |``vActionsOrchard``       |``OrchardZSAAction[nActionsOrchard]``             |A sequence of OrchardZSA Action descriptions in the Action Group.    |  
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 |``1``                               |``flagsOrchard``          |``byte``                                          |As defined in Section 7.1 of the Protocol                            |  
 |                                    |                          |                                                  |Specification [#protocol-txnencoding]_.                              |  
@@ -303,22 +303,22 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 |                                    |                          |                                                  |transaction.                                                         |
 +------------------------------------+--------------------------+--------------------------------------------------+---------------------------------------------------------------------+
 
-The encoding of ``OrchardZsaAction`` is described below.
+The encoding of ``OrchardZSAAction`` is described below.
 
 * The proofs aggregated in ``proofsOrchardZSA``, and the elements of
   ``vSpendAuthSigsOrchard``, each have a 1:1 correspondence to the elements of
   ``vActionsOrchard`` and MUST be ordered such that the proof or signature at a given
-  index corresponds to the ``OrchardZsaAction`` at the same index.
+  index corresponds to the ``OrchardZSAAction`` at the same index.
 
 Rationale for nAGExpiryHeight
 `````````````````````````````
 
-We introduce the ``nAGExpiryHeight`` field in this transaction format in order to be forward compatible with Swaps over ZSAs [#zip-0228]_.
+We introduce the ``nAGExpiryHeight`` field in this transaction format in order to be forward compatible with Swaps over ZSAs, as proposed in ZIP 228 [#zip-0228]_.
 For the OrchardZSA protocol, which does not make use of an additional expiry height for transactions, we set the value of ``nAGExpiryHeight`` to be ``0`` by consensus.
 This serves as a default value to represent the situation where there is no expiry, analogous to the convention adopted for ``nExpiryHeight`` in ZIP 203 [#zip-0203].
 
-Orchard-ZSA Action Description (``OrchardZsaAction``)
------------------------------------------------------
+OrchardZSA Action Description (``OrchardZSAAction``)
+----------------------------------------------------
 
 +-----------------------------+--------------------------+--------------------------------------+------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                            | Description                                                |
@@ -346,15 +346,15 @@ Orchard-ZSA Action Description (``OrchardZsaAction``)
 The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding
 and Consensus’ of the Zcash Protocol Specification [#protocol-actiondesc]_.
 
-Orchard-ZSA Asset Burn Description
+OrchardZSA Asset Burn Description
 ----------------------------------
 
-An Orchard-ZSA Asset Burn description is encoded in a transaction as an instance of an ``AssetBurn`` type:
+An OrchardZSA Asset Burn description is encoded in a transaction as an instance of an ``AssetBurn`` type:
 
 +-------+---------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------+
 | Bytes | Name          | Data Type                   | Description                                                                                                        |
 +=======+===============+=============================+====================================================================================================================+
-| 32    | ``AssetBase`` | ``byte[32]``                | For the Orchard-based ZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase^{Orchard}}\!`. |
+| 32    | ``AssetBase`` | ``byte[32]``                | For the OrchardZSA protocol, this is the encoding of the Asset Base :math:`\mathsf{AssetBase^{Orchard}}\!`.        |
 +-------+---------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------+
 | 8     | ``valueBurn`` | ``uint64``                  | The amount being burnt. The value is checked by consensus to be non-zero.                                          |
 +-------+---------------+-----------------------------+--------------------------------------------------------------------------------------------------------------------+
@@ -435,7 +435,7 @@ calculated in zatoshis. Additional definitions that are used in the formula for 
 Input                            Units  Description
 ================================ ====== ====================================================================================================================
 :math:`nOrchardActions`          number the number of OrchardZSA transfer actions (including ZEC actions)
-:math:`nTotalOutputsZsaIssuance` number the total number of OrchardZSA issuance outputs (added across issuance actions)
+:math:`nTotalOutputsZSAIssuance` number the total number of OrchardZSA issuance outputs (added across issuance actions)
 :math:`nCreateActions`           number the number of OrchardZSA issuance actions that issue a Custom Asset that is not present in the Global Issuance State
 ================================ ====== ====================================================================================================================
 
@@ -446,7 +446,7 @@ Note that :math:`nOrchardActions`, that is used in the computation of :math:`log
 The formula for the computation of the :math:`zsa\_logical\_actions` (with the updated computation of :math:`logical\_actions` as described above) is:
 
 .. math::
-     zsa\_logical\_actions  = logical\_actions \;+ nTotalOutputsZsaIssuance
+     zsa\_logical\_actions  = logical\_actions \;+ nTotalOutputsZSAIssuance
 
 The formula for the computation of the :math:`zsa\_conventional\_fee` is:
 
