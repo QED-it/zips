@@ -346,7 +346,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>The
                     <span class="math">\(\mathsf{finalize}\)</span>
                  boolean is set by the Issuer to signal that there will be no further issuance of the specific Custom Asset. As we will see in <a href="#specification-consensus-rule-changes">Specification: Consensus Rule Changes</a>, transactions that attempt to issue further amounts of a Custom Asset that has previously been finalized will be rejected.</p>
-                <p>The complete encoding of these fields into an <code>IssueAction</code> is defined in ZIP 230 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0230-issuance-action-description">14</a>.</p>
+                <p>The complete encoding of these fields into an <code>IssueAction</code> is defined in ZIP 230 <a id="footnote-reference-21" class="footnote_reference" href="#zip-0230-issuance-action-description">15</a>.</p>
                 <p>We note that the output note commitment of the recipient's notes are not included in the actual transaction, but when added to the global state of the chain, they will be added to the note commitment tree as a shielded note. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
             </section>
             <section id="issuance-bundle"><h3><span class="section-heading">Issuance Bundle</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-bundle"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
@@ -364,7 +364,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{isk}\!\)</span>
                     , that validates the issuance.</li>
                 </ul>
-                <p>The issuance bundle is added within the transaction format as a new bundle. The detailed encoding of the issuance bundle as a part of the V6 transaction format is defined in ZIP 230 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0230-transaction-format">15</a>.</p>
+                <p>The issuance bundle is added within the transaction format as a new bundle. The detailed encoding of the issuance bundle as a part of the V6 transaction format is defined in ZIP 230 <a id="footnote-reference-22" class="footnote_reference" href="#zip-0230-transaction-format">16</a>.</p>
             </section>
             <section id="issuance-protocol"><h3><span class="section-heading">Issuance Protocol</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-protocol"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The issuer program performs the following operations:</p>
@@ -642,7 +642,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="txid-digest-issuance"><h2><span class="section-heading">TxId Digest - Issuance</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-issuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the OrchardZSA protocol can be found in ZIP 226 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0226-txiddigest">13</a>. As in ZIP 244 <a id="footnote-reference-30" class="footnote_reference" href="#zip-0244">17</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
+            <p>This section details the construction of the subtree of hashes in the transaction digest that corresponds to issuance transaction data. Details of the overall changes to the transaction digest due to the OrchardZSA protocol can be found in ZIP 226 <a id="footnote-reference-29" class="footnote_reference" href="#zip-0226-txiddigest">13</a>. As in ZIP 244 <a id="footnote-reference-30" class="footnote_reference" href="#zip-0244">18</a>, the digests are all personalized BLAKE2b-256 hashes, and in cases where no elements are available for hashing, a personalized hash of the empty byte array is used.</p>
             <p>A new issuance transaction digest algorithm is defined that constructs the subtree of the transaction digest tree of hashes for the issuance portion of a transaction. Each branch of the subtree will correspond to a specific subset of issuance transaction data. The overall structure of the hash is as follows; each name referenced here will be described in detail below:</p>
             <pre>issuance_digest
 ├── issue_actions_digest
@@ -712,7 +712,7 @@ T.5a.i.5: rseed                        (field encoding bytes)</pre>
             </section>
         </section>
         <section id="signature-digest"><h2><span class="section-heading">Signature Digest</span><span class="section-anchor"> <a rel="bookmark" href="#signature-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-32" class="footnote_reference" href="#zip-0244-sigdigest">18</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
+            <p>The per-input transaction digest algorithm to generate the signature digest in ZIP 244 <a id="footnote-reference-32" class="footnote_reference" href="#zip-0244-sigdigest">19</a> is modified so that a signature digest is produced for each transparent input, each Sapling input, each Orchard action, and additionally for each Issuance Action. For Issuance Actions, this algorithm has the exact same output as the transaction digest algorithm, thus the txid may be signed directly.</p>
             <p>The overall structure of the hash is as follows. We highlight the changes for the OrchardZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol:</p>
             <pre>signature_digest
 ├── header_digest
@@ -727,35 +727,21 @@ S.2: transparent_sig_digest (32-byte hash output)
 S.3: sapling_digest         (32-byte hash output)
 S.4: orchard_digest         (32-byte hash output)
 S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
-                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-33" class="footnote_reference" href="#zip-0244">17</a>.</p>
+                <p>The personalization field remains the same as in ZIP 244 <a id="footnote-reference-33" class="footnote_reference" href="#zip-0244">18</a>.</p>
                 <section id="s-5-issuance-digest"><h4><span class="section-heading">S.5: issuance_digest</span><span class="section-anchor"> <a rel="bookmark" href="#s-5-issuance-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>Identical to that specified for the transaction identifier.</p>
                 </section>
             </section>
         </section>
-        <section id="authorizing-data-commitment"><h2><span class="section-heading">Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-34" class="footnote_reference" href="#zip-0244-authcommitment">19</a> which commits to the authorizing data of a transaction is modified by the OrchardZSA protocol to have the following structure. We highlight the changes for the OrchardZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol:</p>
-            <pre>auth_digest
-├── transparent_scripts_digest
-├── sapling_auth_digest
-├── orchard_auth_digest
-└── issuance_auth_digest        [ADDED FOR ZSA]</pre>
-            <p>The pair (Transaction Identifier, Auth Commitment) constitutes a commitment to all the data of a serialized transaction that may be included in a block.</p>
-            <section id="auth-digest"><h3><span class="section-heading">auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>A BLAKE2b-256 hash of the following values</p>
-                <pre>A.1: transparent_scripts_digest (32-byte hash output)
-A.2: sapling_auth_digest        (32-byte hash output)
-A.3: orchard_auth_digest        (32-byte hash output)
-A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
-                <p>The personalization field of this hash remains the same as in ZIP 244.</p>
-                <section id="a-4-issuance-auth-digest"><h4><span class="section-heading">A.4: issuance_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-4-issuance-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the <code>issueAuthSig</code> field of the transaction:</p>
-                    <pre>A.4a: issueAuthSig            (field encoding bytes)</pre>
-                    <p>The personalization field of this hash is set to:</p>
-                    <pre>"ZTxAuthZSAOrHash"</pre>
-                    <p>In the case that the transaction has no Orchard Actions, <code>issuance_auth_digest</code> is</p>
-                    <pre>BLAKE2b-256("ZTxAuthZSAOrHash", [])</pre>
-                </section>
+        <section id="authorizing-data-commitment-issuance"><h2><span class="section-heading">Authorizing Data Commitment - Issuance</span><span class="section-anchor"> <a rel="bookmark" href="#authorizing-data-commitment-issuance"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>This section covers the construction of the subtree of hashes in the authorizing data commitment that corresponds to issuance transaction data. Details of the overall changes to the authorizing data commitment due to the OrchardZSA protocol can be found in ZIP 226 <a id="footnote-reference-34" class="footnote_reference" href="#zip-0226-authcommitment">14</a>.</p>
+            <section id="a-4-issuance-auth-digest"><h3><span class="section-heading">A.4: issuance_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-4-issuance-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the <code>issueAuthSig</code> field of the transaction:</p>
+                <pre>A.4a: issueAuthSig            (field encoding bytes)</pre>
+                <p>The personalization field of this hash is set to:</p>
+                <pre>"ZTxAuthZSAOrHash"</pre>
+                <p>In the case that the transaction has no Orchard Actions, <code>issuance_auth_digest</code> is</p>
+                <pre>BLAKE2b-256("ZTxAuthZSAOrHash", [])</pre>
             </section>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -789,7 +775,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                  in order to properly keep track of the total supply for different Asset Identifiers. This is useful for wallets and other applications that need to keep track of the total supply of Assets.</p>
             </section>
             <section id="fee-structures"><h3><span class="section-heading">Fee Structures</span><span class="section-anchor"> <a rel="bookmark" href="#fee-structures"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317, and is described in ZIP 230 <a id="footnote-reference-36" class="footnote_reference" href="#zip-0230-orchardzsa-fee-calculation">16</a>.</p>
+                <p>The fee mechanism described in this ZIP will follow the mechanism described in ZIP 317, and is described in ZIP 230 <a id="footnote-reference-36" class="footnote_reference" href="#zip-0230-orchardzsa-fee-calculation">17</a>.</p>
             </section>
         </section>
         <section id="test-vectors"><h2><span class="section-heading">Test Vectors</span><span class="section-anchor"> <a rel="bookmark" href="#test-vectors"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -911,10 +897,18 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                     </tr>
                 </tbody>
             </table>
-            <table id="zip-0230-issuance-action-description" class="footnote">
+            <table id="zip-0226-authcommitment" class="footnote">
                 <tbody>
                     <tr>
                         <th>14</th>
+                        <td><a href="zip-0226.html#authorizing-data-commitment">ZIP 226: Transfer and Burn of Zcash Shielded Assets - Authorizing Data Commitment</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0230-issuance-action-description" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>15</th>
                         <td><a href="zip-0230.html#issuance-action-description-issueaction">ZIP 230: Version 6 Transaction Format: Issuance Action Description (IssueAction)</a></td>
                     </tr>
                 </tbody>
@@ -922,7 +916,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="zip-0230-transaction-format" class="footnote">
                 <tbody>
                     <tr>
-                        <th>15</th>
+                        <th>16</th>
                         <td><a href="zip-0230.html#transaction-format">ZIP 230: Version 6 Transaction Format: Transaction Format</a></td>
                     </tr>
                 </tbody>
@@ -930,7 +924,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="zip-0230-orchardzsa-fee-calculation" class="footnote">
                 <tbody>
                     <tr>
-                        <th>16</th>
+                        <th>17</th>
                         <td><a href="zip-0230.html#orchardzsa-fee-calculation">ZIP 230: Version 6 Transaction Format: OrchardZSA Fee Calculation</a></td>
                     </tr>
                 </tbody>
@@ -938,7 +932,7 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="zip-0244" class="footnote">
                 <tbody>
                     <tr>
-                        <th>17</th>
+                        <th>18</th>
                         <td><a href="zip-0244.html">ZIP 244: Transaction Identifier Non-Malleability</a></td>
                     </tr>
                 </tbody>
@@ -946,16 +940,8 @@ A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
             <table id="zip-0244-sigdigest" class="footnote">
                 <tbody>
                     <tr>
-                        <th>18</th>
-                        <td><a href="zip-0244.html#signature-digest">ZIP 244: Transaction Identifier Non-Malleability: Signature Digest</a></td>
-                    </tr>
-                </tbody>
-            </table>
-            <table id="zip-0244-authcommitment" class="footnote">
-                <tbody>
-                    <tr>
                         <th>19</th>
-                        <td><a href="zip-0244.html#authorizing-data-commitment">ZIP 244: Transaction Identifier Non-Malleability: Authorizing Data Commitment</a></td>
+                        <td><a href="zip-0244.html#signature-digest">ZIP 244: Transaction Identifier Non-Malleability: Signature Digest</a></td>
                     </tr>
                 </tbody>
             </table>

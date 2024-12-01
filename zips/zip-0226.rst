@@ -460,10 +460,72 @@ T.5: issuance_digest
 ````````````````````
 The details of the computation of this value are in ZIP 227 [#zip-0227-txiddigest]_.
 
-Signature Digest and Authorizing Data Commitment
-================================================
+Signature Digest 
+================
 
-The details of the changes to these algorithms are in ZIP 227 [#zip-0227-sigdigest]_ [#zip-0227-authcommitment]_.
+The details of the changes to this algorithm are in ZIP 227 [#zip-0227-sigdigest]_.
+
+Authorizing Data Commitment
+===========================
+
+The transaction digest algorithm defined in ZIP 244 [#zip-0244-authcommitment]_ which commits to the authorizing data of a transaction is modified by the OrchardZSA protocol to have the structure specified in this section.
+There is a new branch added for issuance information, along with modifications within the ``orchard_auth_digest`` to account for the presence of Action Groups.
+
+We highlight the changes for the OrchardZSA protocol via the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol::
+
+    auth_digest
+    ├── transparent_scripts_digest
+    ├── sapling_auth_digest
+    ├── orchard_auth_digest         [UPDATED FOR ZSA]
+    └── issuance_auth_digest        [ADDED FOR ZSA]
+
+The pair (Transaction Identifier, Auth Commitment) constitutes a commitment to all the data of a serialized transaction that may be included in a block.
+
+auth_digest
+-----------
+A BLAKE2b-256 hash of the following values ::
+
+   A.1: transparent_scripts_digest (32-byte hash output)
+   A.2: sapling_auth_digest        (32-byte hash output)
+   A.3: orchard_auth_digest        (32-byte hash output)  [UPDATED FOR ZSA]
+   A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]
+
+The personalization field of this hash remains the same as in ZIP 244.
+
+
+A.3: orchard_auth_digest
+````````````````````````
+
+In the case that OrchardZSA Action Groups are present, this is a BLAKE2b-256 hash of the following values::
+
+    A.3a: orchard_action_groups_auth_digest  (32-byte hash output)  [ADDED FOR ZSA]
+    A.3b: bindingSigOrchard                  (field encoding bytes)
+
+The personalization field of this hash is the same as in ZIP 244, that is::
+
+    "ZTxAuthOrchaHash"
+
+In case that the transaction has no OrchardZSA Action Groups, ``orchard_auth_digest`` is::
+
+    BLAKE2b-256("ZTxAuthOrchaHash", [])
+
+A.3a: orchard_action_groups_auth_digest
+'''''''''''''''''''''''''''''''''''''''
+
+This is a BLAKE2b-256 hash of the ``proofsOrchard`` and ``spendAuthSigsOrchard`` fields of all OrchardZSA Action Groups belonging to the transaction::
+
+    A.3a.i:  proofsOrchard               (field encoding bytes)
+    A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)
+
+The personalization field of this hash is set to::
+
+    "ZTxAuthOrcAGHash"
+
+A.4: issuance_auth_digest
+`````````````````````````
+
+The details of the computation of this value are in ZIP 227 [#zip-0227-authcommitment]_.
+
 
 Security and Privacy Considerations
 ===================================
@@ -522,10 +584,11 @@ References
 .. [#zip-0227-consensus] `ZIP 227: Issuance of Zcash Shielded Assets: Specification: Consensus Rule Changes <zip-0227.html#specification-consensus-rule-changes>`_
 .. [#zip-0227-txiddigest] `ZIP 227: Issuance of Zcash Shielded Assets: TxId Digest - Issuance <zip-0227.html#txid-digest-issuance>`_
 .. [#zip-0227-sigdigest] `ZIP 227: Issuance of Zcash Shielded Assets: Signature Digest <zip-0227.html#signature-digest>`_
-.. [#zip-0227-authcommitment] `ZIP 227: Issuance of Zcash Shielded Assets: Authorizing Data Commitment <zip-0227.html#authorizing-data-commitment>`_
+.. [#zip-0227-authcommitment] `ZIP 227: Issuance of Zcash Shielded Assets: Authorizing Data Commitment <zip-0227.html#authorizing-data-commitment-issuance>`_
 .. [#zip-0230] `ZIP 230: Version 6 Transaction Format <zip-0230.html>`_
 .. [#zip-0230-orchardzsa-fee-calculation] `ZIP 230: Version 6 Transaction Format: OrchardZSA Fee Calculation <zip-0230.html#orchardzsa-fee-calculation>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.html>`_
+.. [#zip-0244-authcommitment] `ZIP 244: Transaction Identifier Non-Malleability: Authorizing Data Commitment <zip-0244.html#authorizing-data-commitment>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-actions] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.7: Action Transfers and their Descriptions <protocol/protocol.pdf#actions>`_
