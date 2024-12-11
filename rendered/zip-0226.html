@@ -195,7 +195,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </section>
             </section>
             <section id="burn-mechanism"><h3><span class="section-heading">Burn Mechanism</span><span class="section-anchor"> <a rel="bookmark" href="#burn-mechanism"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Custom Asset to be "destroyed" by the holder. The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets. Burning makes it globally provable that a given amount of a Custom Asset has been destroyed. Note that the OrchardZSA Protocol does not allow for the burning of ZEC (or TAZ).</p>
+                <p>The burn mechanism is a transparent extension to the transfer protocol that enables a specific amount of any Custom Asset to be "destroyed" by the holder. The burn mechanism does NOT send Assets to a non-spendable address, it simply reduces the total number of units of a given Custom Asset in circulation. It is enforced at the consensus level, by using an extension of the value balance mechanism used for ZEC Assets. Burning makes it globally provable that a given amount of a Custom Asset has been destroyed. Note that the OrchardZSA Protocol does not allow for the burning of the Native Asset (i.e. ZEC or TAZ).</p>
                 <p>In the <a href="#orchardzsa-transaction-structure">OrchardZSA Transaction Structure</a>, there is now an
                     <span class="math">\(\mathsf{assetBurn}\)</span>
                  set. For every Custom Asset (represented by its
@@ -216,7 +216,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <ol type="1">
                         <li>It MUST be the case that for every
                             <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}\!\)</span>
-                        . That is, ZEC or TAZ is not allowed to be burnt by this mechanism.</li>
+                        . That is, the Native Asset is not allowed to be burnt by this mechanism.</li>
                         <li>It MUST be that for every
                             <span class="math">\((\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{v} \neq 0\!\)</span>
                         .</li>
@@ -229,7 +229,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         .</li>
                     </ol>
                     <p>The other consensus rule changes for the OrchardZSA protocol are specified in ZIP 227 <a id="footnote-reference-39" class="footnote_reference" href="#zip-0227-consensus">8</a>.</p>
-                    <p><strong>Note:</strong> Even if this mechanism allows having transparent ↔ shielded Asset transfers in theory, the transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
+                    <p><strong>Note:</strong> The transparent protocol will not be changed with this ZIP to adapt to a multiple Asset structure. This means that unless future consensus rules changes do allow it, unshielding will not be possible for Custom Assets.</p>
                 </section>
             </section>
             <section id="value-balance-verification"><h3><span class="section-heading">Value Balance Verification</span><span class="section-anchor"> <a rel="bookmark" href="#value-balance-verification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
