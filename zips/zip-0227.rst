@@ -230,6 +230,8 @@ Specification: Issuance Action, Issuance Bundle and Issuance Protocol
 Issue Note Description
 ----------------------
 
+TODO: Fill this section.
+
 Issuance Action Description
 ---------------------------
 
