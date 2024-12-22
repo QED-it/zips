@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ZIP approval: Transaction User Controls</title>
+    <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1"><link rel="stylesheet" href="css/style.css"></head>
+<body>
+    <section>
+        <pre>ZIP: TODO: TO BE ASSIGNED
+Title: Transaction User Controls
+Owners: Pablo Kogan &lt;pablo@qed-it.com&gt;
+        Antoine Rondelet &lt;antoine@qed-it.com&gt;
+Status: Draft
+Category: Consensus
+Created: 2024-12-22
+License: MIT
+Discussions-To: &lt;<a href="https://forum.zcashcommunity.com/t/introducing-transaction-controls-in-zcash/49640">https://forum.zcashcommunity.com/t/introducing-transaction-controls-in-zcash/49640</a>&gt;
+Pull-Request: &lt;TODO: ADD&gt;</pre>
+        <section id="terminology"><h2><span class="section-heading">Terminology</span><span class="section-anchor"> <a rel="bookmark" href="#terminology"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>The key word "MUST" in this document is to be interpreted as described in BCP 14 <a id="footnote-reference-1" class="footnote_reference" href="#bcp14">1</a> when, and only when, it appears in all capitals.</p>
+            <p>The term "network upgrade" in this document is to be interpreted as described in ZIP 200 <a id="footnote-reference-2" class="footnote_reference" href="#zip-0200">2</a>.</p>
+            <p>The terms "Orchard" and "Action" in this document are to be interpreted as described in ZIP 224 <a id="footnote-reference-3" class="footnote_reference" href="#zip-0224">4</a>.</p>
+            <p>The terms "Asset" and "ZSA" in this document are to be interpreted as described in ZIP 227 <a id="footnote-reference-4" class="footnote_reference" href="#zip-0227">5</a>.</p>
+        </section>
+        <section id="abstract"><h2><span class="section-heading">Abstract</span><span class="section-anchor"> <a rel="bookmark" href="#abstract"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>This ZIP proposes transaction user controls - a mechanism allowing recipients of shielded funds to actively participate in the transfer of assets by approving or rejecting incoming transactions.</p>
+        </section>
+        <section id="motivation"><h2><span class="section-heading">Motivation</span><span class="section-anchor"> <a rel="bookmark" href="#motivation"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>In the current version of Zcash, fund transfers occur without explicit recipient consent. While this simplicity offers convenience, it creates significant challenges for users of the network (e.g. individuals or businesses). The goal of this ZIP is to design a mechanism where the recipient of shielded funds on Zcash (for any type of ZSA) can confirm (or ‘approve’) the receipt of the funds on chain. This enhancement addresses crucial needs in the Zcash ecosystem, particularly at a time when privacy-preserving assets face increased scrutiny from major exchanges. The proposed controls offer robust safeguarding solutions while maintaining Zcash’s core privacy features.</p>
+        </section>
+        <section id="overview"><h2><span class="section-heading">Overview</span><span class="section-anchor"> <a rel="bookmark" href="#overview"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>Existing Zcash users rely on the notion of "address" to identify each other. Each Zcash user has one or more address. When 2 users (a sender and a recipient) want to transact, they first need to "discover each other". More particularly, the sender of the funds, must get the address of the recipient in order to transfer funds to the counterparty. This "address discovery" is usually done via off-chain communications (e.g. emails, forum). By sharing (or not sharing) their payment address, recipients can decide (i.e. 'authorize' or 'not authorize') which other network participants can send them funds on the network.</p>
+            <p>In some contexts, individuals and/or organizations may want to publish one of their addresses in order to allow everyone to issue a payment to them (e.g. charities like Turing Trust). In other cases, Zcash users may want to selectively disclose their payment addresses to only allow incoming payments from a restricted set of users.</p>
+            <p>But, relying exclusively on "address discovery" to authorize / not authorize incoming payments has the following limitations:</p>
+            <ul>
+                <li>Lack of revocation: Sharing one's payment address only allows the recipient to "grant" the "authority to be paid by a user", but it doesn't allow the recipient to "revoke" this "authority to be paid". This could be an issue if recipients want to authorize the sender to pay them only once. (Generating new addresses is not a clean way to revoke the authorization to pay because the sender can still send funds to the old address, potentially leading to lost funds. More on that below.)</li>
+                <li>Loose authorization. Sharing one's address with a sender only allows the recipient to "grant" the "authority to be paid by a user" but it does not constrain the terms of the payment. The recipient might want to only authorize payments for specific amounts - or at specific times (e.g. for tax reasons) -, instead of authorizing "every kind of payments, any time" from the sender they shared their payment address with.</li>
+                <li>Payment authorization is transitive (undesired property). A malicious sender could disclose the payment address of the recipient to other network participants which will - in turn - "grant them authorization to send funds to the recipient", against the recipient's will. Say, e.g. Alice gives her address to Bob to authorize him to pay her. If Bob leaks Alice's address to Charlie, then, now Charlie knows Alice's address - as if Alice gave her address to Charlie (to authorize him to pay her). In other words, recipients can control who they share their address with, but once shared they can't control who else will get their address. (Obviously, not all senders will be malicious in reality, but every sender can be compromised. This is why, we must assume all senders to be malicious in the analysis.)</li>
+            </ul>
+            <p>Nowadays, any sender who has the address of another Zcash user can - unilaterally - send funds to this user.</p>
+            <p>In doing so, the sender can:</p>
+            <ul>
+                <li>Create a link between the recipient and a specific asset.</li>
+                <li>Create a link between a recipient and unlawfully acquired/tainted funds (e.g. to blackmail, cause reputational damages) etc.</li>
+                <li>Associate the recipient with a group of users or a set of on-chain transactions</li>
+            </ul>
+            <p>The fact that senders can - unaliterally - transfer funds to a recipient, without their consent creates a set of practical issues. Custodians like centralized exchanges (CEX), for instance, have no way to reject fraudulent deposits. As a consequence, several CEX have started to delist privacy preserving crypto assets like Zcash [INSERT REF]. Such delistings impact the Zcash community, making the asset harder to buy and sell across the ecosystem. Likewise, given that recipients are not actively involved in the transfer of funds, the sender is the sole responsible to make sure that the asset transfer occurs as expected. Unfortunately, mistakes are made regularly (e.g. typos in the address of the recipient), which regularly leads funds being lost. Established payment systems (e.g. CHAPS or Faster Payments in the UK) have developped solutions to mitigate errors in transfers (e.g. Confirmation of Payee (CoP) [TODO REF]), but, to date, crypto transfers lack such safeguarding functionality.</p>
+            <p>This ZIP introduces an interactive protocol for the sender of funds to seek approval from the recipient during an asset transfer. This approval is generated by the recipient of funds who generates an approval signature on the raw transaction and sends it back to the sender. Upon receipt of the approval signature, the sender can then submit the transaction to the chain for execution. The Zcash network can verify the validity of the approval by verifying that the approval signature has been generated by the recipient of the funds transfered in the transaction.</p>
+            <p>This interactive user control protocol offers a double-opt in on fund transfers, which:</p>
+            <ol type="1">
+                <li>acts as a loss-prevention mechanism, and</li>
+                <li>allows the recipients of funds to control (accept/reject) the funds being sent to their wallet.</li>
+            </ol>
+        </section>
+        <section id="specification"><h2><span class="section-heading">Specification</span><span class="section-anchor"> <a rel="bookmark" href="#specification"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <p>Most of the protocol is kept the same as the Orchard protocol released with NU5, except for the following.</p>
+            <section id="approval-signature"><h3><span class="section-heading">Approval Signature</span><span class="section-anchor"> <a rel="bookmark" href="#approval-signature"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>Given the Orchard address (in the form: $d | pk_d$) of the recipient of the output note of an Orchard Action and given that $g_d$ is a Pallas curve point, derived from $d$ - the approval signature derivation goes as follows:</p>
+                <ol type="1">
+                    <li>The sender sends the OrchardAction (the preimage of the message to be signed) for the recipient to sign.</li>
+                    <li>
+                        <dl>
+                            <dt>The recipient executes the following steps:</dt>
+                            <dd>
+                                <ul>
+                                    <li>$m gets H(OrchardActionDescription)$, where $OrchardActionDescription$ is the Orchard Action description as per <a href="https://zips.z.cash/protocol/protocol.pdf#actionencodingandconsensus">https://zips.z.cash/protocol/protocol.pdf#actionencodingandconsensus</a>.</li>
+                                    <li>Takes $r overset{{scriptscriptstyle$}}{leftarrow} mathbb{Z}_{r_{mathbb{P}}}$, where $mathbb{Z}_{r_{mathbb{P}}}$ is the scalar field of Pallas, and where $overset{{scriptscriptstyle$}}{leftarrow}$ denotes a variable assignment uniformly at random from a given set.</li>
+                                    <li>$u gets [r]g_d$, a Pallas point</li>
+                                    <li>$C gets H(g_d, pk_d, u, m) mod r_{mathbb{P}}$, an element of Pallas' scalar field</li>
+                                    <li>$s gets r + C * ivk mod r_{mathbb{P}}$, an element of Pallas' scalar field</li>
+                                    <li>$sigma_{approval} gets (u, s)$</li>
+                                </ul>
+                            </dd>
+                        </dl>
+                    </li>
+                </ol>
+                <p>, and sends $sigma_{approval}$ to the sender (off-chain).</p>
+                <p>$sigma_{approval}$ is a tuple made of one Pallas point and one element of Pallas' scalar field. Hence, the size, in bytes of $sigma_{approval}$ is: 96 bytes.</p>
+                <section id="rationale-for-approval-signature"><h4><span class="section-heading">Rationale for Approval Signature</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-approval-signature"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>To prove that the correct recipient of the output notes of an Orchard Action approves (the transfer of funds represented by) the Action, we want to show that the approval signature has been generated with a signing key that is derived from the spending key of the recipient of the output notes of the Action. In other words, we want to prove that the approval signature is generated by the network user who "knows" the spending key of the output notes of the Action. Doing so means that only the recipient of the note created in the Orchard Action can approve the payment.</p>
+                    <p>To achieve this, we look into the key structure of Zcash Orchard. We know that the Orchard address is of the form: $d | pk_d$. These 2 fields, the diversifier and the diversified address, are used by the sender when sending notes.</p>
+                    <p>Looking at the Orchard key components derivations, we know that $pk_d$ is derived as: $pk_d := KAOrchard.DerivePublic(ivk, g_d) = [ivk]g_d$</p>
+                    <p>Given that $ivk$ is derived from the spending key of the recipient of the funds, we can prove that the recipient of the funds in an Orchard Action is approving the receipt of the funds, by using a proof of knowledge of $ivk$. Such proof of knowledge of $ivk$ can be obtained by using the Non-Interactive Schnorr Protocol.</p>
+                    <p>In fact, such proof of knowledge of ivk can be obtained by using a Schnorr Signature on the Action (the message) with ivk as signing/secret key and $g_d$ as group generator.</p>
+                </section>
+            </section>
+            <section id="modifications-to-the-orchard-statement-circuit"><h3><span class="section-heading">Modifications to the Orchard Statement/Circuit</span><span class="section-anchor"> <a rel="bookmark" href="#modifications-to-the-orchard-statement-circuit"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>The following steps are added to the Orchard Action statement:</p>
+                <p>Instance:</p>
+                <ul>
+                    <li>$sigma_{approval}$</li>
+                    <li>OrchardActionDescription</li>
+                </ul>
+                <p>Witness:</p>
+                <ul>
+                    <li>$g_d$</li>
+                    <li>$pk_d$</li>
+                </ul>
+                <p>Circuit:</p>
+                <ul>
+                    <li>$C’ gets H(g_d, pk_d, sigma_{approval}.u, H(OrchardActionDescription))$</li>
+                    <li>$LHS gets [sigma_{approval}.s]g_d$</li>
+                    <li>$RHS gets sigma_{approval}.u + [C']pk_d$</li>
+                    <li>$LHS - RHS = 0$</li>
+                </ul>
+                <section id="rationale-for-the-modifications-to-the-orchard-statement-circuit"><h4><span class="section-heading">Rationale for the modifications to the Orchard Statement/Circuit</span><span class="section-anchor"> <a rel="bookmark" href="#rationale-for-the-modifications-to-the-orchard-statement-circuit"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                    <p>Upon receipt of the approval signature by the recipient of the funds, the sender could include $sigma_{approval}$ along with $g_d$ and $pk_d$ in the transaction to be sent on chain. Indeed, both $g_d$ and $pk_d$ of the recipient are needed by the Zcash validators/miners to verify the approval Schnorr signature on chain.</p>
+                    <p>In this case, the Zcash miners could verify the recipient's approval by doing (for each Action in the transaction):</p>
+                    <ol type="1">
+                        <li>$C’ gets H(g_d, pk_d, sigma_{approval}.u, H(OrchardActionDescription))$</li>
+                        <li>$LHS gets [sigma_{approval}.sigma]g_d$</li>
+                        <li>$RHS gets sigma_{approval}.u + [C']pk_d$</li>
+                        <li>$LHS stackrel{?}{=} RHS$. If not, reject transaction.</li>
+                    </ol>
+                    <p>If the signature was generated correctly, $LHS = [r + C * ivk]g_d$ and $RHS =[r]g_d + [C]pk_d$, since a well derived $pk_d$ equals $[ivk]g_d$ we get $RHS = [r]g_d + [C][ivk]g_d implies RHS = [r + C * ivk]g_d$. So if all steps are followed properly, $LHS = RHS$ and the signature verification succeeds.</p>
+                    <p>However, to verify the signature, Zcash miners need to know which $g_d$ and $pk_d$ to use to verify the approval signatures on each Actions. Disclosing these values leaks "which Orchard address" is the recipient of the output notes of an Action. So, unlinkability is affected.</p>
+                    <p>Here, the sender needs to include the Orchard address of the recipient for the miners to check approval from the recipient. To fix this, we included the Schnorr signature verification in the Orchard Action circuit directly. This keeps the recipient's $g_d$ and $pk_d$ privy to the transacting parties (i.e. the values remain part of the witness - as currently done in the NU5 protocol). The Zcash miners, just need to verify the Orchard Action proof to make sure the approval signature was:</p>
+                    <ul>
+                        <li>Properly generated by the recipient of the notes in the Orchard Actions</li>
+                        <li>Properly verified by the sender of the funds</li>
+                    </ul>
+                </section>
+            </section>
+            <section id="modifications-to-the-transaction-format"><h3><span class="section-heading">Modifications to the Transaction Format</span><span class="section-anchor"> <a rel="bookmark" href="#modifications-to-the-transaction-format"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>In order to support this ZIP, the transaction format must be extended to add the appoval signatures, as follows:</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Bytes</th>
+                            <th>Name</th>
+                            <th>Data Type</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>96 * nActionsOrchard</td>
+                            <td>vApprovalSigs</td>
+                            <td>byte[96][nActionsOrchard]</td>
+                            <td>Approval signatures for each Orchard Action</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+        </section>
+        <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <section id="transaction-fees"><h3><span class="section-heading">Transaction Fees</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>Given the modification of the transaction structure (and the additional bytes), it might be necessary to slightly increase the default transaction fees on Zcash if this ZIP gets implemented.</p>
+            </section>
+        </section>
+        <section id="references"><h2><span class="section-heading">References</span><span class="section-anchor"> <a rel="bookmark" href="#references"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+            <table id="bcp14" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>1</th>
+                        <td><a href="https://www.rfc-editor.org/info/bcp14">Information on BCP 14 — "RFC 2119: Key words for use in RFCs to Indicate Requirement Levels" and "RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0200" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>2</th>
+                        <td><a href="zip-0200.html">ZIP 200: Network Upgrade Mechanism</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0209" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>3</th>
+                        <td><a href="zip-0209.html">ZIP 209: Prohibit Negative Shielded Chain Value Pool Balances</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0224" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>4</th>
+                        <td><a href="zip-0224.html">ZIP 224: Orchard</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>5</th>
+                        <td><a href="zip-0227.html">ZIP 227: Issuance of Zcash Shielded Assets</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-specification-global-issuance-state" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>6</th>
+                        <td><a href="zip-0227.html#specification-global-issuance-state">ZIP 227: Issuance of Zcash Shielded Assets: Specification: Global Issuance State</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-assetidentifier" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>7</th>
+                        <td><a href="zip-0227.html#specification-asset-identifier">ZIP 227: Issuance of Zcash Shielded Assets: Specification: Asset Identifier</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-consensus" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>8</th>
+                        <td><a href="zip-0227.html#specification-consensus-rule-changes">ZIP 227: Issuance of Zcash Shielded Assets: Specification: Consensus Rule Changes</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-txiddigest" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>9</th>
+                        <td><a href="zip-0227.html#txid-digest-issuance">ZIP 227: Issuance of Zcash Shielded Assets: TxId Digest - Issuance</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-sigdigest" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>10</th>
+                        <td><a href="zip-0227.html#signature-digest">ZIP 227: Issuance of Zcash Shielded Assets: Signature Digest</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0227-authcommitment" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>11</th>
+                        <td><a href="zip-0227.html#authorizing-data-commitment-issuance">ZIP 227: Issuance of Zcash Shielded Assets: Authorizing Data Commitment</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0230" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>12</th>
+                        <td><a href="zip-0230.html">ZIP 230: Version 6 Transaction Format</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0230-orchardzsa-fee-calculation" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>13</th>
+                        <td><a href="zip-0230.html#orchardzsa-fee-calculation">ZIP 230: Version 6 Transaction Format: OrchardZSA Fee Calculation</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0244" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>14</th>
+                        <td><a href="zip-0244.html">ZIP 244: Transaction Identifier Non-Malleability</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0244-authcommitment" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>15</th>
+                        <td><a href="zip-0244.html#authorizing-data-commitment">ZIP 244: Transaction Identifier Non-Malleability: Authorizing Data Commitment</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="zip-0307" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>16</th>
+                        <td><a href="zip-0307">ZIP 307: Light Client Protocol for Payment Detection</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-notes" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>17</th>
+                        <td><a href="protocol/protocol.pdf#notes">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.2: Notes</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-actions" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>18</th>
+                        <td><a href="protocol/protocol.pdf#actions">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.7: Action Transfers and their Descriptions</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-abstractcommit" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>19</th>
+                        <td><a href="protocol/protocol.pdf#abstractcommit">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.1.8: Commitment</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-orcharddummynotes" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>20</th>
+                        <td><a href="protocol/protocol.pdf#orcharddummynotes">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.8.3: Dummy Notes (Orchard)</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-orchardbalance" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>21</th>
+                        <td><a href="protocol/protocol.pdf#orchardbalance">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.14: Balance and Binding Signature (Orchard)</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-commitmentsandnullifiers" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>22</th>
+                        <td><a href="protocol/protocol.pdf#commitmentsandnullifiers">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.16: Computing ρ values and Nullifiers</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-actionstatement" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>23</th>
+                        <td><a href="protocol/protocol.pdf#actionstatement">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.18.4: Action Statement (Orchard)</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-endian" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>24</th>
+                        <td><a href="protocol/protocol.pdf#endian">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.1: Integers, Bit Sequences, and Endianness</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-constants" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>25</th>
+                        <td><a href="protocol/protocol.pdf#constants">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.3: Constants</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-concretesinsemillahash" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>26</th>
+                        <td><a href="protocol/protocol.pdf#concretesinsemillahash">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.1.9: Sinsemilla hash function</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-concretehomomorphiccommit" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>27</th>
+                        <td><a href="protocol/protocol.pdf#concretehomomorphiccommit">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard)</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-concretesinsemillacommit" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>28</th>
+                        <td><a href="protocol/protocol.pdf#concretesinsemillacommit">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.8.4: Sinsemilla commitments</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-pallasandvesta" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>29</th>
+                        <td><a href="protocol/protocol.pdf#pallasandvesta">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.9.6: Pallas and Vesta</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-notept" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>30</th>
+                        <td><a href="protocol/protocol.pdf#notept">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.5: Encodings of Note Plaintexts and Memo Fields</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="protocol-actionencodingandconsensus" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>31</th>
+                        <td><a href="protocol/protocol.pdf#actionencodingandconsensus">Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 7.5: Action Description Encoding and Consensus</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="initial-zsa-issue" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>32</th>
+                        <td><a href="https://github.com/str4d/zips/blob/zip-udas/drafts/zip-user-defined-assets.rst">User-Defined Assets and Wrapped Assets</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="generalized-value-commitments" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>33</th>
+                        <td><a href="https://github.com/zcash/zcash/issues/2277#issuecomment-321106819">Comment on Generalized Value Commitments</a></td>
+                    </tr>
+                </tbody>
+            </table>
+            <table id="circuit-modifications" class="footnote">
+                <tbody>
+                    <tr>
+                        <th>34</th>
+                        <td><a href="https://docs.google.com/document/d/1DzXBqZl_l3aIs_gcelw3OuZz2OVMnYk6Xe_1lBsTji8/edit?usp=sharing">Modifications to the Orchard circuit for the OrchardZSA Protocol</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+    </section>
+</body>
+</html>
