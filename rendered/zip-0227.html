@@ -360,7 +360,15 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 </ul>
                 <p>The complete encoding of these fields into an <code>IssueNote</code> is defined in ZIP 230 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0230-issue-note">16</a>.</p>
                 <section id="computation-of"><h4><span class="section-heading">Computation of ρ</span><span class="section-anchor"> <a rel="bookmark" href="#computation-of"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
-                    <p>TO BE FILLED</p>
+                    <p>We define a function
+                        <span class="math">\(\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{64} \to \mathbb{F}_{q_{\mathbb{P}}}\)</span>
+                     as follows:</p>
+                    <div class="math">\(\mathsf{DeriveIssuedRho}(\text{ρ}_{\mathsf{Trf}}, \mathsf{index}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\text{ρ}_{\mathsf{Trf}}, \mathtt{0x??} \| \mathsf{LEI2OSP}_{32}(\mathsf{index})))\)</div>
+                    <p>where
+                        <span class="math">\(\text{ρ}_{\mathsf{Trf}}\)</span>
+                     is the nullifier of the first note in the first Action of the OrchardZSA Bundle,
+                        <span class="math">\(\mathsf{index}\)</span>
+                     is the index of the Issue Note in the Issue Action</p>
                 </section>
             </section>
             <section id="issuance-action"><h3><span class="section-heading">Issuance Action</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>

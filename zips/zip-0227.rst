@@ -251,7 +251,11 @@ The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 23
 Computation of ρ
 ````````````````
 
-TO BE FILLED
+We define a function $\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{64} \to \mathbb{F}_{q_{\mathbb{P}}}$ as follows:
+
+.. math:: \mathsf{DeriveIssuedRho}(\text{ρ}_{\mathsf{Trf}}, \mathsf{index}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\text{ρ}_{\mathsf{Trf}}, \mathtt{0x??} \| \mathsf{LEI2OSP}_{32}(\mathsf{index}))) 
+
+where $\text{ρ}_{\mathsf{Trf}}$ is the nullifier of the first note in the first Action of the OrchardZSA Bundle, $\mathsf{index}$ is the index of the Issue Note in the Issue Action
 
 Issuance Action
 ---------------
