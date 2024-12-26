@@ -372,6 +372,7 @@ For every transaction:
   - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1$.
   - For every issue note description ($\mathsf{note}_{\mathsf{j}},\ 1 \leq j \leq \mathtt{nNotes}$) in ``IssueAction``:
 
+    - The $\text{ρ}$ field of the issue note MUST have been computed as described in the `Computation of ρ`_ section.
     - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} + \mathsf{v} \leq \mathsf{MAX\_ISSUE}$, where $\mathsf{v}$ is the value of $\mathsf{note}_{\mathsf{j}}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} + \mathsf{v}$.
     - The node MUST compute the note commitment, $\mathsf{cm}_{\mathsf{i,j}}$, as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-notestructure]_.
   - If $\mathsf{finalize} = 1$ within the ``flagsIssuance`` field of ``IssueAction``, the node MUST set $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} = 1$.

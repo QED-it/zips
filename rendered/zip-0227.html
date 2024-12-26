@@ -596,6 +596,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <span class="math">\(\mathsf{note}_{\mathsf{j}},\ 1 \leq j \leq \mathtt{nNotes}\!\)</span>
                         ) in <code>IssueAction</code>:
                             <ul>
+                                <li>The
+                                    <span class="math">\(\text{ρ}\)</span>
+                                 field of the issue note MUST have been computed as described in the <a href="#computation-of">Computation of ρ</a> section.</li>
                                 <li>It MUST be the case that
                                     <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} + \mathsf{v} \leq \mathsf{MAX\_ISSUE}\!\)</span>
                                 , where
