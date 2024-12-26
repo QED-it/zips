@@ -233,14 +233,14 @@ Issue Note
 The maximum total supply of any issued Custom Asset is denoted by the constant $\mathsf{MAX\_ISSUE} := 2^{64} - 1$. 
 
 An Issue Note represents that a value $\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}$ of a specific Custom Asset is issued to a recipient.
-An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \text{ρ}, \mathsf{rseed}, \mathsf{AssetBase})$, where:
+An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetBase}, \text{ρ}, \mathsf{rseed})$, where:
 
 - $\mathsf{d}: \mathbb{B}^{[\ell_{\mathsf{d}}]}$ is the diversifier of the recipient's shielded payment address, as in §3.2 of the protocol specification [#protocol-notes]_.
 - $\mathsf{pk_d}: \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public}$ is the recipient's diversified transmission key, as in §3.2 of the protocol specification [#protocol-notes]_.
 - $\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}$ is the value of the note in terms of the number of Asset tokens.
+- $\mathsf{AssetBase}: \mathbb{P}^*$ is the Asset Base corresponding to the ZSA being issued in the Issue Note.
 - $\text{ρ}: \mathbb{F}_{q_{\mathbb{P}}}$ is used to derive the nullifier of the note, and is computed as in `Computation of ρ`_.
 - $\mathsf{rseed}: \mathbb{B}^{[\mathbb{Y}^{32}]}$ MUST be sampled uniformly at random by the issuer.
-- $\mathsf{AssetBase}: \mathbb{P}^*$ is the Asset Base corresponding to the ZSA being issued in the Issue Note.
 
 The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 230 [#zip-0230-issue-note]_.
 

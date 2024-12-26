@@ -336,7 +336,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>An Issue Note represents that a value
                     <span class="math">\(\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}\)</span>
                  of a specific Custom Asset is issued to a recipient. An Issue Note is a tuple
-                    <span class="math">\((\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \text{ρ}, \mathsf{rseed}, \mathsf{AssetBase})\!\)</span>
+                    <span class="math">\((\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetBase}, \text{ρ}, \mathsf{rseed})\!\)</span>
                 , where:</p>
                 <ul>
                     <li>
@@ -349,14 +349,14 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}\)</span>
                      is the value of the note in terms of the number of Asset tokens.</li>
                     <li>
+                        <span class="math">\(\mathsf{AssetBase}: \mathbb{P}^*\)</span>
+                     is the Asset Base corresponding to the ZSA being issued in the Issue Note.</li>
+                    <li>
                         <span class="math">\(\text{ρ}: \mathbb{F}_{q_{\mathbb{P}}}\)</span>
                      is used to derive the nullifier of the note, and is computed as in <a href="#computation-of">Computation of ρ</a>.</li>
                     <li>
                         <span class="math">\(\mathsf{rseed}: \mathbb{B}^{[\mathbb{Y}^{32}]}\)</span>
                      MUST be sampled uniformly at random by the issuer.</li>
-                    <li>
-                        <span class="math">\(\mathsf{AssetBase}: \mathbb{P}^*\)</span>
-                     is the Asset Base corresponding to the ZSA being issued in the Issue Note.</li>
                 </ul>
                 <p>The complete encoding of these fields into an <code>IssueNote</code> is defined in ZIP 230 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0230-issue-note">16</a>.</p>
                 <section id="computation-of"><h4><span class="section-heading">Computation of ρ</span><span class="section-anchor"> <a rel="bookmark" href="#computation-of"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
