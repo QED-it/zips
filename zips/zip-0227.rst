@@ -306,7 +306,7 @@ For all actions ``IssueAction``:
 - set the $\mathsf{finalize}$ boolean as desired (if more issuance actions are to be created for this $\mathsf{AssetBase}$, set $\mathsf{finalize} = 0$, otherwise set $\mathsf{finalize} = 1$).
 - for each recipient $i$:
 
-    - generate a Issue Note, $\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \text{ρ}_i, \mathsf{rseed}_i, \mathsf{AssetBase})$.
+    - generate an Issue Note, $\mathsf{note}_i = (\mathsf{d}_i, \mathsf{pk}_{\mathsf{d}_i}, \mathsf{v}_i, \mathsf{AssetBase}, \text{ρ}_i, \mathsf{rseed}_i)$.
     - encode the $\mathsf{note}_i$ into the vector ``vNotes`` of the ``IssueAction``.
 
 - encode the ``IssueAction`` into the vector ``vIssueActions`` of the bundle.
