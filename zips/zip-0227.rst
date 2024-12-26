@@ -245,9 +245,6 @@ An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetB
 The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 230 [#zip-0230-issue-note]_.
 
 
-The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 230 [#zip-0230-issue-note]_.
-
-
 Issuance Action
 ---------------
 
