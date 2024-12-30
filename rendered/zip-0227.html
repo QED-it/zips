@@ -378,7 +378,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{finalize}\)</span>
                  boolean is set by the Issuer to signal that there will be no further issuance of the specific Custom Asset. As we will see in <a href="#specification-consensus-rule-changes">Specification: Consensus Rule Changes</a>, transactions that attempt to issue further amounts of a Custom Asset that has previously been finalized will be rejected.</p>
                 <p>The complete encoding of these fields into an <code>IssueAction</code> is defined in ZIP 230 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0230-issuance-action-description">15</a>.</p>
-                <p>We note that the output note commitment of the recipient's notes are not included in the actual transaction, but when added to the global state of the chain, they will be added to the note commitment tree as a shielded note. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
+                <p>We note that when the issued note commitments are added to the global state of the chain, they will be added to the note commitment tree as any other shielded note. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
             </section>
             <section id="issuance-bundle"><h3><span class="section-heading">Issuance Bundle</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-bundle"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance bundle is the aggregate of all the issuance-related information. Specifically, contains all the issuance actions and the issuer signature on the transaction SIGHASH that validates the issuance itself. It contains the following fields:</p>
@@ -399,15 +399,15 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
             <section id="computation-of"><h3><span class="section-heading">Computation of ρ</span><span class="section-anchor"> <a rel="bookmark" href="#computation-of"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>We define a function
-                    <span class="math">\(\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. \mathsf{MAX\_ISSUE}\} \to \mathbb{F}_{q_{\mathbb{P}}}\)</span>
+                    <span class="math">\(\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. 2^{32} - 1\} \to \mathbb{F}_{q_{\mathbb{P}}}\)</span>
                  as follows:</p>
-                <div class="math">\(\mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{64}(\mathsf{i_{N}})))\)</div>
+                <div class="math">\(\mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}})))\)</div>
                 <p>The
                     <span class="math">\(\text{ρ}\)</span>
                  field of an Issue Note is computed as</p>
-                <div class="math">\(\text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{\mathsf{trf}}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),\)</div>
+                <div class="math">\(\text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{1,1}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),\)</div>
                 <p>where
-                    <span class="math">\(\mathsf{nf}_{\mathsf{trf}}\)</span>
+                    <span class="math">\(\mathsf{nf}_{1,1}\)</span>
                  is the nullifier of the first Note in the first Action of the OrchardZSA Bundle of the transaction,
                     <span class="math">\(\mathsf{index_{Action}}\)</span>
                  is the index of the Issuance Action in the Issuance Bundle, and

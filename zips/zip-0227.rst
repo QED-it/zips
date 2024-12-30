@@ -260,7 +260,7 @@ As we will see in `Specification: Consensus Rule Changes`_, transactions that at
 
 The complete encoding of these fields into an ``IssueAction`` is defined in ZIP 230 [#zip-0230-issuance-action-description]_.
 
-We note that the output note commitment of the recipient's notes are not included in the actual transaction, but when added to the global state of the chain, they will be added to the note commitment tree as a shielded note.
+We note that when the issued note commitments are added to the global state of the chain, they will be added to the note commitment tree as any other shielded note. 
 This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.
 
 Issuance Bundle
@@ -280,15 +280,15 @@ The detailed encoding of the issuance bundle as a part of the V6 transaction for
 Computation of ρ
 ----------------
 
-We define a function $\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. \mathsf{MAX\_ISSUE}\} \to \mathbb{F}_{q_{\mathbb{P}}}$ as follows:
+We define a function $\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. 2^{32} - 1\} \to \mathbb{F}_{q_{\mathbb{P}}}$ as follows:
 
-.. math:: \mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{64}(\mathsf{i_{N}}))) 
+.. math:: \mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}}))) 
 
 The $\text{ρ}$ field of an Issue Note is computed as 
 
-.. math:: \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{\mathsf{trf}}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
+.. math:: \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{1,1}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
 
-where $\mathsf{nf}_{\mathsf{trf}}$ is the nullifier of the first Note in the first Action of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the index of the Issue Note in the Issuance Action.
+where $\mathsf{nf}_{1,1}$ is the nullifier of the first Note in the first Action of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the index of the Issue Note in the Issuance Action.
 
 
 Issuance Protocol
