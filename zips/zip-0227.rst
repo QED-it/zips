@@ -335,8 +335,19 @@ For the ``IssueBundle``:
 
 **Note:** that the commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
 
-Specification: Global Issuance State
-====================================
+Specification: Reference Notes and Global Issuance State
+========================================================
+
+Reference Notes
+---------------
+
+A reference note for a Custom Asset MUST be included by the issuer as the first Note in the first Action of the Issuance Bundle where that Custom Asset is being issued for the first time.
+
+A reference note for a Custom Asset is an Issue Note where the value $\mathsf{v}$ is set to $0$, the Asset Base ($\mathsf{AssetBase}$) corresponds to that of the Custom Asset, and the recipient address $(\mathsf{d}, \mathsf{pk}_{\mathsf{d}})$ is set to the default diversified payment address derived from the all-zero Orchard spending key using the algorithm specified in §4.2.3 of the protocol specification [#protocol-orchardkeycomponents]_.
+
+
+Global Issuance State
+---------------------
 
 The maximum total supply of any issued Custom Asset is denoted by the constant $\mathsf{MAX\_ISSUE} := 2^{64} - 1$. 
 Issuance requires the following additions to the global state:
