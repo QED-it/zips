@@ -401,7 +401,20 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>We define a function
                     <span class="math">\(\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. 2^{32} - 1\} \to \mathbb{F}_{q_{\mathbb{P}}}\)</span>
                  as follows:</p>
-                <div class="math">\(\mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}})))\)</div>
+                <div class="math">\(\mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Rho}}(\mathsf{PRF}^{\mathsf{Rho}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}}))),\)</div>
+                <p>where</p>
+                <ul>
+                    <li>
+                        <span class="math">\(\mathsf{ToBase}^{\mathsf{Rho}} : \mathbb{B}^{512} \to \mathbb{F}_{q_{\mathbb{P}}}\)</span>
+                     is defined as
+                        <span class="math">\(\mathsf{ToBase}^{\mathsf{Rho}}(x) := \mathsf{LEOS2IP}_{512}(x) \mod q_{\mathbb{P}}\)</span>
+                    </li>
+                    <li>
+                        <span class="math">\(\mathsf{PRF}^{\mathsf{Rho}} : \mathbb{B}^{256} \times \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{512}\)</span>
+                     is defined as
+                        <span class="math">\(\mathsf{PRF}^{\mathsf{Rho}}(\mathsf{k},t) := \textsf{BLAKE2b-512}(\mathtt{"ZSA\_IssueNoteRho"}, \mathsf{LEBS2OSP}_{256}(\mathsf{k}) \| t)\)</span>
+                    </li>
+                </ul>
                 <p>The
                     <span class="math">\(\text{ρ}\)</span>
                  field of an Issue Note is computed as</p>
