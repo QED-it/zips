@@ -244,6 +244,14 @@ An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetB
 
 The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 230 [#zip-0230-issue-note]_.
 
+Let $\mathsf{Note^{Issue}}$ be the type of an Issue Note, i.e.
+
+.. math:: \mathsf{Note^{Issue}} := \mathbb{B}^{[\ell_{\mathsf{d}}]} \times \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public} \times \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{P}^* \times \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{[\mathbb{Y}^{32}]}. 
+
+The note commitments of Issue Notes are computed in the same manner as for OrchardZSA Notes.
+They will be added to the note commitment tree as any other shielded note when the transaction issuing the Asset is included on chain. 
+This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.
+
 
 Issuance Action
 ---------------
@@ -260,8 +268,6 @@ As we will see in `Specification: Consensus Rule Changes`_, transactions that at
 
 The complete encoding of these fields into an ``IssueAction`` is defined in ZIP 230 [#zip-0230-issuance-action-description]_.
 
-We note that when the issued note commitments are added to the global state of the chain, they will be added to the note commitment tree as any other shielded note. 
-This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.
 
 Issuance Bundle
 ---------------

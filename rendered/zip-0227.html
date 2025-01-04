@@ -359,6 +359,11 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      MUST be sampled uniformly at random by the issuer.</li>
                 </ul>
                 <p>The complete encoding of these fields into an <code>IssueNote</code> is defined in ZIP 230 <a id="footnote-reference-24" class="footnote_reference" href="#zip-0230-issue-note">16</a>.</p>
+                <p>Let
+                    <span class="math">\(\mathsf{Note^{Issue}}\)</span>
+                 be the type of an Issue Note, i.e.</p>
+                <div class="math">\(\mathsf{Note^{Issue}} := \mathbb{B}^{[\ell_{\mathsf{d}}]} \times \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public} \times \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{P}^* \times \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{[\mathbb{Y}^{32}]}.\)</div>
+                <p>The note commitment of the Issue Notes are computed in the same manner as for OrchardZSA Notes. They will be added to the note commitment tree as any other shielded note when the transaction issuing the Asset is included on chain. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
             </section>
             <section id="issuance-action"><h3><span class="section-heading">Issuance Action</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -378,7 +383,6 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{finalize}\)</span>
                  boolean is set by the Issuer to signal that there will be no further issuance of the specific Custom Asset. As we will see in <a href="#specification-consensus-rule-changes">Specification: Consensus Rule Changes</a>, transactions that attempt to issue further amounts of a Custom Asset that has previously been finalized will be rejected.</p>
                 <p>The complete encoding of these fields into an <code>IssueAction</code> is defined in ZIP 230 <a id="footnote-reference-25" class="footnote_reference" href="#zip-0230-issuance-action-description">15</a>.</p>
-                <p>We note that when the issued note commitments are added to the global state of the chain, they will be added to the note commitment tree as any other shielded note. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
             </section>
             <section id="issuance-bundle"><h3><span class="section-heading">Issuance Bundle</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-bundle"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance bundle is the aggregate of all the issuance-related information. Specifically, contains all the issuance actions and the issuer signature on the transaction SIGHASH that validates the issuance itself. It contains the following fields:</p>
