@@ -504,23 +504,27 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{MAX\_ISSUE} := 2^{64} - 1\!\)</span>
                 . Issuance requires the following additions to the global state:</p>
                 <p>A map,
-                    <span class="math">\(\mathsf{issued\_assets} : \mathbb{P}^* \to \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{B}\!\)</span>
+                    <span class="math">\(\mathsf{issued\_assets} : \mathbb{P}^* \to \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{B} \times \mathsf{Note^{Issue}}\!\)</span>
                 , from the Asset Base,
                     <span class="math">\(\mathsf{AssetBase} : \mathbb{P}^*\!\)</span>
                 , to a tuple
-                    <span class="math">\((\mathsf{balance}, \mathsf{final})\!\)</span>
+                    <span class="math">\((\mathsf{balance}, \mathsf{final}, \mathsf{ref\_note})\!\)</span>
                 , for every Asset that has been issued. We use the notation
-                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{balance}\)</span>
-                 and
-                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{final}\)</span>
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{balance}\!\)</span>
+                ,
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{final}\!\)</span>
+                , and
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note}\)</span>
                  to access, respectively, the elements of the tuple stored in the global state for a given
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
                 . If
                     <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}) = \bot\!\)</span>
                 , it is assumed that
-                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{balance} = 0\)</span>
-                 and
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{balance} = 0\!\)</span>
+                ,
                     <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{final} = 0\!\)</span>
+                , and
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note} = \bot\!\)</span>
                 .</p>
                 <p>For any Asset represented by
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
@@ -544,6 +548,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      to
                         <span class="math">\(0\!\)</span>
                     .</li>
+                    <li>
+                        <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note} : \mathsf{Note^{Issue}}\)</span>
+                     stores the reference note for the Asset, as defined in the <a href="#reference-notes">Reference Notes</a> section.</li>
                 </ul>
                 <p>The maximum total supply of any issued Custom Asset is denoted by the constant
                     <span class="math">\(\mathsf{MAX\_ISSUE} := 2^{64} - 1\!\)</span>
@@ -613,7 +620,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                          is a string of length
                             <span class="math">\(\mathtt{assetDescSize}\)</span>
                          bytes.</li>
-                        <li>Elements of every Issue Note in <code>IssueAction</code> MUST be valid encodings of the types given in the <a href="#issue-note">Issue Note</a> section, and MUST encode the same
+                        <li>Every Issue Note in <code>IssueAction</code> MUST be a valid encoding of the
+                            <span class="math">\(\mathsf{Note^{Issue}}\)</span>
+                         type, and MUST encode the same
                             <span class="math">\(\mathsf{AssetBase}\!\)</span>
                         .</li>
                         <li>This
@@ -622,6 +631,33 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <li>It MUST be the case that
                             <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1\!\)</span>
                         .</li>
+                        <li>If
+                            <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \bot\!\)</span>
+                        , then let
+                            <span class="math">\(\mathsf{note}_1\)</span>
+                         be the first Issue Note in the Issuance Action.
+                            <ul>
+                                <li>The recipient address
+                                    <span class="math">\((\mathsf{d}, \mathsf{pk}_{\mathsf{d}})\)</span>
+                                 of
+                                    <span class="math">\(\mathsf{note}_1\)</span>
+                                 MUST be the default diversified payment address derived from the all-zero Orchard spending key, as described in the <a href="#reference-notes">Reference Notes</a> section.</li>
+                                <li>The value
+                                    <span class="math">\(\mathsf{v}_0\)</span>
+                                 of
+                                    <span class="math">\(\mathsf{note}_1\)</span>
+                                 MUST be
+                                    <span class="math">\(0\!\)</span>
+                                , and the
+                                    <span class="math">\(\text{ρ}\)</span>
+                                 field of
+                                    <span class="math">\(\mathsf{note}_1\)</span>
+                                 MUST have been computed as described in the <a href="#computation-of">Computation of ρ</a> section.</li>
+                                <li>The node MUST update
+                                    <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \mathsf{note}_1\!\)</span>
+                                .</li>
+                            </ul>
+                        </li>
                         <li>For every issue note description (
                             <span class="math">\(\mathsf{note}_{\mathsf{j}},\ 1 \leq j \leq \mathtt{nNotes}\!\)</span>
                         ) in <code>IssueAction</code>:
