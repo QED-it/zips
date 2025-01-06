@@ -31,7 +31,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>The terms "Orchard" and "Action" in this document are to be interpreted as described in ZIP 224 <a id="footnote-reference-3" class="footnote_reference" href="#zip-0224">9</a>.</p>
             <p>We define the following additional terms:</p>
             <ul>
-                <li>Asset: A type of note that can be transferred on the Zcash blockchain. Each Asset is identified by an Asset Identifier <a href="#specification-asset-identifier">Specification: Asset Identifier</a>.
+                <li>Asset: A type of note that can be transferred on the Zcash blockchain. Each Asset is identified by an Asset Identifier <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a>.
                     <ul>
                         <li>ZEC is the default (and currently the only defined) Asset for the Zcash mainnet.</li>
                         <li>TAZ is the default (and currently the only defined) Asset for the Zcash testnet.</li>
@@ -267,7 +267,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                  algorithm is defined in BIP 340 <a id="footnote-reference-20" class="footnote_reference" href="#bip-0340">23</a>.</p>
             </section>
         </section>
-        <section id="specification-asset-identifier"><h2><span class="section-heading">Specification: Asset Identifier</span><span class="section-anchor"> <a rel="bookmark" href="#specification-asset-identifier"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
+        <section id="specification-asset-identifier-asset-digest-and-asset-base"><h2><span class="section-heading">Specification: Asset Identifier, Asset Digest, and Asset Base</span><span class="section-anchor"> <a rel="bookmark" href="#specification-asset-identifier-asset-digest-and-asset-base"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>For every new Asset, there MUST be a new and unique Asset Identifier, denoted
                 <span class="math">\(\mathsf{AssetId}\!\)</span>
             . We define this to be a globally unique pair
@@ -363,7 +363,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{Note^{Issue}}\)</span>
                  be the type of an Issue Note, i.e.</p>
                 <div class="math">\(\mathsf{Note^{Issue}} := \mathbb{B}^{[\ell_{\mathsf{d}}]} \times \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public} \times \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{P}^* \times \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{[\mathbb{Y}^{32}]}.\)</div>
-                <p>The note commitment of the Issue Notes are computed in the same manner as for OrchardZSA Notes. They will be added to the note commitment tree as any other shielded note when the transaction issuing the Asset is included on chain. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
+                <p>The note commitments of Issue Notes are computed in the same manner as for OrchardZSA Notes. They will be added to the note commitment tree as any other shielded note when the transaction issuing the Asset is included on chain. This prevents future usage of the note from being linked to the issuance transaction, as the nullifier key is not known to the validators and chain observers.</p>
             </section>
             <section id="issuance-action"><h3><span class="section-heading">Issuance Action</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
@@ -373,7 +373,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                      and
                         <span class="math">\(512\!\)</span>
                     .</li>
-                    <li><code>asset_desc</code>: the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                    <li><code>asset_desc</code>: the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</li>
                     <li><code>vNotes</code>: an array of Issue Notes containing the unencrypted output notes to the recipients of the Asset.</li>
                     <li><code>flagsIssuance</code>: a byte that stores the
                         <span class="math">\(\mathsf{finalize}\)</span>
@@ -444,12 +444,12 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{ik}\)</span>
                      and
                         <span class="math">\(\mathsf{asset\_desc}\)</span>
-                     as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                     as decribed in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</li>
                     <li>compute
                         <span class="math">\(\mathsf{AssetBase}\)</span>
                      from
                         <span class="math">\(\mathsf{AssetDigest}\)</span>
-                     as decribed in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                     as decribed in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</li>
                     <li>set the
                         <span class="math">\(\mathsf{finalize}\)</span>
                      boolean as desired (if more issuance actions are to be created for this
@@ -604,7 +604,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         .</li>
                         <li>This
                             <span class="math">\(\mathsf{AssetBase}\)</span>
-                         MUST satisfy the derivation from the issuance validating key and asset description described in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</li>
+                         MUST satisfy the derivation from the issuance validating key and asset description described in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</li>
                         <li>It MUST be the case that
                             <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1\!\)</span>
                         .</li>
@@ -896,7 +896,7 @@ S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="displaying-asset-identifier-information-to-users"><h3><span class="section-heading">Displaying Asset Identifier information to users</span><span class="section-anchor"> <a rel="bookmark" href="#displaying-asset-identifier-information-to-users"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the <a href="#specification-asset-identifier">Specification: Asset Identifier</a> section.</p>
+                <p>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</p>
             </section>
             <section id="issuance-key-compromise"><h3><span class="section-heading">Issuance Key Compromise</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-compromise"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The design of this protocol does not currently allow for rotation of the issuance validating key that would allow for replacing the key of a specific Asset. In case of compromise, the following actions are recommended:</p>
