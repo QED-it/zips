@@ -195,15 +195,23 @@ Let
 - $\mathsf{asset\_desc}$ be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.
 - $\mathsf{ik}$ be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.
 
-Define $\mathsf{AssetDigest_{AssetId}} := \textsf{BLAKE2b-512}(\texttt{“ZSA-Asset-Digest”},\; \mathsf{EncodeAssetId}(\mathsf{AssetId}))$,
+Define 
+
+.. math:: \mathsf{AssetDigest_{AssetId}} := \textsf{BLAKE2b-512}(\texttt{“ZSA-Asset-Digest”},\; \mathsf{EncodeAssetId}(\mathsf{AssetId})),
+
 where
 
 - $\mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{asset\_desc})) := \mathtt{0x00} || \mathsf{ik} || \mathsf{asset\_desc}\!$.
 - Note that the initial $\mathtt{0x00}$ byte is a version byte.
 
-Define $\mathsf{AssetBase_{AssetId}} := \mathsf{ZSAValueBase}(\mathsf{AssetDigest_{AssetId}})$
+Define 
 
-In the case of the OrchardZSA protocol, we define $\mathsf{ZSAValueBase}(\mathsf{AssetDigest_{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest_{AssetId}})$
+.. math:: \mathsf{AssetBase_{AssetId}} := \mathsf{ZSAValueBase}(\mathsf{AssetDigest_{AssetId}})
+
+In the case of the OrchardZSA protocol, we define 
+
+.. math:: \mathsf{ZSAValueBase}(\mathsf{AssetDigest_{AssetId}}) := \mathsf{GroupHash}^\mathbb{P}(\texttt{"z.cash:OrchardZSA"}, \mathsf{AssetDigest_{AssetId}})
+
 where $\mathsf{GroupHash}^\mathbb{P}$ is defined as in [#protocol-concretegrouphashpallasandvesta]_.
 
 The relations between the Asset Identifier, Asset Digest, and Asset Base are shown in the following diagram:
@@ -230,14 +238,13 @@ Specification: Issue Note, Issuance Action, Issuance Bundle and Issuance Protoco
 Issue Note
 ----------
 
-The maximum total supply of any issued Custom Asset is denoted by the constant $\mathsf{MAX\_ISSUE} := 2^{64} - 1$. 
-
-An Issue Note represents that a value $\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}$ of a specific Custom Asset is issued to a recipient.
+Let $\ell_{\mathsf{value}}$ be as defined in §5.3 of the protocol specification [#protocol-constants]_.
+An Issue Note represents that a value $\mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}$ of a specific Custom Asset is issued to a recipient.
 An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetBase}, \text{ρ}, \mathsf{rseed})$, where:
 
 - $\mathsf{d}: \mathbb{B}^{[\ell_{\mathsf{d}}]}$ is the diversifier of the recipient's shielded payment address, as in §3.2 of the protocol specification [#protocol-notes]_.
 - $\mathsf{pk_d}: \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public}$ is the recipient's diversified transmission key, as in §3.2 of the protocol specification [#protocol-notes]_.
-- $\mathsf{v} : \{0 .. \mathsf{MAX\_ISSUE}\}$ is the value of the note in terms of the number of Asset tokens.
+- $\mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}$ is the value of the note in terms of the number of Asset tokens.
 - $\mathsf{AssetBase}: \mathbb{P}^*$ is the Asset Base corresponding to the ZSA being issued in the Issue Note.
 - $\text{ρ}: \mathbb{F}_{q_{\mathbb{P}}}$ is used to derive the nullifier of the note, and is computed as in `Computation of ρ`_.
 - $\mathsf{rseed}: \mathbb{B}^{[\mathbb{Y}^{32}]}$ MUST be sampled uniformly at random by the issuer.
@@ -246,7 +253,7 @@ The complete encoding of these fields into an ``IssueNote`` is defined in ZIP 23
 
 Let $\mathsf{Note^{Issue}}$ be the type of an Issue Note, i.e.
 
-.. math:: \mathsf{Note^{Issue}} := \mathbb{B}^{[\ell_{\mathsf{d}}]} \times \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public} \times \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{P}^* \times \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{[\mathbb{Y}^{32}]}. 
+.. math:: \mathsf{Note^{Issue}} := \mathbb{B}^{[\ell_{\mathsf{d}}]} \times \mathsf{KA}^{\mathsf{Orchard}}.\mathsf{Public} \times \{0 .. 2^{\ell_{\mathsf{value}}} - 1\} \times \mathbb{P}^* \times \mathbb{F}_{q_{\mathbb{P}}} \times \mathbb{B}^{[\mathbb{Y}^{32}]}. 
 
 The note commitments of Issue Notes are computed in the same manner as for OrchardZSA Notes.
 They will be added to the note commitment tree as any other shielded note when the transaction issuing the Asset is included on chain. 
@@ -331,6 +338,7 @@ For the ``IssueBundle``:
 Specification: Global Issuance State
 ====================================
 
+The maximum total supply of any issued Custom Asset is denoted by the constant $\mathsf{MAX\_ISSUE} := 2^{64} - 1$. 
 Issuance requires the following additions to the global state:
 
 A map, $\mathsf{issued\_assets} : \mathbb{P}^* \to \{0 .. \mathsf{MAX\_ISSUE}\} \times \mathbb{B}$, from the Asset Base, $\mathsf{AssetBase} : \mathbb{P}^*$, to a tuple $(\mathsf{balance}, \mathsf{final})$, for every Asset that has been issued.
@@ -739,6 +747,7 @@ References
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-orchardkeycomponents] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.2.3: Orchard Key Components <protocol/protocol.pdf#orchardkeycomponents>`_
 .. [#protocol-sighash] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.10: SIGHASH Transaction Hashing <protocol/protocol.pdf#sighash>`_
+.. [#protocol-constants] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.3: Constants <protocol/protocol.pdf#constants>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
 .. [#protocol-orchardpaymentaddrencoding] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.6.4.2: Orchard Raw Payment Addresses <protocol/protocol.pdf#orchardpaymentaddrencoding>`_
 .. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
