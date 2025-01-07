@@ -341,7 +341,7 @@ Specification: Reference Notes and Global Issuance State
 Reference Notes
 ---------------
 
-A reference note for a Custom Asset MUST be included by the issuer as the first Note in the first Action of the Issuance Bundle where that Custom Asset is being issued for the first time.
+A reference note for a Custom Asset MUST be included by the issuer as the first Note in the Action of the Issuance Bundle where that Custom Asset is being issued for the first time.
 
 A reference note for a Custom Asset is an Issue Note where the value $\mathsf{v}$ is set to $0$, the Asset Base ($\mathsf{AssetBase}$) corresponds to that of the Custom Asset, and the recipient address $(\mathsf{d}, \mathsf{pk}_{\mathsf{d}})$ is set to the default diversified payment address derived from the all-zero Orchard spending key using the algorithm specified in §4.2.3 of the protocol specification [#protocol-orchardkeycomponents]_.
 
@@ -401,7 +401,7 @@ For every transaction:
   - If $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \bot$, then let $\mathsf{note}_1$ be the first Issue Note in the Issuance Action.
 
       - The recipient address $(\mathsf{d}, \mathsf{pk}_{\mathsf{d}})$ of $\mathsf{note}_1$ MUST be the default diversified payment address derived from the all-zero Orchard spending key, as described in the `Reference Notes`_ section.
-      - The value $\mathsf{v}_0$ of $\mathsf{note}_1$ MUST be $0$, and the $\text{ρ}$ field of $\mathsf{note}_1$ MUST have been computed as described in the `Computation of ρ`_ section.
+      - The value $\mathsf{v}_0$ of $\mathsf{note}_1$ MUST be $0$.
       - The node MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \mathsf{note}_1$.
 
   - For every issue note description ($\mathsf{note}_{\mathsf{j}},\ 1 \leq j \leq \mathtt{nNotes}$) in ``IssueAction``:

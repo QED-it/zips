@@ -488,7 +488,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
         </section>
         <section id="specification-reference-notes-and-global-issuance-state"><h2><span class="section-heading">Specification: Reference Notes and Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-reference-notes-and-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="reference-notes"><h3><span class="section-heading">Reference Notes</span><span class="section-anchor"> <a rel="bookmark" href="#reference-notes"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>A reference note for a Custom Asset MUST be included by the issuer as the first Note in the first Action of the Issuance Bundle where that Custom Asset is being issued for the first time.</p>
+                <p>A reference note for a Custom Asset MUST be included by the issuer as the first Note in the Action of the Issuance Bundle where that Custom Asset is being issued for the first time.</p>
                 <p>A reference note for a Custom Asset is an Issue Note where the value
                     <span class="math">\(\mathsf{v}\)</span>
                  is set to
@@ -648,11 +648,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                     <span class="math">\(\mathsf{note}_1\)</span>
                                  MUST be
                                     <span class="math">\(0\!\)</span>
-                                , and the
-                                    <span class="math">\(\text{ρ}\)</span>
-                                 field of
-                                    <span class="math">\(\mathsf{note}_1\)</span>
-                                 MUST have been computed as described in the <a href="#computation-of">Computation of ρ</a> section.</li>
+                                .</li>
                                 <li>The node MUST update
                                     <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \mathsf{note}_1\!\)</span>
                                 .</li>
