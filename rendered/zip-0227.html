@@ -497,7 +497,14 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
                 ) corresponds to that of the Custom Asset, and the recipient address
                     <span class="math">\((\mathsf{d}, \mathsf{pk}_{\mathsf{d}})\)</span>
-                 is set to the default diversified payment address derived from the all-zero Orchard spending key using the algorithm specified in §4.2.3 of the protocol specification <a id="footnote-reference-28" class="footnote_reference" href="#protocol-orchardkeycomponents">27</a>.</p>
+                 is set to the default diversified payment address (i.e. the diversified payment address with diversifier index
+                    <span class="math">\(0\!\)</span>
+                ) derived from the all-zero Orchard spending key using the algorithm specified in §4.2.3 of the protocol specification <a id="footnote-reference-28" class="footnote_reference" href="#protocol-orchardkeycomponents">27</a>. This corresponds to a 43 byte <code>u8</code> array with the following entries:</p>
+                <pre>[
+  204, 54, 96, 25, 89, 33, 59, 107, 12, 219, 150, 167, 92, 23, 195, 166, 104, 169, 127, 13, 106,
+  140, 92, 225, 100, 165, 24, 234, 155, 169, 165, 14, 167, 81, 145, 253, 134, 27, 15, 241, 14,
+  98, 176,
+]</pre>
             </section>
             <section id="global-issuance-state"><h3><span class="section-heading">Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The maximum total supply of any issued Custom Asset is denoted by the constant
@@ -508,13 +515,13 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 , from the Asset Base,
                     <span class="math">\(\mathsf{AssetBase} : \mathbb{P}^*\!\)</span>
                 , to a tuple
-                    <span class="math">\((\mathsf{balance}, \mathsf{final}, \mathsf{ref\_note})\!\)</span>
+                    <span class="math">\((\mathsf{balance}, \mathsf{final}, \mathsf{note_{ref}})\!\)</span>
                 , for every Asset that has been issued. We use the notation
                     <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{balance}\!\)</span>
                 ,
                     <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{final}\!\)</span>
                 , and
-                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note}\)</span>
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{note_{ref}}\)</span>
                  to access, respectively, the elements of the tuple stored in the global state for a given
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
                 . If
@@ -524,7 +531,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 ,
                     <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{final} = 0\!\)</span>
                 , and
-                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note} = \bot\!\)</span>
+                    <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \bot\!\)</span>
                 .</p>
                 <p>For any Asset represented by
                     <span class="math">\(\mathsf{AssetBase}\!\)</span>
@@ -549,7 +556,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(0\!\)</span>
                     .</li>
                     <li>
-                        <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{ref\_note} : \mathsf{Note^{Issue}}\)</span>
+                        <span class="math">\(\mathsf{issued\_assets}(\mathsf{AssetBase}).\mathsf{note_{ref}} : \mathsf{Note^{Issue}}\)</span>
                      stores the reference note for the Asset, as defined in the <a href="#reference-notes">Reference Notes</a> section.</li>
                 </ul>
                 <p>The maximum total supply of any issued Custom Asset is denoted by the constant
@@ -632,7 +639,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                             <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1\!\)</span>
                         .</li>
                         <li>If
-                            <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \bot\!\)</span>
+                            <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \bot\!\)</span>
                         , then let
                             <span class="math">\(\mathsf{note}_1\)</span>
                          be the first Issue Note in the Issuance Action.
@@ -650,7 +657,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                                     <span class="math">\(0\!\)</span>
                                 .</li>
                                 <li>The node MUST update
-                                    <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{ref\_note} = \mathsf{note}_1\!\)</span>
+                                    <span class="math">\(\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \mathsf{note}_1\!\)</span>
                                 .</li>
                             </ul>
                         </li>
