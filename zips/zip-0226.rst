@@ -349,7 +349,7 @@ TxId Digest
 ===========
 
 The transaction digest algorithm defined in ZIP 244 [#zip-0244]_ is modified by the OrchardZSA protocol to add a new branch for issuance information, along with replacement of the ``orchard_digest`` with a new ``orchard_zsa_digest`` to account for the inclusion of the Asset Base and the updated transaction format.
-The details of these changes are described in this section, and highlighted using the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label. We omit the details of the sections that do not change for the OrchardZSA protocol.
+The details of these changes are described in this section, and highlighted using the ``[ADDED FOR ZSA]`` text label. We omit the details of the sections that do not change for the OrchardZSA protocol.
 
 txid_digest
 -----------
@@ -514,14 +514,14 @@ Authorizing Data Commitment
 ===========================
 
 The transaction digest algorithm defined in ZIP 244 [#zip-0244-authcommitment]_ which commits to the authorizing data of a transaction is modified by the OrchardZSA protocol to have the structure specified in this section.
-There is a new branch added for issuance information, along with modifications within the ``orchard_auth_digest`` to account for the presence of Action Groups.
+There is a new branch added for issuance information, and the ``orchard_auth_digest`` in ZIP 244 is replaced with ``orchard_zsa_auth_digest`` to account for the presence of Action Groups.
 
-We highlight the changes for the OrchardZSA protocol via the ``[UPDATED FOR ZSA]`` or ``[ADDED FOR ZSA]`` text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol::
+We highlight the changes for the OrchardZSA protocol via the ``[ADDED FOR ZSA]`` text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol::
 
     auth_digest
     ├── transparent_scripts_digest
     ├── sapling_auth_digest
-    ├── orchard_auth_digest         [UPDATED FOR ZSA]
+    ├── orchard_zsa_auth_digest     [ADDED FOR ZSA]
     └── issuance_auth_digest        [ADDED FOR ZSA]
 
 The pair (Transaction Identifier, Auth Commitment) constitutes a commitment to all the data of a serialized transaction that may be included in a block.
@@ -532,30 +532,30 @@ A BLAKE2b-256 hash of the following values ::
 
    A.1: transparent_scripts_digest (32-byte hash output)
    A.2: sapling_auth_digest        (32-byte hash output)
-   A.3: orchard_auth_digest        (32-byte hash output)  [UPDATED FOR ZSA]
+   A.3: orchard_zsa_auth_digest    (32-byte hash output)  [ADDED FOR ZSA]
    A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]
 
 The personalization field of this hash remains the same as in ZIP 244.
 
 
-A.3: orchard_auth_digest
-````````````````````````
+A.3: orchard_zsa_auth_digest
+````````````````````````````
 
 In the case that OrchardZSA Action Groups are present, this is a BLAKE2b-256 hash of the following values::
 
-    A.3a: orchard_action_groups_auth_digest  (32-byte hash output)  [ADDED FOR ZSA]
-    A.3b: bindingSigOrchard                  (field encoding bytes)
+    A.3a: orchard_zsa_action_groups_auth_digest  (32-byte hash output)
+    A.3b: bindingSigOrchard                      (field encoding bytes)
 
 The personalization field of this hash is the same as in ZIP 244, that is::
 
     "ZTxAuthOrchaHash"
 
-In case that the transaction has no OrchardZSA Action Groups, ``orchard_auth_digest`` is::
+In case that the transaction has no OrchardZSA Action Groups, ``orchard_zsa_auth_digest`` is::
 
     BLAKE2b-256("ZTxAuthOrchaHash", [])
 
-A.3a: orchard_action_groups_auth_digest
-'''''''''''''''''''''''''''''''''''''''
+A.3a: orchard_zsa_action_groups_auth_digest
+'''''''''''''''''''''''''''''''''''''''''''
 
 This is a BLAKE2b-256 hash of the ``proofsOrchard`` and ``spendAuthSigsOrchard`` fields of all OrchardZSA Action Groups belonging to the transaction::
 

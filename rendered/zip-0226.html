@@ -462,7 +462,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <p>The transaction format for v6 transactions is described in ZIP 230 <a id="footnote-reference-52" class="footnote_reference" href="#zip-0230">13</a>.</p>
         </section>
         <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-53" class="footnote_reference" href="#zip-0244">14</a> is modified by the OrchardZSA protocol to add a new branch for issuance information, along with replacement of the <code>orchard_digest</code> with a new <code>orchard_zsa_digest</code> to account for the inclusion of the Asset Base and the updated transaction format. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the OrchardZSA protocol.</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-53" class="footnote_reference" href="#zip-0244">14</a> is modified by the OrchardZSA protocol to add a new branch for issuance information, along with replacement of the <code>orchard_digest</code> with a new <code>orchard_zsa_digest</code> to account for the inclusion of the Asset Base and the updated transaction format. The details of these changes are described in this section, and highlighted using the <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the OrchardZSA protocol.</p>
             <section id="txid-digest-1"><h3><span class="section-heading">txid_digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest-1"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>A BLAKE2b-256 hash of the following values:</p>
                 <pre>T.1: header_digest       (32-byte hash output)
@@ -562,30 +562,30 @@ S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
             </section>
         </section>
         <section id="authorizing-data-commitment"><h2><span class="section-heading">Authorizing Data Commitment</span><span class="section-anchor"> <a rel="bookmark" href="#authorizing-data-commitment"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-61" class="footnote_reference" href="#zip-0244-authcommitment">16</a> which commits to the authorizing data of a transaction is modified by the OrchardZSA protocol to have the structure specified in this section. There is a new branch added for issuance information, along with modifications within the <code>orchard_auth_digest</code> to account for the presence of Action Groups.</p>
-            <p>We highlight the changes for the OrchardZSA protocol via the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol:</p>
+            <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-61" class="footnote_reference" href="#zip-0244-authcommitment">16</a> which commits to the authorizing data of a transaction is modified by the OrchardZSA protocol to have the structure specified in this section. There is a new branch added for issuance information, and the <code>orchard_auth_digest</code> in ZIP 244 is replaced with <code>orchard_zsa_auth_digest</code> to account for the presence of Action Groups.</p>
+            <p>We highlight the changes for the OrchardZSA protocol via the <code>[ADDED FOR ZSA]</code> text label, and we omit the descriptions of the sections that do not change for the OrchardZSA protocol:</p>
             <pre>auth_digest
 ├── transparent_scripts_digest
 ├── sapling_auth_digest
-├── orchard_auth_digest         [UPDATED FOR ZSA]
+├── orchard_zsa_auth_digest     [ADDED FOR ZSA]
 └── issuance_auth_digest        [ADDED FOR ZSA]</pre>
             <p>The pair (Transaction Identifier, Auth Commitment) constitutes a commitment to all the data of a serialized transaction that may be included in a block.</p>
             <section id="auth-digest"><h3><span class="section-heading">auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>A BLAKE2b-256 hash of the following values</p>
                 <pre>A.1: transparent_scripts_digest (32-byte hash output)
 A.2: sapling_auth_digest        (32-byte hash output)
-A.3: orchard_auth_digest        (32-byte hash output)  [UPDATED FOR ZSA]
+A.3: orchard_zsa_auth_digest    (32-byte hash output)  [ADDED FOR ZSA]
 A.4: issuance_auth_digest       (32-byte hash output)  [ADDED FOR ZSA]</pre>
                 <p>The personalization field of this hash remains the same as in ZIP 244.</p>
-                <section id="a-3-orchard-auth-digest"><h4><span class="section-heading">A.3: orchard_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-3-orchard-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
+                <section id="a-3-orchard-zsa-auth-digest"><h4><span class="section-heading">A.3: orchard_zsa_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-3-orchard-zsa-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h4>
                     <p>In the case that OrchardZSA Action Groups are present, this is a BLAKE2b-256 hash of the following values:</p>
-                    <pre>A.3a: orchard_action_groups_auth_digest  (32-byte hash output)  [ADDED FOR ZSA]
-A.3b: bindingSigOrchard                  (field encoding bytes)</pre>
+                    <pre>A.3a: orchard_zsa_action_groups_auth_digest  (32-byte hash output)
+A.3b: bindingSigOrchard                      (field encoding bytes)</pre>
                     <p>The personalization field of this hash is the same as in ZIP 244, that is:</p>
                     <pre>"ZTxAuthOrchaHash"</pre>
-                    <p>In case that the transaction has no OrchardZSA Action Groups, <code>orchard_auth_digest</code> is:</p>
+                    <p>In case that the transaction has no OrchardZSA Action Groups, <code>orchard_zsa_auth_digest</code> is:</p>
                     <pre>BLAKE2b-256("ZTxAuthOrchaHash", [])</pre>
-                    <section id="a-3a-orchard-action-groups-auth-digest"><h5><span class="section-heading">A.3a: orchard_action_groups_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-3a-orchard-action-groups-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
+                    <section id="a-3a-orchard-zsa-action-groups-auth-digest"><h5><span class="section-heading">A.3a: orchard_zsa_action_groups_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-3a-orchard-zsa-action-groups-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
                         <p>This is a BLAKE2b-256 hash of the <code>proofsOrchard</code> and <code>spendAuthSigsOrchard</code> fields of all OrchardZSA Action Groups belonging to the transaction:</p>
                         <pre>A.3a.i:  proofsOrchard               (field encoding bytes)
 A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)</pre>
