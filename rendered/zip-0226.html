@@ -586,7 +586,7 @@ A.3b: bindingSigOrchard                      (field encoding bytes)</pre>
                     <p>In case that the transaction has no OrchardZSA Action Groups, <code>orchard_zsa_auth_digest</code> is:</p>
                     <pre>BLAKE2b-256("ZTxAuthOrchaHash", [])</pre>
                     <section id="a-3a-orchard-zsa-action-groups-auth-digest"><h5><span class="section-heading">A.3a: orchard_zsa_action_groups_auth_digest</span><span class="section-anchor"> <a rel="bookmark" href="#a-3a-orchard-zsa-action-groups-auth-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h5>
-                        <p>This is a BLAKE2b-256 hash of the <code>proofsOrchard</code> and <code>spendAuthSigsOrchard</code> fields of all OrchardZSA Action Groups belonging to the transaction:</p>
+                        <p>This is a BLAKE2b-256 hash of the <code>proofsOrchard</code> field of all OrchardZSA Action Groups belonging to the transaction; followed by the <code>spendAuthSigsOrchard</code> fields corresponding to every OrchardZSA Action in the OrchardZSA Action Group, for all OrchardZSA Action Groups belonging to the transaction:</p>
                         <pre>A.3a.i:  proofsOrchard               (field encoding bytes)
 A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)</pre>
                         <p>The personalization field of this hash is set to:</p>

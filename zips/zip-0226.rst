@@ -557,7 +557,7 @@ In case that the transaction has no OrchardZSA Action Groups, ``orchard_zsa_auth
 A.3a: orchard_zsa_action_groups_auth_digest
 '''''''''''''''''''''''''''''''''''''''''''
 
-This is a BLAKE2b-256 hash of the ``proofsOrchard`` and ``spendAuthSigsOrchard`` fields of all OrchardZSA Action Groups belonging to the transaction::
+This is a BLAKE2b-256 hash of the ``proofsOrchard`` field of all OrchardZSA Action Groups belonging to the transaction; followed by the ``spendAuthSigsOrchard`` fields corresponding to every OrchardZSA Action in the OrchardZSA Action Group, for all OrchardZSA Action Groups belonging to the transaction::
 
     A.3a.i:  proofsOrchard               (field encoding bytes)
     A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)
