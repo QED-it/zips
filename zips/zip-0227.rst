@@ -443,7 +443,7 @@ Rationale for Global Issuance State
 It is necessary to ensure that the balance of any issued Custom Asset never becomes negative within a shielded pool, along the lines of ZIP 209 [#zip-0209]_. 
 However, unlike for the shielded ZEC pools, there is no individual transaction field that directly corresponds to both the issued and burnt amounts for a given Asset.
 Therefore, we require that all nodes maintain a record of the current amount in circulation for every issued Custom Asset, and update this record based on the issuance and burn transactions processed. 
-This allows for efficient detection of balance violations for any Asset, in which scenario we specify a consensus rule to reject the transaction or block.
+This allows for efficient detection of balance violations for any Asset, in which case we specify a consensus rule to reject the transaction or block.
 
 We limit the total issuance of any Asset to a maximum of $\mathsf{MAX\_ISSUE}$. 
 This is a practical limit that also allows an issuer to issue the complete supply of an Asset in a single transaction.

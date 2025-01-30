@@ -458,7 +458,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             </section>
         </section>
         <section id="orchardzsa-transaction-structure"><h2><span class="section-heading">OrchardZSA Transaction Structure</span><span class="section-anchor"> <a rel="bookmark" href="#orchardzsa-transaction-structure"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
-            <p>The transaction format for v6 transactions is described in ZIP 230 <a id="footnote-reference-51" class="footnote_reference" href="#zip-0230">12</a>.</p>
+            <p>The transaction format for v6 transactions is described in ZIP 230 <a id="footnote-reference-51" class="footnote_reference" href="#zip-0230">13</a>.</p>
         </section>
         <section id="txid-digest"><h2><span class="section-heading">TxId Digest</span><span class="section-anchor"> <a rel="bookmark" href="#txid-digest"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The transaction digest algorithm defined in ZIP 244 <a id="footnote-reference-52" class="footnote_reference" href="#zip-0244">14</a> is modified by the OrchardZSA protocol to add a new branch for issuance information, along with modifications within the <code>orchard_digest</code> to account for the inclusion of the Asset Base. The details of these changes are described in this section, and highlighted using the <code>[UPDATED FOR ZSA]</code> or <code>[ADDED FOR ZSA]</code> text label. We omit the details of the sections that do not change for the OrchardZSA protocol.</p>
@@ -590,7 +590,7 @@ A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)</pre>
         </section>
         <section id="other-considerations"><h2><span class="section-heading">Other Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#other-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="transaction-fees"><h3><span class="section-heading">Transaction Fees</span><span class="section-anchor"> <a rel="bookmark" href="#transaction-fees"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the OrchardZSA protocol upgrade, and are described in ZIP 230 <a id="footnote-reference-61" class="footnote_reference" href="#zip-0230-orchardzsa-fee-calculation">13</a>.</p>
+                <p>The fee mechanism for the upgrades proposed in this ZIP will follow the mechanism described in ZIP 317 for the OrchardZSA protocol upgrade, and are described in ZIP 227 <a id="footnote-reference-61" class="footnote_reference" href="#zip-0227-orchardzsa-fee-calculation">12</a>.</p>
             </section>
             <section id="backward-compatibility"><h3><span class="section-heading">Backward Compatibility</span><span class="section-anchor"> <a rel="bookmark" href="#backward-compatibility"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>In order to have backward compatibility with the ZEC notes, we have designed the circuit to support both ZEC and OrchardZSA notes. As we specify above, there are three main reasons we can do this:</p>
@@ -709,19 +709,19 @@ A.3a.ii: spendAuthSigsOrchard        (field encoding bytes)</pre>
                     </tr>
                 </tbody>
             </table>
-            <table id="zip-0230" class="footnote">
+            <table id="zip-0227-orchardzsa-fee-calculation" class="footnote">
                 <tbody>
                     <tr>
                         <th>12</th>
-                        <td><a href="zip-0230.html">ZIP 230: Version 6 Transaction Format</a></td>
+                        <td><a href="zip-0227.html#orchardzsa-fee-calculation">ZIP 227: Issuance of Zcash Shielded Assets: OrchardZSA Fee Calculation</a></td>
                     </tr>
                 </tbody>
             </table>
-            <table id="zip-0230-orchardzsa-fee-calculation" class="footnote">
+            <table id="zip-0230" class="footnote">
                 <tbody>
                     <tr>
                         <th>13</th>
-                        <td><a href="zip-0230.html#orchardzsa-fee-calculation">ZIP 230: Version 6 Transaction Format: OrchardZSA Fee Calculation</a></td>
+                        <td><a href="zip-0230.html">ZIP 230: Version 6 Transaction Format</a></td>
                     </tr>
                 </tbody>
             </table>
