@@ -286,7 +286,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <ul>
                 <li>
                     <span class="math">\(\mathsf{asset\_desc}\)</span>
-                 be the asset description, which includes any information pertaining to the issuance, and is a byte sequence of up to 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
+                 be the asset description, which includes any information pertaining to the issuance, and is a non-empty byte sequence of at most 512 bytes which SHOULD be a well-formed UTF-8 code unit sequence according to Unicode 15.0.0 or later.</li>
                 <li>
                     <span class="math">\(\mathsf{ik}\)</span>
                  be the issuance validating key of the issuer, a public key used to verify the signature on the issuance transaction's SIGHASH.</li>
@@ -366,9 +366,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
             <section id="issuance-action"><h3><span class="section-heading">Issuance Action</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-action"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>An issuance action, <code>IssueAction</code>, is the instance of issuing a specific Custom Asset, and contains the following fields:</p>
                 <ul>
-                    <li><code>assetDescSize</code>: the size of the Asset description, a number between
-                        <span class="math">\(0\)</span>
-                     and
+                    <li><code>assetDescSize</code>: the size of the Asset description, a non-zero number that is at most
                         <span class="math">\(512\!\)</span>
                     .</li>
                     <li><code>asset_desc</code>: the Asset description, a byte string of up to 512 bytes as defined in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</li>
