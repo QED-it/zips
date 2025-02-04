@@ -474,7 +474,7 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         <span class="math">\(\mathsf{IssueAuthSig}\)</span>
                      signature scheme. The signature is then added to the issuance bundle.</li>
                 </ul>
-                <p><strong>Note:</strong> that the commitment is not included in the <code>IssuanceAction</code> itself. As explained below, it is computed later by the validators and added to the note commitment tree.</p>
+                <p><strong>Note:</strong> The note commitment is not included in the <code>IssuanceAction</code> itself. As explained below, it is computed later by the validators and added to the note commitment tree.</p>
             </section>
         </section>
         <section id="specification-reference-notes-and-global-issuance-state"><h2><span class="section-heading">Specification: Reference Notes and Global Issuance State</span><span class="section-anchor"> <a rel="bookmark" href="#specification-reference-notes-and-global-issuance-state"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
@@ -676,10 +676,22 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                         .</li>
                     </ul>
                 </li>
-                <li>If all the consensus rules are satisfied, the node MUST add the note commitments,
-                    <span class="math">\(\mathsf{cm}_{\mathsf{i,j}}\ \forall\ \mathsf{i} \in \{1..\mathtt{nIssueActions}\},\ \mathsf{j} \in \{1..\mathtt{nNotes}\}\!\)</span>
-                , to the Merkle tree of note commitments.</li>
             </ul>
+            <section id="addition-to-the-note-commitment-tree"><h3><span class="section-heading">Addition to the Note Commitment Tree</span><span class="section-anchor"> <a rel="bookmark" href="#addition-to-the-note-commitment-tree"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
+                <p>If the transaction is added to the block chain, the note commitments of all the OrchardZSA Notes and the Issue Notes in the transaction are added to the note commitment tree of the associated treestate. The order of addition to the tree is as specified below:</p>
+                <ul>
+                    <li>For each Action Group in the OrchardZSA Bundle:
+                        <ul>
+                            <li>For every Action in the Action Group, append the note commitment of every new OrchardZSA note in the Action to the note commitment tree.</li>
+                        </ul>
+                    </li>
+                    <li>For each Issue Action in the Issue Bundle:
+                        <ul>
+                            <li>For every Issue Note in the Issue Action, append the note commitment of the Issue Note to the note commitment tree.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </section>
         </section>
         <section id="rationale"><h2><span class="section-heading">Rationale</span><span class="section-anchor"> <a rel="bookmark" href="#rationale"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <p>The following is a list of rationale for different decisions made in the proposal:</p>

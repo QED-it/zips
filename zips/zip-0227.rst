@@ -332,7 +332,7 @@ For the ``IssueBundle``:
 - sign the SIGHASH transaction hash with the issuance authorizing key, $\mathsf{isk}$, using the $\mathsf{IssueAuthSig}$ signature scheme. The signature is then added to the issuance bundle.
 
 
-**Note:** that the commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
+**Note:** The note commitment is not included in the ``IssuanceAction`` itself. As explained below, it is computed later by the validators and added to the note commitment tree.
 
 Specification: Reference Notes and Global Issuance State
 ========================================================
@@ -415,8 +415,20 @@ For every transaction:
     - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} + \mathsf{v} \leq \mathsf{MAX\_ISSUE}$, where $\mathsf{v}$ is the value of $\mathsf{note}_{\mathsf{j}}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}.\mathsf{balance} + \mathsf{v}$.
     - The node MUST compute the note commitment, $\mathsf{cm}_{\mathsf{i,j}}$, as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-notestructure]_.
   - If $\mathsf{finalize} = 1$ within the ``flagsIssuance`` field of ``IssueAction``, the node MUST set $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} = 1$.
-- If all the consensus rules are satisfied, the node MUST add the note commitments, $\mathsf{cm}_{\mathsf{i,j}}\ \forall\ \mathsf{i} \in \{1..\mathtt{nIssueActions}\},\ \mathsf{j} \in \{1..\mathtt{nNotes}\}$, to the Merkle tree of note commitments.
 
+Addition to the Note Commitment Tree
+------------------------------------
+
+If the transaction is added to the block chain, the note commitments of all the OrchardZSA Notes and the Issue Notes in the transaction are added to the note commitment tree of the associated treestate. 
+The order of addition to the tree is as specified below:
+
+- For each Action Group in the OrchardZSA Bundle:
+
+  - For every Action in the Action Group, append the note commitment of every new OrchardZSA note in the Action to the note commitment tree.
+
+- For each Issue Action in the Issue Bundle:
+
+  - For every Issue Note in the Issue Action, append the note commitment of the Issue Note to the note commitment tree.
 
 Rationale
 =========
