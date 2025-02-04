@@ -293,21 +293,20 @@ The detailed encoding of the issuance bundle as a part of the V6 transaction for
 Computation of ρ
 ----------------
 
-We define a function $\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. 2^{32} - 1\} \to \mathbb{F}_{q_{\mathbb{P}}}$ as follows:
+We define a function $\mathsf{DeriveIssuedRho} : \mathbb{F}_{q_{\mathbb{P}}} \times \{0 .. 2^{32} - 1\} \times \{0 .. 2^{32} - 1\} \to \mathbb{F}_{q_{\mathbb{P}}}$ for Issue Notes in the OrchardZSA Protocol as follows:
 
-.. math:: \mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Rho}}(\mathsf{PRF}^{\mathsf{Rho}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}}))),
+.. math:: \mathsf{DeriveIssuedRho}(\mathsf{nf}, \mathsf{i_{A}}, \mathsf{i_{N}}) := \mathsf{ToBase}^{\mathsf{Orchard}}(\mathsf{PRF}^{\mathsf{expand}}(\mathsf{I2LEOSP}_{256}(\mathsf{nf}), [\mathtt{0x84}] \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{A}}) \| \mathsf{I2LEOSP}_{32}(\mathsf{i_{N}}))),
 
-where 
-
-- $\mathsf{ToBase}^{\mathsf{Rho}} : \mathbb{B}^{512} \to \mathbb{F}_{q_{\mathbb{P}}}$ is defined as $\mathsf{ToBase}^{\mathsf{Rho}}(x) := \mathsf{LEOS2IP}_{512}(x) \mod q_{\mathbb{P}}$ 
-- $\mathsf{PRF}^{\mathsf{Rho}} : \mathbb{B}^{256} \times \mathbb{B}^{\mathbb{Y}^{[\mathbb{N}]}} \to \mathbb{B}^{512}$ is defined as $\mathsf{PRF}^{\mathsf{Rho}}(\mathsf{k},t) := \textsf{BLAKE2b-512}(\mathtt{"ZSA\_IssueNoteRho"}, \mathsf{k} \| t)$
+where $\mathsf{ToBase}^{\mathsf{Orchard}}$ is defined in §4.2.3 of the protocol specification [#protocol-orchardkeycomponents]_, and $\mathsf{PRF}^{\mathsf{expand}}$ is defined in §5.4.2 of the protocol specification [#protocol-concreteprfs]_.
 
 The $\text{ρ}$ field of an Issue Note is computed as 
 
 .. math:: \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{1,1}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
 
-where $\mathsf{nf}_{1,1}$ is the nullifier of the first Note in the first Action of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the index of the Issue Note in the Issuance Action.
+where $\mathsf{nf}_{1,1}$ is the nullifier of the first Note in the first Action in the first Action Group of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the zero-based index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the zero-based index of the Issue Note in the Issuance Action.
 
+**NOTE:** This implicitly requires that there always is an Action Group in the OrchardZSA bundle of the transaction.
+This is enforced by the sixth consensus rule in the `Specification: Consensus Rule Changes`_ section.
 
 Issuance Protocol
 -----------------
@@ -391,6 +390,7 @@ Specification: Consensus Rule Changes
 
 For every transaction:
 
+- The ``nActionGroupsOrchard`` field MUST have a value of either ``0`` or ``1`` and the ``nAGExpiryHeight`` field MUST have a value of ``0``.
 - The output issuance state of the transaction MUST be initialized to be the same as the input issuance state, $\mathsf{issued\_assets}_{\mathsf{OUT}} = \mathsf{issued\_assets}_{\mathsf{IN}}$.
 - The $\mathsf{assetBurn}$ set MUST satisfy the consensus rules specified in ZIP 226 [#zip-0226-assetburn]_.
 - It MUST be the case that for all $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} \geq \mathsf{v}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase})$ prior to processing the issuance bundle in the following manner. For every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{AssetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} - \mathsf{v}$.
@@ -693,6 +693,7 @@ Displaying Asset Identifier information to users
 ------------------------------------------------
 
 Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section.
+Wallets also need to 
 
 Issuance Key Compromise
 -----------------------
@@ -769,6 +770,7 @@ References
 .. [#protocol-orchardkeycomponents] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.2.3: Orchard Key Components <protocol/protocol.pdf#orchardkeycomponents>`_
 .. [#protocol-sighash] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 4.10: SIGHASH Transaction Hashing <protocol/protocol.pdf#sighash>`_
 .. [#protocol-constants] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.3: Constants <protocol/protocol.pdf#constants>`_
+.. [#protocol-concreteprfs] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.2: Pseudo Random Functions <protocol/protocol.pdf#concreteprfs>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
 .. [#protocol-orchardpaymentaddrencoding] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 5.6.4.2: Orchard Raw Payment Addresses <protocol/protocol.pdf#orchardpaymentaddrencoding>`_
 .. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
