@@ -301,9 +301,9 @@ where $\mathsf{ToBase}^{\mathsf{Orchard}}$ is defined in §4.2.3 of the protocol
 
 The $\text{ρ}$ field of an Issue Note is computed as 
 
-.. math:: \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{1,1}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
+.. math:: \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{0,0}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
 
-where $\mathsf{nf}_{1,1}$ is the nullifier of the first Note in the first Action in the first Action Group of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the zero-based index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the zero-based index of the Issue Note in the Issuance Action.
+where $\mathsf{nf}_{0,0}$ is the nullifier of the first Note in the first Action in the first Action Group of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the zero-based index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the zero-based index of the Issue Note in the Issuance Action.
 
 **NOTE:** This implicitly requires that there always is an Action Group in the OrchardZSA bundle of the transaction.
 This is enforced by the sixth consensus rule in the `Specification: Consensus Rule Changes`_ section.
@@ -705,7 +705,6 @@ Displaying Asset Identifier information to users
 ------------------------------------------------
 
 Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section.
-Wallets also need to 
 
 Issuance Key Compromise
 -----------------------

@@ -139,7 +139,7 @@ It consists of
 
 .. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
 
-We make explicit the order of addition of the note commitments to the note commitment tree in ZIP 227 [#zip-0227-note-commitment-order]_.
+The explicit order of addition of the note commitments to the note commitment tree is specified in ZIP 227 [#zip-0227-note-commitment-order]_.
 
 Rationale for Note Commitment
 `````````````````````````````

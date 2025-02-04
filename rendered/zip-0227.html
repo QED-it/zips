@@ -410,9 +410,9 @@ Pull-Request: &lt;<a href="https://github.com/zcash/zips/pull/680">https://githu
                 <p>The
                     <span class="math">\(\text{ρ}\)</span>
                  field of an Issue Note is computed as</p>
-                <div class="math">\(\text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{1,1}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),\)</div>
+                <div class="math">\(\text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{0,0}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),\)</div>
                 <p>where
-                    <span class="math">\(\mathsf{nf}_{1,1}\)</span>
+                    <span class="math">\(\mathsf{nf}_{0,0}\)</span>
                  is the nullifier of the first Note in the first Action in the first Action Group of the OrchardZSA Bundle of the transaction,
                     <span class="math">\(\mathsf{index_{Action}}\)</span>
                  is the zero-based index of the Issuance Action in the Issuance Bundle, and
@@ -947,7 +947,7 @@ S.5: issuance_digest        (32-byte hash output)  [ADDED FOR ZSA]</pre>
         </section>
         <section id="security-and-privacy-considerations"><h2><span class="section-heading">Security and Privacy Considerations</span><span class="section-anchor"> <a rel="bookmark" href="#security-and-privacy-considerations"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h2>
             <section id="displaying-asset-identifier-information-to-users"><h3><span class="section-heading">Displaying Asset Identifier information to users</span><span class="section-anchor"> <a rel="bookmark" href="#displaying-asset-identifier-information-to-users"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
-                <p>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section. Wallets also need to</p>
+                <p>Wallets need to communicate the names of the Assets in a non-confusing way to users, since the byte representation of the Asset Identifier would be hard to read for an end user. Possible solutions are provided in the <a href="#specification-asset-identifier-asset-digest-and-asset-base">Specification: Asset Identifier, Asset Digest, and Asset Base</a> section.</p>
             </section>
             <section id="issuance-key-compromise"><h3><span class="section-heading">Issuance Key Compromise</span><span class="section-anchor"> <a rel="bookmark" href="#issuance-key-compromise"><img width="24" height="24" class="section-anchor" src="assets/images/section-anchor.png" alt=""></a></span></h3>
                 <p>The design of this protocol does not currently allow for rotation of the issuance validating key that would allow for replacing the key of a specific Asset. In case of compromise, the following actions are recommended:</p>
