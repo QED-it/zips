@@ -387,7 +387,7 @@ For each Action Group, the following elements are included in the hash::
     T.4a.i   : orchard_zsa_actions_compact_digest      (32-byte hash output)
     T.4a.ii  : orchard_zsa_actions_memos_digest        (32-byte hash output)
     T.4a.iii : orchard_zsa_actions_noncompact_digest   (32-byte hash output)
-    T.4a.iv  : orchard_zsa_burn_digest             (32-byte hash output)
+    T.4a.iv  : orchard_zsa_burn_digest                 (32-byte hash output)
     T.4a.v   : flagsOrchard                            (1 byte)
     T.4a.vi  : anchorOrchard                           (32 bytes)
     T.4a.vii : nAGExpiryHeight                         (4 bytes)
