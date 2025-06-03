@@ -205,6 +205,7 @@ For context, the relations between the Asset Identifier, Asset Digest, and Asset
 
 **Note:** To keep notations light and concise, we may omit $\mathsf{AssetId}$ in the subscript when the Asset Identifier is clear from the context.
 
+
 Asset Identifiers
 -----------------
 
