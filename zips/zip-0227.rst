@@ -184,8 +184,8 @@ Note that $\mathsf{IssueAuthSig.Sign}$ could return $\bot$ with very low probabi
 Define $\mathsf{IssueAuthSig.Validate} \;{\small ⦂}\; (\mathsf{ik} \;{\small ⦂}\; \mathsf{IssueAuthSig.Public}) \times (M \;{\small ⦂}\; \mathsf{IssueAuthSig.Message}) \times (\text{σ} \;{\small ⦂}\; \mathsf{IssueAuthSig.Signature}) \to \mathbb{B}$ as:
 
 * Return $0$ if $\text{σ} = \bot$.
-* Parse $\text{σ}$ as $\mathtt{0x00} || \mathsf{sig}$ and parse $\mathsf{ik}}$ as $\mathtt{0x00} || \mathsf{key}$. Return $0$ if the parsing fails.
-* Return $1$ if $\mathsf{Verify}(\mathsf{key}, M, \text{sig})$ succeeds, otherwise $0$.
+* Parse $\text{σ}$ as $\mathtt{0x00} || \mathsf{sig}$ and parse $\mathsf{ik}$ as $\mathtt{0x00} || \mathsf{key}$. Return $0$ if the parsing fails.
+* Return $1$ if $\mathsf{Verify}(\mathsf{key}, M, \mathsf{sig})$ succeeds, otherwise $0$.
 
 where the $\mathsf{Verify}$ algorithm is defined in BIP 340 [#bip-0340]_.
 
