@@ -85,7 +85,9 @@ The OrchardZSA Protocol adds the following keys to the key components [#protocol
 
 1. The issuance authorizing key, denoted as $\mathsf{isk}$, is the key used to authorize the issuance of Asset Identifiers by a given issuer, and is only used by that issuer.
 
-2. The issuance validating key, denoted as $\mathsf{ik}$, is the key that is used to validate issuance transactions. This key is used to validate the issuance of Asset Identifiers by a given issuer, and is used by all blockchain users (specifically the owners of notes for that Asset, and consensus validators) to associate the Asset in question with the issuer.
+2. The issuance validating key, is the key that is used to validate issuance transactions and also as an identifier of a particular Issuer.
+   It is denoted as $\mathsf{issuer}$. 
+   This key is used to validate the issuance of Asset Identifiers by a given issuer, and is used by all blockchain users (specifically the owners of notes for that Asset, and consensus validators) to associate the Asset in question with the issuer.
 
 The relations between these keys are shown in the following diagram:
 
@@ -157,11 +159,11 @@ Derivation of issuance validating key
 
 Define $\mathsf{IssueAuthSig.DerivePublic} \;{\small ⦂}\; (\mathsf{isk} \;{\small ⦂}\; \mathsf{IssueAuthSig.Private}) \to \mathsf{IssueAuthSig.Public}$ as:
 
-* $\mathsf{ik} := \mathtt{0x00} || \textit{PubKey}(\mathsf{isk})$
-* Return $\bot$ if the $\textit{PubKey}$ algorithm invocation fails, otherwise return $\mathsf{ik}$.
+* $\mathsf{issuer} := \mathtt{0x00} || \textit{PubKey}(\mathsf{isk})$
+* Return $\bot$ if the $\textit{PubKey}$ algorithm invocation fails, otherwise return $\mathsf{issuer}$.
 
 where the $\textit{PubKey}$ algorithm is defined in BIP 340 [#bip-0340]_, and the output of the algorithm is in big-endian order as defined in BIP 340.
-The encoding of $\mathsf{ik}$ begins with a byte indicating the signature scheme, which MUST be $\mathtt{0x00}$ indicating BIP 340. 
+The encoding of $\mathsf{issuer}$ begins with a byte indicating the signature scheme, which MUST be $\mathtt{0x00}$ indicating BIP 340. 
 This enables future ZIPs to specify alternative signature schemes.
 
 It is possible for the $\textit{PubKey}$ algorithm to fail with very low probability, which means that $\mathsf{IssueAuthSig.DerivePublic}$ could return $\bot$ with very low probability.
@@ -183,10 +185,10 @@ Note that $\mathsf{IssueAuthSig.Sign}$ could return $\bot$ with very low probabi
 The encoding of the signature begins with a byte indicating the signature scheme, which MUST be $\mathtt{0x00}$ indicating BIP 340. 
 This enables future ZIPs to specify alternative signature schemes.
 
-Define $\mathsf{IssueAuthSig.Validate} \;{\small ⦂}\; (\mathsf{ik} \;{\small ⦂}\; \mathsf{IssueAuthSig.Public}) \times (M \;{\small ⦂}\; \mathsf{IssueAuthSig.Message}) \times (\text{σ} \;{\small ⦂}\; \mathsf{IssueAuthSig.Signature}) \to \mathbb{B}$ as:
+Define $\mathsf{IssueAuthSig.Validate} \;{\small ⦂}\; (\mathsf{issuer} \;{\small ⦂}\; \mathsf{IssueAuthSig.Public}) \times (M \;{\small ⦂}\; \mathsf{IssueAuthSig.Message}) \times (\text{σ} \;{\small ⦂}\; \mathsf{IssueAuthSig.Signature}) \to \mathbb{B}$ as:
 
 * Return $0$ if $\text{σ} = \bot$.
-* Parse $\text{σ}$ as $\mathtt{0x00} || \mathsf{sig}$ and parse $\mathsf{ik}$ as $\mathtt{0x00} || \mathsf{key}$. Return $0$ if the parsing fails.
+* Parse $\text{σ}$ as $\mathtt{0x00} || \mathsf{sig}$ and parse $\mathsf{issuer}$ as $\mathtt{0x00} || \mathsf{key}$. Return $0$ if the parsing fails.
 * Return $1$ if $\mathsf{Verify}(\mathsf{key}, M, \mathsf{sig})$ succeeds, otherwise $0$.
 
 where the $\mathsf{Verify}$ algorithm is defined in BIP 340 [#bip-0340]_.
@@ -218,7 +220,7 @@ OrchardZSA protocol and potentially future Zcash shielded protocols.
 ZIP 227 Asset Identifiers
 `````````````````````````
 
-Assets issued using the protocol specified in this ZIP are scoped to the $\mathsf{ik}$
+Assets issued using the protocol specified in this ZIP are scoped to the $\mathsf{issuer}$
 that issued them. Within that scope, Asset Identifier uniqueness is obtained by way of an
 asset description, $\mathsf{asset\_desc}$, which includes any information pertaining to
 the issuance. $\mathsf{asset\_desc}$ is a non-empty byte sequence which SHOULD be a
@@ -230,11 +232,11 @@ Define
 
 We define Asset Identifiers for Assets issued under this ZIP as
 
-.. math:: \mathsf{AssetId} := (\mathsf{ik}, \mathsf{assetDescHash})
+.. math:: \mathsf{AssetId} := (\mathsf{issuer}, \mathsf{assetDescHash})
 
 and define their canonical encoding as
 
-.. math:: \mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{ik}, \mathsf{assetDescHash})) := \mathtt{0x00} || \mathsf{ik} || \mathsf{assetDescHash}
+.. math:: \mathsf{EncodeAssetId}(\mathsf{AssetId}) = \mathsf{EncodeAssetId}((\mathsf{issuer}, \mathsf{assetDescHash})) := \mathtt{0x00} || \mathsf{issuer} || \mathsf{assetDescHash}
 
 Note that the initial $\mathtt{0x00}$ byte is a version byte, enabling future ZIPs to
 specify alternative issuance protocols and Asset Identifiers.
@@ -299,7 +301,7 @@ An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetB
 - $\mathsf{rseed}: \mathbb{B}^{[\mathbb{Y}^{32}]}$ MUST be sampled uniformly at random by the issuer.
 
 ZIP 230 [#zip-0230-issue-note]_ defines, in ``IssueNote``, field encodings which together with
-$\mathsf{ik}$ from the parent `Issuance Bundle`_ and $\mathsf{AssetDescHash}$ from the parent
+$\mathsf{issuer}$ from the parent `Issuance Bundle`_ and $\mathsf{AssetDescHash}$ from the parent
 `Issuance Action`_, specify an Issue Note.
 
 Let $\mathsf{Note^{Issue}}$ be the type of an Issue Note, i.e.
@@ -333,7 +335,7 @@ An issuance bundle is the aggregate of all the issuance-related information.
 Specifically, contains all the issuance actions and the issuer signature on the transaction SIGHASH that validates the issuance itself.
 It contains the following fields:
 
-- $\mathsf{ik}$: the issuance validating key, that allows the validators to verify that the $\mathsf{AssetId}$ is properly associated with the issuer.
+- $\mathsf{issuer}$: the issuance validating key, that allows the validators to verify that the $\mathsf{AssetId}$ is properly associated with the issuer.
 - ``vIssueActions``: an array of issuance actions, of type ``IssueAction``.
 - $\mathsf{issueAuthSig}$: the signature of the transaction SIGHASH, signed by the issuance authorizing key, $\mathsf{isk}$, that validates the issuance.
 
@@ -366,7 +368,7 @@ For all actions ``IssueAction``:
 
 - encode $\mathsf{asset\_desc}$ as a UTF-8 byte string.
 - compute $\mathsf{assetDescHash}$
-- compute $\mathsf{AssetDigest}$ from the issuance validating key $\mathsf{ik}$ and $\mathsf{assetDescHash}$ as decribed in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section.
+- compute $\mathsf{AssetDigest}$ from the issuance validating key $\mathsf{issuer}$ and $\mathsf{assetDescHash}$ as decribed in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section.
 - compute $\mathsf{AssetBase}$ from $\mathsf{AssetDigest}$ as decribed in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section.
 - set the $\mathsf{finalize}$ boolean as desired (if more issuance actions are to be created for this $\mathsf{AssetBase}$, set $\mathsf{finalize} = 0$, otherwise set $\mathsf{finalize} = 1$).
 - for each recipient $i$:
@@ -379,7 +381,7 @@ For all actions ``IssueAction``:
 For the ``IssueBundle``:
 
 - encode the ``vIssueActions`` vector.
-- encode the $\mathsf{ik}$ as 32 byte-string.
+- encode the $\mathsf{issuer}$ as 32 byte-string.
 - sign the SIGHASH transaction hash with the issuance authorizing key, $\mathsf{isk}$, using the $\mathsf{IssueAuthSig}$ signature scheme. The signature is then added to the issuance bundle.
 
 
@@ -447,7 +449,7 @@ For every transaction:
 - It MUST be the case that for all $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} \geq \mathsf{v}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase})$ prior to processing the issuance bundle in the following manner. For every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{AssetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} - \mathsf{v}$.
 - Let $\mathsf{SigHash}$ be the SIGHASH transaction hash of this transaction, as defined in §4.10 of the protocol specification [#protocol-sighash]_ with the modifications described in ZIP 226 [#zip-0226-txiddigest]_, using $\mathsf{SIGHASH\_ALL}$.
 - If the transaction contains an Issuance Bundle, it MUST also contain at least one OrchardZSA Action Group.
-- The issuance authorization signature, $\mathsf{issueAuthSig}$, MUST be a valid $\mathsf{IssueAuthSig}$ signature over $\mathsf{SigHash}$, i.e. $\mathsf{IssueAuthSig}.\!\mathsf{Validate}(\mathsf{ik}, \mathsf{SigHash}, \mathsf{issueAuthSig}) = 1$. 
+- The issuance authorization signature, $\mathsf{issueAuthSig}$, MUST be a valid $\mathsf{IssueAuthSig}$ signature over $\mathsf{SigHash}$, i.e. $\mathsf{IssueAuthSig}.\!\mathsf{Validate}(\mathsf{issuer}, \mathsf{SigHash}, \mathsf{issueAuthSig}) = 1$. 
 - For every issuance action description ($\mathsf{IssueAction}_\mathsf{i},\ 1 \leq i \leq \mathtt{nIssueActions}$) in the issuance bundle:
 
   - Every Issue Note in ``IssueAction`` MUST be a valid encoding of the $\mathsf{Note^{Issue}}$ type, and MUST encode the same $\mathsf{AssetBase}$. 
@@ -507,7 +509,7 @@ asset description, for the following reasons:
   rules had required it to be a Unicode string instead of only recommending it).
 
 - The lack of key rotation in this issuance protocol means that it is not sufficient to
-  mark an $\mathsf{ik}$ as trusted and then accept whatever asset descriptions are issued
+  mark an $\mathsf{issuer}$ as trusted and then accept whatever asset descriptions are issued
   by it. Each Asset Identifier needs to be independently verified, which requires some
   out-of-band protocol that can also convey the corresponding asset description.
 
