@@ -85,8 +85,7 @@ The OrchardZSA Protocol adds the following keys to the key components [#protocol
 
 1. The issuance authorizing key, denoted as $\mathsf{isk}$, is the key used to authorize the issuance of Asset Identifiers by a given issuer, and is only used by that issuer.
 
-2. The issuer identifier, denoted by $\mathsf{issuer}$ is the identifier of a particular Issuer.
-   This identifier is used to validate the issuance of Asset Identifiers by a given issuer, and is used by all blockchain users (specifically the owners of notes for that Asset, and consensus validators) to associate the Asset in question with the issuer.
+2. The issuer identifier, denoted by $\mathsf{issuer}$ is the identifier of a particular Issuer. This identifier is used to validate the issuance of Asset Identifiers by a given issuer, and is used by all blockchain users (specifically the owners of notes for that Asset, and consensus validators) to associate the Asset in question with the issuer.
 
 The relations between these keys are shown in the following diagram:
 
