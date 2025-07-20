@@ -100,15 +100,21 @@ We know that the Orchard address is of the form: $(\mathsf{d}, \mathsf{pk_d})$.
 These 2 fields, the diversifier and the diversified address, are used by the sender when sending notes.
 
 Looking at the Orchard key components derivations, we know that $\mathsf{pk_d}$ is derived as:
-$\mathsf{pk_d} =mathsf{KAOrchard.DerivePublic}(\mathsf{ivk}, \mathsf{g_d}) = [\mathsf{ivk}]\mathsf{g_d}$ [#protocol-orchard-keys]_.
+$\mathsf{pk_d} = \mathsf{KAOrchard.DerivePublic}(\mathsf{ivk}, \mathsf{g_d}) = [\mathsf{ivk}]\mathsf{g_d}$ [#protocol-orchard-keys]_.
 
 Given that $\mathsf{ivk}$ is derived from the spending key of the recipient of the funds, we can prove that the recipient of the funds in an Orchard Action is approving the receipt of the funds, by using a proof of knowledge of $\mathsf{ivk}$.
 Such proof of knowledge of $\mathsf{ivk}$ can be obtained by using the Non-Interactive Schnorr Protocol. 
 
 In fact, such proof of knowledge of $\mathsf{ivk}$ can be obtained by using a Schnorr Signature on the Action (the message) with $\mathsf{ivk}$ as signing/secret key and $\mathsf{g_d}$ as group generator.
 
-**Note:** Zcash Orchard already uses a Schnorr-based signature scheme instantiated with the Pallas curve, $\mathsf{RedPallas}$ [#protocol-redpallas]_.
+**Note 1:** Zcash Orchard already uses a Schnorr-based signature scheme ($\mathsf{RedDSA}$) instantiated with the Pallas curve, $\mathsf{RedPallas}$ [#protocol-redpallas]_.
 As of NU6, $\mathsf{RedPallas}$ is used to instantiate $\mathsf{SpendAuthSig^{Orchard}}$ and $\mathsf{BindingSig^{Orchard}}$.
+
+**Note 2:** As discussed in [#community-forum-tx-approval]_, we believe that proving knowledge of $\mathsf{ivk}$ for the approval is better suited that proving knowledge of $\mathsf{ask}$, *if we don't introduce a new "approval key" in the Zcash key derivation tree*.
+In fact, $\mathsf{ivk}$ relates to incoming funds, just like approving transactions. While $\mathsf{ivk}$ can, in theory, be shared with anyone (it's a key with "fairly weak privileges"), in practice, it won't be given to any random party asking for it, simply because ZEC holders won't want literally everyone to know when they receive funds.
+Under this setting, we believe it to be acceptable to assume that the holders of a party P's $\mathsf{ivk}$ is "trusted enough" by P to assume the extra responsibility of approving transactions.
+To avoid assigning a double functionality to an existing key, like $\mathsf{ivk}$, a new "approval key" can be introduced in the protocol.
+Doing so keeps a strict separation of concerns between keys at the expense of creating more protocol changes (which we're aiming to keep minimal with this ZIP). 
 
 Modifications to the Orchard Statement/Circuit
 ----------------------------------------------
@@ -209,3 +215,4 @@ References
 .. [#protocol-key-agreement] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. 5.4.5.5 Orchard Key Agreement` <https://zips.z.cash/protocol/protocol.pdf#concreteorchardkeyagreement>
 .. [#protocol-tx-encoding] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. 7.1 Transaction Encoding and Consensus` <https://zips.z.cash/protocol/protocol.pdf#txnencoding>
 .. [#protocol-redpallas] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. 5.4.7 RedDSA, RedJubjub, and RedPallas` <https://zips.z.cash/protocol/protocol.pdf#concretereddsa>
+.. [#community-forum-tx-approval] `Introducing Transaction Controls in Zcash, Zcash Community Forum` <https://forum.zcashcommunity.com/t/introducing-transaction-controls-in-zcash/49640>
