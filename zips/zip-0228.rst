@@ -5,6 +5,8 @@
   Owners: Antoine Rondelet <antoine@qed-it.com>
           Pablo Kogan <pablo@qed-it.com>
           Vivek Arte <vivek@qed-it.com>
+          Alexey Koren <alexey@qed-it.com>
+          Constance Beguier <constance@qed-it.com>
           Daira-Emma Hopwood <daira-emma@electriccoin.co>
           Jack Grigg <str4d@electriccoin.co>
   Credits: 
