@@ -7,9 +7,10 @@
           Vivek Arte <vivek@qed-it.com>
           Alexey Koren <alexey@qed-it.com>
           Constance Beguier <constance@qed-it.com>
-          Daira-Emma Hopwood <daira-emma@electriccoin.co>
-          Jack Grigg <str4d@electriccoin.co>
-  Credits: 
+          Daira-Emma Hopwood <daira@jacaranda.org>
+          Jack Grigg <thestr4d@gmail.com>
+  Credits: Daniel Benarroch
+           Aurelien Nicolas
   Status: Draft
   Created: TBD
   License: MIT
