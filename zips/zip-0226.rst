@@ -33,8 +33,10 @@ The terms "Asset" and "Custom Asset" in this document are to be interpreted as d
 
 We define the following additional terms:
 
+- Action Group: an Action Group is a group of OrchardZSA Actions (as defined in [#zip-0224]_) which share the same tuple $(\mathsf{rt}, \mathsf{enableSpends}, \mathsf{enableOutputs}, \mathsf{enableZSA}, \mathsf{nAGExpiryHeight})$. In this ZIP, we denote the above shared tuple by "Orchard Commons".
 - Split Input: an Action input used to ensure that the output note of that Action is of a validly issued $\mathsf{AssetBase}$ (see [#zip-0227-assetidentifier]_) when there is no corresponding real input note, in situations where the number of outputs are larger than the number of inputs. See formal definition in `Split Notes`_.
 - Split Action: an Action that contains a Split Input.
+- v1 Signature Digest: the per-Action-Group signature digest defined in `v1 Signature Digest and Spend Authorization Signatures`_. This is used in certain cases to provide spend authorization for the Actions of a single Action Group. 
 
 Abstract
 ========
@@ -200,6 +202,60 @@ The Orchard Protocol uses a Homomorphic Pedersen Commitment [#protocol-concreteh
 
 The use of different value base points for different Assets enables the final balance of the transaction to be securely computed, such that each Asset Identifier is balanced independently, which is required as different Assets are not meant to be mutually fungible.
 
+Action Groups
+-------------
+
+OrchardZSA Actions in transactions are organized into one or more Action Groups. 
+An Action Group is a group of OrchardZSA Actions which share the same tuple $(\mathsf{rt}, \mathsf{enableSpends}, \mathsf{enableOutputs}, \mathsf{enableZSA}, \mathsf{nAGExpiryHeight})$, which we denote by "Orchard Commons".
+A transaction MAY contain more than one Action Group.
+
+An Action Group contains a list of OrchardZSA Actions that share the same Orchard Commons, along with those Orchard Commons, the `Burn Mechanism`_ data, and the authorizing data such as the Spend Authorization Signatures and proofs.
+The encoding of the Action Group is defined in ZIP 230 [#zip-0230-orchardzsa-action-group-description]_.
+
+The Orchard Commons of each Action Group includes an expiry height, $\mathsf{nAGExpiryHeight}$, which specifies the maximum block height at which a transaction containing that Action Group may be mined.
+A value of $0$ indicates that the Action Group places no expiry constraint.
+
+Rationale for Action Groups
+```````````````````````````
+
+In the Zcash protocol deployed in NU5, the anchor is not included in the Action Description, and is only included once in the entire transaction.
+Action Groups are a generalization of the protocol that allows for Actions generated against different anchors to be combined in a single transaction.
+The Action Groups abstraction achieves the same function as including the tuple (Merkle Root ($\mathsf{rt}$), ``enableSpend``, ``enableOutputs``) in each Action - but more efficiently.
+It allows for the binding of multiple Actions, along with an expiry height, in an inseparable manner.
+It reduces information duplication within the transaction object, and thus is more bandwidth efficient.
+
+One of the applications that takes advantage of this generalization is ZSA Swaps [#zip-0228]_.
+In this application, components provided by two parties, with possible different blockchain states, can be combined in a single transaction.
+
+Rationale for Expiry Height
+```````````````````````````
+
+The expiry height $\mathsf{nAGExpiryHeight}$ allows for a time limit to be set for the inclusion of a particular Action Group in a mined block. 
+This is useful for applications such as ZSA Swaps [#zip-0228]_, where a party might want to limit how long the counterparty has an indefinite option on their trade intent.
+
+v1 Signature Digest and Spend Authorization Signatures
+------------------------------------------------------
+
+ZIP 246 [#zip-0246]_ introduces versioning for SIGHASH algorithms.
+We define the **v1 Signature Digest** for an Action Group as the output of the ``orchard_action_groups_digest`` for that Action Group, as defined in ZIP 246 [#zip-0246-t-4a-orchard-action-groups-digest]_.
+
+If there is only one Action Group in the transaction, then the Spend Authorization Signatures for the Actions in the transaction MUST be computed as in the Orchard protocol, over the v0 Signature Digest.
+If there are multiple Action Groups in the transaction, then the Spend Authorization Signatures for the Actions in each Action Group MUST be computed over the v1 Signature Digest of that Action Group.
+
+Rationale for v1 Signature Digests and Spend Authorization Signature Changes
+````````````````````````````````````````````````````````````````````````````
+
+In the OrchardZSA protocol, each Action includes a Spend Authorization Signature [#protocol-spendauthsig]_ that binds a specific spend instruction to a specific transaction and prevents replay attacks.
+
+However, in the generalization to multiple Action Groups, each of which might be generated by different parties, the mechanism needs updating. 
+This is because the transaction SIGHASH represents a hash over a full consensus-compliant transaction object. 
+The party creating the Action Group might not be able to construct the SIGHASH as the full transaction might not be known at that point. 
+This is because various fields are set only when the full bundle transaction is formed and sent to the chain.
+
+To make sure the time limit isn't malleable and replay attacks are precluded, the sender signs the information in the Action Group of the Order. 
+The ``orchard_action_groups_digest`` contains all the information that the sender needs to authorize, which is why we use this for the v1 Signature Digest. 
+The non-malleability of the expiry height and other fields of received orders during order matching is guaranteed by the unforgeability of the sender's Spend Authorization Signature.
+
 Burn Mechanism
 --------------
 
@@ -209,20 +265,31 @@ It is enforced at the consensus level, by using an extension of the value balanc
 Burning makes it globally provable that a given amount of a Custom Asset has been destroyed.
 Note that the OrchardZSA Protocol does not allow for the burning of the Native Asset (i.e. ZEC or TAZ).
 
-In the `OrchardZSA Transaction Structure`_, there is now an $\mathsf{assetBurn}$ set. 
-For every Custom Asset (represented by its $\mathsf{AssetBase}$) that is burnt in the transaction, the sender adds to $\mathsf{assetBurn}$ the tuple $(\mathsf{AssetBase}, \mathsf{v})$, where $\mathsf{v}$ is the amount of the Custom Asset the sender wants to burn. 
+In the `OrchardZSA Transaction Structure`_, there is now an $\mathsf{assetBurn}_{\mathsf{AG}}$ set for each Action Group. 
+For every Custom Asset (represented by its $\mathsf{AssetBase}$) that is burnt in the Action Group, the sender adds to $\mathsf{assetBurn}_{\mathsf{AG}}$ the tuple $(\mathsf{AssetBase}, \mathsf{v})$, where $\mathsf{v}$ is the amount of the Custom Asset the sender wants to burn. 
 We define a constant $\mathsf{MAX\_BURN\_VALUE} := 2^{63} - 1$, which denotes the maximum amount of a given Custom Asset that can be burnt in a transaction.
 We denote by $L$ the cardinality of the $\mathsf{assetBurn}$ set in a transaction.
 
 As described in `Value Balance Verification`_, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. 
 This ensures that the values are all balanced out on a per-Asset basis in the transaction.
 
+Note: 
+In a transaction with multiple Action Groups, each with their own $\mathsf{assetBurn}_{\mathsf{AG}}$ set, there MAY be multiple entries for the same Custom Asset across the different $\mathsf{assetBurn}_{\mathsf{AG}}$ sets.
+
+We construct a set $\mathsf{assetBurn}$ as the union of all the $\mathsf{assetBurn}_{\mathsf{AG}}$ sets across all Action Groups in the transaction. 
+This is constructed in two steps:
+
+- First, we set $\mathsf{assetBurn} := \bigcup_{\mathsf{AG}} \mathsf{assetBurn}_{\mathsf{AG}}$.
+  That is, we take the union of the $\mathsf{assetBurn}_{\mathsf{AG}}$ sets across all Action Groups in the transaction.
+- Then, if there are multiple entries for the same Custom Asset in the resulting $\mathsf{assetBurn}$ set, we de-duplicate by summing the corresponding burn values $\mathsf{v}$ for those entries, and keep a single entry for that Custom Asset with the summed burn value.
+
+
 Additional Consensus Rules for the assetBurn set
 ````````````````````````````````````````````````
 
 1. It MUST be the case that for every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}$. That is, the Native Asset is not allowed to be burnt by this mechanism.
 2. It MUST be that for every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{v} > 0$ and $\mathsf{v} \leq \mathsf{MAX\_BURN\_VALUE}$.
-3. There MUST be no duplication of Custom Assets in the $\mathsf{assetBurn}$ set. That is, every $\mathsf{AssetBase}$ has at most one entry in $\mathsf{assetBurn}$.
+3. There MUST be no duplication of Custom Assets in the $\mathsf{assetBurn}_{\mathsf{AG}}$ set, for each Action Group $\mathsf{AG}$. That is, every $\mathsf{AssetBase}$ has at most one entry in $\mathsf{assetBurn}_{\mathsf{AG}}$ for each Action Group.
 
 The other consensus rule changes for the OrchardZSA protocol are specified in ZIP 227 [#zip-0227-consensus]_.
 
@@ -238,17 +305,24 @@ It will also allow for compatibility with future Custom-asset-specific value bal
 Value Balance Verification
 --------------------------
 
-In order to verify the balance of the different Assets, the verifier MUST perform a similar process as for the Orchard protocol [#protocol-orchardbalance]_, with the addition of the burn information.
+Transactions continue to have a single Binding Signature, which covers all the Actions across the Action Groups in the transaction.
+The signature continues to be computed over the v0 Signature Digest of the transaction.
 
-For a total of $n$ Actions in a transfer, the prover MUST still sign the SIGHASH transaction hash using the binding signature key
+In order to verify the balance of the different Assets, the validator MUST perform a similar process as for the Orchard protocol [#protocol-orchardbalance]_, with the addition of the burn information.
+
+For a total of $n$ Actions in a transfer (across Action Groups), the signer MUST still sign the SIGHASH transaction hash using the binding signature key
 $\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_i$.
 
-The verifier MUST compute the value balance verification equation:
+The validator MUST compute the value balance verification equation:
 
 .. math:: \mathsf{bvk} = (\sum_{i=1}^{n}  \mathsf{cv}^{\mathsf{net}}_i) - \mathsf{ValueCommit_0^{OrchardZSA}(\mathcal{V}^{\mathsf{Orchard}}, v^{balanceOrchard})} - \sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{AssetBase}, \mathsf{v})
 
-After computing $\mathsf{bvk}$, the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.
+After computing $\mathsf{bvk}$, the validator MUST use it to verify the binding signature on the SIGHASH transaction hash.
 
+Note: In the equation above, the set $\mathsf{assetBurn}$ across all Action Groups in the transaction, is as defined in the `Burn Mechanism`_ section.
+
+An application that requires the signer to assemble the transaction from independently generated components MUST include a mechanism to ensure that the signer has the information necessary to compute the $\mathsf{bsk}$ as described above.
+The specific mechanism is out of scope for this ZIP. Refer to ZIP 228 [#zip-0228]_ for an example of how this can be achieved in the context of ZSA swaps.
 
 Rationale for Value Balance Verification
 ````````````````````````````````````````
@@ -419,6 +493,25 @@ In order to have backward compatibility with the ZEC notes, we have designed the
 - The value commitment is abstracted to allow for the value base-point as a variable private input to the proof.
 - The ZEC-based Actions will still include dummy input notes, whereas the OrchardZSA Actions will include split input notes and will not include dummy input notes.
 
+Security and Privacy Considerations
+===================================
+
+Protection Against Replay attacks
+---------------------------------
+
+We consider whether our change from signing the v0 SIGHASH in the spend authorization signature to signing the v1 Signature Digest opens any possibilities of replay attacks.
+
+This is prevented by the use of the v0 SIGHASH in the binding signature. 
+If an adversary tries to extract an Action Group and associated Spend Authorization Signature from a transaction on the network to replay it within another transaction - which would be detrimental in the form of front-running - the adversary will also need to be able to generate a binding signature on their replayed transaction, which is not possible without knowing the $\mathsf{bsk}$ associated with the Action Group being replayed.
+The $\mathsf{bsk}$ is computed based on values communicated over a secure channel off-chain between the parties in the case of multiple Action Groups generated by different parties. 
+This precludes the possibility of replay attacks. 
+
+Non-Malleability of the Expiry Height
+-------------------------------------
+
+We protect against the malleation of the ``nAGExpiryHeight`` field by a malicious matching party by including the expiry height inside the v1 Signature Digest that is signed using the Spend Authorization Signature (see more details in `Rationale for Expiry Height`_).
+The security of the Spend Authorization Signature and the collision resistance of the BLAKE2b-256 hash then ensures that the expiry height remains the same as the one mandated by the creator of the Swap Order.
+
 Deployment
 ==========
 
@@ -453,13 +546,16 @@ References
 .. [#zip-0227-txiddigest] `ZIP 227: Issuance of Zcash Shielded Assets — TxId Digest - Issuance <zip-0227.rst#txid-digest-issuance>`_
 .. [#zip-0227-authcommitment] `ZIP 227: Issuance of Zcash Shielded Assets — Authorizing Data Commitment <zip-0227.rst#authorizing-data-commitment-issuance>`_
 .. [#zip-0227-orchardzsa-fee-calculation] `ZIP 227: Issuance of Zcash Shielded Assets — OrchardZSA Fee Calculation <zip-0227.rst#orchardzsa-fee-calculation>`_
+.. [#zip-0228] `ZIP 228: Asset Swaps for Zcash Shielded Assets <zip-0228.rst>`_
 .. [#zip-0230] `ZIP 230: Version 6 Transaction Format <zip-0230.rst>`_
 .. [#zip-0230-transaction-format] `ZIP 230: Version 6 Transaction Format — Transaction Format <zip-0230.rst#transaction-format>`_
+.. [#zip-0230-orchardzsa-action-group-description] `ZIP 230: Version 6 Transaction Format — OrchardZSA Action Group Description <zip-0230.rst#orchardzsa-action-group-description>`_
 .. [#zip-0230-note-plaintexts] `ZIP 230: Version 6 Transaction Format — Note Plaintexts <zip-0230.rst#note-plaintexts>`_
 .. [#zip-0230-orchard-note-plaintext] `ZIP 230: Version 6 Transaction Format — Orchard Note Plaintext <zip-0230.rst#orchard-note-plaintext>`_
 .. [#zip-0230-implications-for-wallets] `ZIP 230: Version 6 Transaction Format — Implications for Wallets <zip-0230.rst#implications-for-wallets>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0246] `ZIP 246: Digests for the Version 6 Transaction Format <zip-0246.rst>`_
+.. [#zip-0246-t-4a-orchard-action-groups-digest] `ZIP 246: Digests for the Version 6 Transaction Format — T.4a: orchard_action_groups_digest <zip-0246.rst#t-4a-orchard-action-groups-digest>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#zip-2005] `ZIP 2005: Orchard Quantum Recoverability <zip-2005.md>`_
 .. [#protocol] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1] or later. <protocol/protocol.pdf>`_
@@ -469,6 +565,7 @@ References
 .. [#protocol-orchardsend] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.7.3: Sending Notes (Orchard) <protocol/protocol.pdf#orchardsend>`_
 .. [#protocol-orcharddummynotes] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.8.3: Dummy Notes (Orchard) <protocol/protocol.pdf#orcharddummynotes>`_
 .. [#protocol-orchardbalance] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.14: Balance and Binding Signature (Orchard) <protocol/protocol.pdf#orchardbalance>`_
+.. [#protocol-spendauthsig] `Zcash Protocol Specification, Version 2024.5.1. Section 4.15: Spend Authorization Signature (Sapling and Orchard) <protocol/protocol.pdf#spendauthsig>`_
 .. [#protocol-rhoandnullifiers] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.16: Computing ρ values and Nullifiers <protocol/protocol.pdf#rhoandnullifiers>`_
 .. [#protocol-actionstatement] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.18.4: Action Statement (Orchard) <protocol/protocol.pdf#actionstatement>`_
 .. [#protocol-endian] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.1: Integers, Bit Sequences, and Endianness <protocol/protocol.pdf#endian>`_
