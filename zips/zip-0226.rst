@@ -265,17 +265,23 @@ It is enforced at the consensus level, by using an extension of the value balanc
 Burning makes it globally provable that a given amount of a Custom Asset has been destroyed.
 Note that the OrchardZSA Protocol does not allow for the burning of the Native Asset (i.e. ZEC or TAZ).
 
-In the `OrchardZSA Transaction Structure`_, there is now an $\mathsf{assetBurn}$ set for each Action Group. 
-For every Custom Asset (represented by its $\mathsf{AssetBase}$) that is burnt in the transaction, the sender adds to $\mathsf{assetBurn}$ the tuple $(\mathsf{AssetBase}, \mathsf{v})$, where $\mathsf{v}$ is the amount of the Custom Asset the sender wants to burn. 
+In the `OrchardZSA Transaction Structure`_, there is now an $\mathsf{assetBurn}_{\mathsf{AG}}$ set for each Action Group. 
+For every Custom Asset (represented by its $\mathsf{AssetBase}$) that is burnt in the Action Group, the sender adds to $\mathsf{assetBurn}_{\mathsf{AG}}$ the tuple $(\mathsf{AssetBase}, \mathsf{v})$, where $\mathsf{v}$ is the amount of the Custom Asset the sender wants to burn. 
 We define a constant $\mathsf{MAX\_BURN\_VALUE} := 2^{63} - 1$, which denotes the maximum amount of a given Custom Asset that can be burnt in a transaction.
 We denote by $L$ the cardinality of the $\mathsf{assetBurn}$ set in a transaction.
 
 As described in `Value Balance Verification`_, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. 
 This ensures that the values are all balanced out on a per-Asset basis in the transaction.
 
-TODO: 
-The multiple Action Groups in a single transaction may each contain overlapping entries for a single Asset (that is, multiple Action Groups ask to burn the same Asset). 
-This should be allowed(?), but we need to specify how $\mathsf{MAX\_BURN\_VALUE}$ applies in this case.
+Note: 
+In a transaction with multiple Action Groups, each with their own $\mathsf{assetBurn}_{\mathsf{AG}}$ set, there MAY be multiple entries for the same Custom Asset across the different $\mathsf{assetBurn}_{\mathsf{AG}}$ sets.
+
+We construct a set $\mathsf{assetBurn}$ as the union of all the $\mathsf{assetBurn}_{\mathsf{AG}}$ sets across all Action Groups in the transaction. 
+This is constructed in two steps:
+
+- First, we set $\mathsf{assetBurn} := \bigcup_{\mathsf{AG}} \mathsf{assetBurn}_{\mathsf{AG}}$.
+  That is, we take the union of the $\mathsf{assetBurn}_{\mathsf{AG}}$ sets across all Action Groups in the transaction.
+- Then, if there are multiple entries for the same Custom Asset in the resulting $\mathsf{assetBurn}$ set, we de-duplicate by summing the corresponding burn values $\mathsf{v}$ for those entries, and keep a single entry for that Custom Asset with the summed burn value.
 
 
 Additional Consensus Rules for the assetBurn set
@@ -283,7 +289,7 @@ Additional Consensus Rules for the assetBurn set
 
 1. It MUST be the case that for every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{AssetBase} \neq \mathcal{V}^{\mathsf{Orchard}}$. That is, the Native Asset is not allowed to be burnt by this mechanism.
 2. It MUST be that for every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}, \mathsf{v} > 0$ and $\mathsf{v} \leq \mathsf{MAX\_BURN\_VALUE}$.
-3. There MUST be no duplication of Custom Assets in the $\mathsf{assetBurn}$ set. That is, every $\mathsf{AssetBase}$ has at most one entry in $\mathsf{assetBurn}$.
+3. There MUST be no duplication of Custom Assets in the $\mathsf{assetBurn}_{\mathsf{AG}}$ set, for each Action Group $\mathsf{AG}$. That is, every $\mathsf{AssetBase}$ has at most one entry in $\mathsf{assetBurn}_{\mathsf{AG}}$ for each Action Group.
 
 The other consensus rule changes for the OrchardZSA protocol are specified in ZIP 227 [#zip-0227-consensus]_.
 
@@ -313,7 +319,7 @@ The validator MUST compute the value balance verification equation:
 
 After computing $\mathsf{bvk}$, the validator MUST use it to verify the binding signature on the SIGHASH transaction hash.
 
-TODO: In the equation above, needs to be a union of AssetBurn sets across all Action Groups.
+Note: In the equation above, the set $\mathsf{assetBurn}$ across all Action Groups in the transaction, is as defined in the `Burn Mechanism`_ section.
 
 An application that requires the signer to assemble the transaction from independently generated components MUST include a mechanism to ensure that the signer has the information necessary to compute the $\mathsf{bsk}$ as described above.
 The specific mechanism is out of scope for this ZIP. Refer to ZIP 228 [#zip-0228]_ for an example of how this can be achieved in the context of ZSA swaps.
