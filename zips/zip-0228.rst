@@ -238,10 +238,7 @@ Therefore, Swap Orders are expected to generally have at least three Actions:
 Choice of Notes within Swap Order Action Groups
 -----------------------------------------------
 
-In the Action for the Desired Asset, the party creating the Swap Order can use any Note they possess of that AssetBase, with the `split\_flag` set, as the spend for that Action.
-If the party does not have a Note of that Asset, they should use the Reference Note for that Asset, with the `split\_flag` set.
-This Reference Note is public information on the blockchain, that is created on the first issuance of that Asset [#zip-0227-specification-reference-notes-and-global-issuance-state].
-
+In the Action for the Desired Asset, the party creating the Swap Order can use any Note they possess of that Asset or the publicly known Reference Note [#zip-0227-specification-reference-notes-and-global-issuance-state]_ for that Asset, with the $\mathsf{split\_flag}$ set, as the spend for that Action.
 
 Other Considerations
 ====================
