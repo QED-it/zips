@@ -193,6 +193,9 @@ We specify here the structure of a Swap Order. Note that this is not a change to
 |``32``                       |``bsk``                   |``byte[32]``                               |The binding signature key, corresponding to the sum of all the       |  
 |                             |                          |                                           |:math:`\mathsf{rcv}` values of commitments in the Order.             |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|``8``                        |``ag_value_balance``      |``int64``                                  |The net value of Orchard spends minus outputs in the                 |
+|                             |                          |                                           |``SwapActionGroup`` of this Order.                                   |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``varies``                   |``SwapActionGroup``       |``ActionGroupDescription``                 |The description of the Action Group corresponding to the desired     |  
 |                             |                          |                                           |Swap operation. It must contain at least two Actions, the Swap       |  
 |                             |                          |                                           |Action and the Fee Action.                                           |  
