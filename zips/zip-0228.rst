@@ -191,11 +191,11 @@ This ZEC input is used to satisfy the balancing of the Swap Orders (if relevant)
 +=============================+==========================+===========================================+=====================================================================+
 |varies                       |``nProposedInputs``       |``compactSize``                            |The number of proposed inputs of the Swap Order.                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|40 × ``nProposedInputs``     |``vProposedInputs``       |``SwapIO[nProposedInputs]``                |The sequence of proposed inputs of the Swap Order.                   |
+|40 × ``nProposedInputs``     |``vProposedInputs``       |``SwapItem[nProposedInputs]``              |The sequence of proposed inputs of the Swap Order.                   |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |varies                       |``nDesiredOutputs``       |``compactSize``                            |The number of desired outputs of the Swap Order.                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|40 × ``nDesiredOutputs``     |``vDesiredOutputs``       |``SwapIO[nDesiredOutputs]``                |The sequence of desired outputs of the Swap Order.                   |
+|40 × ``nDesiredOutputs``     |``vDesiredOutputs``       |``SwapItem[nDesiredOutputs]``              |The sequence of desired outputs of the Swap Order.                   |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``32``                       |``bsk``                   |``byte[32]``                               |The binding signature key, corresponding to the sum of all the       |  
 |                             |                          |                                           |:math:`\mathsf{rcv}` values of commitments in the Order.             |  
@@ -205,7 +205,7 @@ This ZEC input is used to satisfy the balancing of the Swap Orders (if relevant)
 |                             |                          |                                           |Action and the Fee Action.                                           |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 
-The ``SwapIO`` data type is used to represent the input and output of a Swap Order.
+The ``SwapItem`` data type is used to represent the input and output of a Swap Order.
 
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                                 | Description                                                         |
