@@ -183,20 +183,24 @@ Specification: Swap Orders
 
 We specify here the structure of a Swap Order. Note that this is not a change to the Zcash protocol specification since these Swap Orders are exchanged off-chain.
 
+The convention followed is that the first of the proposed inputs SHOULD be a ZEC input.
+This ZEC input is used to satisfy the balancing of the Swap Orders (if relevant) and to pay the Miner Fees and Matcher Fees.
+
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                     | Data Type                                 | Description                                                         |
 +=============================+==========================+===========================================+=====================================================================+
-|``40``                       |``ProposedInput``         |``SwapIO``                                 |The input of the Swap Order.                                         |  
+|varies                       |``nProposedInputs``       |``compactSize``                            |The number of proposed inputs of the Swap Order.                     |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``40``                       |``DesiredOutput``         |``SwapIO``                                 |The output of the Swap Order.                                        |  
+|40 × ``nProposedInputs``     |``vProposedInputs``       |``SwapIO[nProposedInputs]``                |The sequence of proposed inputs of the Swap Order.                   |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|varies                       |``nDesiredOutputs``       |``compactSize``                            |The number of desired outputs of the Swap Order.                     |
++-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+|40 × ``nDesiredOutputs``     |``vDesiredOutputs``       |``SwapIO[nDesiredOutputs]``                |The sequence of desired outputs of the Swap Order.                   |
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
 |``32``                       |``bsk``                   |``byte[32]``                               |The binding signature key, corresponding to the sum of all the       |  
 |                             |                          |                                           |:math:`\mathsf{rcv}` values of commitments in the Order.             |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``8``                        |``ag_value_balance``      |``int64``                                  |The net value of Orchard spends minus outputs in the                 |
-|                             |                          |                                           |``SwapActionGroup`` of this Order.                                   |
-+-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``SwapActionGroup``       |``ActionGroupDescription``                 |The description of the Action Group corresponding to the desired     |  
+|``varies``                   |``SwapActionGroup``       |``ActionGroupDescription``                 |The description of the Action Group corresponding to the desired     |
 |                             |                          |                                           |Swap operation. It must contain at least two Actions, the Swap       |  
 |                             |                          |                                           |Action and the Fee Action.                                           |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
