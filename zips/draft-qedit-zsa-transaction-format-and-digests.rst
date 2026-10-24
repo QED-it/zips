@@ -33,7 +33,7 @@ Abstract
 ========
 
 This proposal defines a new Zcash peer-to-peer transaction format, which supports the
-changes for the inclusion of Zcash Shielded Assets [#zip-0226]_,[#zip-0227] in a future network upgrade.
+changes for the inclusion of Zcash Shielded Assets [#zip-0226]_,[#zip-0227]_ in a future network upgrade.
 It follows the same design pattern as the v6 transaction format [#zip-0229]_.
 
 This proposal also defines the new concept of "sighash algorithm versioning":
@@ -358,7 +358,7 @@ Rationale for nAGExpiryHeight
 
 We introduce the ``nAGExpiryHeight`` field in this transaction format in order to be forward compatible with Swaps over ZSAs, as proposed in ZIP 228 [#zip-0228]_.
 For the OrchardZSA protocol, which does not make use of an additional expiry height for transactions, we set the value of ``nAGExpiryHeight`` to be ``0`` by consensus.
-This serves as a default value to represent the situation where there is no expiry, analogous to the convention adopted for ``nExpiryHeight`` in ZIP 203 [#zip-0203].
+This serves as a default value to represent the situation where there is no expiry, analogous to the convention adopted for ``nExpiryHeight`` in ZIP 203 [#zip-0203]_.
 
 Rationale for including Burn fields inside OrchardZSA Action Groups
 ```````````````````````````````````````````````````````````````````
