@@ -101,8 +101,8 @@ $\mathsf{height}$ parameter, as follows:
 .. math::
     \mathsf{PoWTargetSpacing}(\mathsf{height}) :=
       \begin{cases}
-        \mathsf{PreBlossomPoWTargetSpacing}, &\!\!\text{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
-        \mathsf{PostBlossomPoWTargetSpacing} &\!\!\text{otherwise}
+        \mathsf{PreBlossomPoWTargetSpacing}, &\!\!\textsf{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
+        \mathsf{PostBlossomPoWTargetSpacing} &\!\!\textsf{otherwise}
       \end{cases}
 
 Also redefine $\mathsf{AveragingWindowTimespan}$, $\mathsf{MinActualTimespan}$, $\mathsf{MaxActualTimespan}$,
@@ -119,19 +119,19 @@ to section 7.8], redefine the $\mathsf{Halving}$ and $\mathsf{BlockSubsidy}$ fun
 .. math::
     \mathsf{Halving}(\mathsf{height}) :=
       \begin{cases}
-        \mathsf{floor}((\mathsf{height} - \mathsf{SlowStartShift}) / \mathsf{PreBlossomHalvingInterval}), &\!\!\text{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
+        \mathsf{floor}((\mathsf{height} - \mathsf{SlowStartShift}) / \mathsf{PreBlossomHalvingInterval}), &\!\!\textsf{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
         \mathsf{floor}((\mathsf{BlossomActivationHeight} - \mathsf{SlowStartShift}) / \mathsf{PreBlossomHalvingInterval} & \\
-        \hspace{1em}+\; (\mathsf{height} - \mathsf{BlossomActivationHeight}) / \mathsf{PostBlossomHalvingInterval}) &\!\!\text{otherwise}
+        \hspace{1em}+\; (\mathsf{height} - \mathsf{BlossomActivationHeight}) / \mathsf{PostBlossomHalvingInterval}) &\!\!\textsf{otherwise}
       \end{cases}
 
 .. math::
     \mathsf{BlockSubsidy}(\mathsf{height}) :=
       \begin{cases}
-        \mathsf{SlowStartRate} \cdot \mathsf{height}, &\!\!\text{if } \mathsf{height} < \mathsf{SlowStartInterval} / 2 \\
-        \mathsf{SlowStartRate} \cdot (\mathsf{height} + 1), &\!\!\text{if } \mathsf{SlowStartInterval} / 2 \leq \mathsf{height} \text{ and } \mathsf{height} < \mathsf{SlowStartInterval} \\
-        \mathsf{floor}(\mathsf{MaxBlockSubsidy} / 2^{\mathsf{Halving}(\mathsf{height})}), &\!\!\text{if } \mathsf{SlowStartInterval} \leq \mathsf{height} \text{ and not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
+        \mathsf{SlowStartRate} \cdot \mathsf{height}, &\!\!\textsf{if } \mathsf{height} < \mathsf{SlowStartInterval} / 2 \\
+        \mathsf{SlowStartRate} \cdot (\mathsf{height} + 1), &\!\!\textsf{if } \mathsf{SlowStartInterval} / 2 \leq \mathsf{height} \textsf{ and } \mathsf{height} < \mathsf{SlowStartInterval} \\
+        \mathsf{floor}(\mathsf{MaxBlockSubsidy} / 2^{\mathsf{Halving}(\mathsf{height})}), &\!\!\textsf{if } \mathsf{SlowStartInterval} \leq \mathsf{height} \textsf{ and not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
         \mathsf{floor}(\mathsf{MaxBlockSubsidy} / & \\
-        \hspace{1em}(\mathsf{BlossomPoWTargetSpacingRatio} \cdot 2^{\mathsf{Halving}(\mathsf{height})})) &\!\!\text{otherwise}
+        \hspace{1em}(\mathsf{BlossomPoWTargetSpacingRatio} \cdot 2^{\mathsf{Halving}(\mathsf{height})})) &\!\!\textsf{otherwise}
       \end{cases}
 
 Note: $\mathsf{BlossomActivationHeight}$, $\mathsf{PostBlossomHalvingInterval}$, and $\mathsf{PostBlossomTargetSpacing}$ are chosen so that:
@@ -147,9 +147,9 @@ In section 7.8 (Payment of Founders’ Reward) [later moved to section 7.9], def
 .. math::
     \mathsf{FounderAddressAdjustedHeight}(\mathsf{height}) :=
       \begin{cases}
-        \mathsf{height}, &\!\!\text{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
+        \mathsf{height}, &\!\!\textsf{if not } \mathsf{IsBlossomActivated}(\mathsf{height}) \\
         \mathsf{BlossomActivationHeight} + \mathsf{floor}((\mathsf{height} - \mathsf{BlossomActivationHeight}) / \\
-          \hspace{1em}\mathsf{BlossomPoWTargetSpacingRatio}) &\!\!\text{otherwise}
+          \hspace{1em}\mathsf{BlossomPoWTargetSpacingRatio}) &\!\!\textsf{otherwise}
       \end{cases}
 
 and in the definition of $\mathsf{FounderAddressIndex}$, replace the use of $\mathsf{height}$ with $\mathsf{FounderAddressAdjustedHeight}(\mathsf{height})$.
@@ -213,6 +213,10 @@ the ``nBits`` field is modified as well, and this affects difficulty adjustment
 for subsequent blocks.
 
 This change does not affect Mainnet.
+
+At the Testnet NU7 activation height, ZIP 218 [#zip-0218]_ changes the
+minimum-difficulty threshold to 18 times the block target spacing. The
+six-spacing threshold specified here continues to apply before NU7.
 
 
 Non-consensus node behaviour
@@ -416,5 +420,6 @@ References
 .. [#zip-0200] `ZIP 200: Network Upgrade Mechanism <zip-0200.rst>`_
 .. [#zip-0205] `ZIP 205: Deployment of the Sapling Network Upgrade <zip-0205.rst>`_
 .. [#zip-0206] `ZIP 206: Deployment of the Blossom Network Upgrade <zip-0206.rst>`_
+.. [#zip-0218] `ZIP 218: 25-second Block Target Spacing <zip-0218.md>`_
 .. [#zip-0308] `ZIP 308: Sprout to Sapling Migration <zip-0308.rst>`_
 .. [#slowfastblocks] `On Slow and Fast Block Times <https://blog.ethereum.org/2015/09/14/on-slow-and-fast-block-times/>`_

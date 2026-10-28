@@ -58,6 +58,8 @@ rules preventing coinbase transactions from containing shielded outputs were ext
 cover Sapling outputs. Therefore, it is now necessary to modify the consensus rules in
 order to enable miners to start using Sapling addresses. It will also be possible for
 miners to use Orchard addresses starting from activation of the NU5 upgrade [#zip-0252]_.
+After the NU6.3 upgrade, it is only possible to mine to an Orchard address by sending the
+funds to the *Ironwood pool*.
 
 
 Specification
@@ -105,10 +107,15 @@ Once the Heartwood network upgrade activates:
 
 Once the NU5 network upgrade activates:
 
-- Coinbase transactions MAY contain Sapling and/or Orchard outputs.
+- Coinbase transactions MAY contain Sapling-pool and/or Orchard-pool outputs.
 
 This does not require any change to the consensus rule given above; it is a consequence
 of other rules as of NU5 activation.
+
+Once the NU6.3 network upgrade activates:
+
+- Coinbase transactions MAY contain Sapling-pool and/or Ironwood-pool outputs.
+- As specified in [#zip-0229]_, coinbase transactions MUST NOT contain any Orchard-pool component.
 
 
 Interaction with the Founders' Reward
@@ -130,9 +137,9 @@ be shielded immediately.
 Enforcing coinbase maturity at the consensus level for Sapling outputs would incur
 significant complexity in the consensus rules, because it would require special-casing
 coinbase note commitments in the Sapling commitment tree. The standard recommendation when
-spending a note is to select an anchor 10 blocks back from the current chain tip, which
-acts as a de-facto 10-block maturity on all notes, coinbase included. This might be
-proposed as a consensus rule in future.
+spending a note is to select an anchor 3 blocks back from the current chain tip (see ZIP
+315 [#zip-0315-anchor-selection]_), which acts as a de-facto 3-block maturity on all notes, coinbase
+included. This might be proposed as a consensus rule in future.
 
 There is another reason for shielded coinbase maturity being unnecessary: shielded
 coinbase outputs have the same effect on economic activity as regular shielded outputs.
@@ -203,5 +210,7 @@ References
 .. [#zip-0200] `ZIP 200: Network Upgrade Mechanism <zip-0200.rst>`_
 .. [#zip-0205] `ZIP 205: Deployment of the Sapling Network Upgrade <zip-0205.rst>`_
 .. [#zip-0207] `ZIP 207: Funding Streams <zip-0207.rst>`_
+.. [#zip-0229] `ZIP 229: Version 6 Transaction Format <zip-0229.rst>`_
 .. [#zip-0250] `ZIP 250: Deployment of the Heartwood Network Upgrade <zip-0250.rst>`_
 .. [#zip-0252] `ZIP 252: Deployment of the NU5 Network Upgrade <zip-0252.rst>`_
+.. [#zip-0315-anchor-selection] `ZIP 315: Best Practices for Wallet Implementations — Anchor selection <zip-0315.rst#anchor-selection>`_

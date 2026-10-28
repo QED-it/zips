@@ -46,41 +46,29 @@ See `here <protocol/README.rst>`__ for the project dependencies.
 Settled Mainnet Network Upgrade
 -------------------------------
 
-The most recent [settled](https://zips.z.cash/protocol/protocol.pdf#blockchain) Network Upgrade
-on Mainnet is NU6.1, which activated at Mainnet block height 3146400 on November 24, 2025, at
-19:56 UTC.
+The most recent `settled <https://zips.z.cash/protocol/protocol.pdf#blockchain>`__ Network Upgrade on Mainnet is NU6.3,
+which activated at Mainnet block height 3428143.
 
-NU6.1 is described in `ZIP 255: Deployment of the NU6.1 Network Upgrade <zips/zip-0255.md>`__.
-It deployed the following ZIPs:
+NU6.3 is described in `ZIP 258: Deployment of the NU6.3 Network Upgrade <zips/zip-0258.md>`__.
 
-- `ZIP 1016: Community and Coinholder Funding Model <zips/zip-1016.md>`__
-- `ZIP 271: Deferred Dev Fund Lockbox Disbursement <zips/zip-0271.md>`__
+NU7 ZIPs
+--------
 
+The following ZIPs are planned for deployment in NU7:
 
-NU7 Candidate ZIPs
-------------------
-
-The following ZIPs are under consideration for deployment in NU7:
-
-- `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zips/zip-0226.rst>`__
-- `ZIP 227: Issuance of Zcash Shielded Assets <zips/zip-0227.rst>`__
-- `ZIP 230: Version 6 Transaction Format <zips/zip-0230.rst>`__
-- `ZIP 231: Memo Bundles <zips/zip-0231.md>`__
-- `ZIP 233: Network Sustainability Mechanism: Removing Funds From Circulation <zips/zip-0233.md>`__
-- `ZIP 234: Network Sustainability Mechanism: Issuance Smoothing <zips/zip-0234.md>`__
-- `ZIP 235: Network Sustainability Mechanism: Remove 60% of Transaction Fees From Circulation <zips/zip-0235.md>`__
-- `ZIP 246: Digests for the Version 6 Transaction Format <zips/zip-0246.rst>`__
-- `ZIP 2002: Explicit Fees <zips/zip-2002.rst>`__
+- `ZIP 218: 25-second Block Target Spacing <zips/zip-0218.md>`__
+- `ZIP 235: Remove 60% of Transaction Fees From Circulation <zips/zip-0235.md>`__
+- `ZIP 237: Network Sustainability Mechanism: Halving-Preserving Issuance <zips/zip-0237.md>`__
 - `ZIP 2003: Disallow version 4 transactions <zips/zip-2003.rst>`__
+- `ZIP 2008: Update to FS_FPF_ZCG_H3 address list <zips/zip-2008.md>`__
 
-In addition, `ZIP 317: Proportional Transfer Fee Mechanism <zips/zip-0317.rst>`__
-may be updated.
+The following existing ZIPs have revisions planned for deployment in NU7:
 
-This list is only provided here for easy reference; no decision has been made
-on whether to include each of these ZIPs.
+- `ZIP 207: Funding Streams <zips/zip-0207.rst>`__ (Revision 2)
+- `ZIP 214: Consensus rules for a Zcash Development Fund <zips/zip-0214.rst>`__ (Revision 3)
 
-`draft-arya-deploy-nu7: Deployment of the NU7 Network Upgrade <zips/draft-arya-deploy-nu7.md>`__
-will define which ZIPs are included in NU7.
+`ZIP 259: Deployment of the NU7 Network Upgrade <zips/zip-0259.md>`__
+defines which ZIPs are included in NU7.
 
 
 License

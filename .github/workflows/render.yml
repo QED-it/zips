@@ -8,29 +8,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 3
-
-      - name: Verify nonexistence of `rendered`
-        shell: bash
-        run: |
-          if [ -e rendered ]; then exit 1; fi
-
-      - name: Set git config
-        run: git config --global --add safe.directory /github/workspace
-
-      - name: Compile ZIPs
-        uses: ./.github/actions/render
-
-  render-protocol:
-    needs: render
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6.0.2
-        with:
-          fetch-depth: 100
 
       - name: Verify nonexistence of `rendered` and `base_ref`
         shell: bash
@@ -38,8 +18,25 @@ jobs:
           if [ -e rendered ]; then exit 1; fi
           if [ -e base_ref ]; then exit 1; fi
 
-      - name: Set git config
-        run: git config --global --add safe.directory /github/workspace
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@3138316df39ed29be04236d7ffc686fa525866aa # v23
+
+      - name: Restore Nix store cache
+        id: nix-cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/nix-closure
+          key: nix-devshell-${{ runner.os }}-${{ hashFiles('flake.lock', 'flake.nix') }}
+
+      - name: Import cached Nix store paths
+        if: steps.nix-cache.outputs.cache-hit == 'true'
+        run: nix-store --import < /tmp/nix-closure/store.nar
+
+      - name: Compile ZIPs
+        run: nix develop --profile /tmp/dev-profile --command make all-zips
+
+      - name: Render regression tests
+        run: nix develop --profile /tmp/dev-profile --command make test
 
       - name: Set base ref
         run: |
@@ -47,4 +44,20 @@ jobs:
           if ! ( grep -E '^[0-9a-f]{40}$' base_ref ); then exit 1; fi
 
       - name: Compile Protocol Specification
-        uses: ./.github/actions/render-protocol
+        run: nix develop --profile /tmp/dev-profile --command make all
+
+      - name: Export Nix store for caching
+        if: steps.nix-cache.outputs.cache-hit != 'true'
+        run: |
+          # Free up some space before creating the (possibly very large) store tarball.
+          df
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -rn 2>/dev/null | head -30
+          docker system prune --all --force || /bin/true
+          sudo apt-get -y remove --purge \
+            '^docker.*' '^microsoft-edge.*' azure-cli '^google-cloud-cli.*' '^google-chrome.*' \
+            firefox java-common '^llvm-.*' '^libllvm.*' '^libclang-.*' '^mysql-.*' powershell snapd
+          sudo apt-get -y autoremove --purge
+          dpkg-query -Wf '${Installed-Size}\t${Package}\n' | sort -rn 2>/dev/null | head -30
+          df
+          mkdir -p /tmp/nix-closure
+          nix-store --export $(nix-store -qR /tmp/dev-profile) > /tmp/nix-closure/store.nar
