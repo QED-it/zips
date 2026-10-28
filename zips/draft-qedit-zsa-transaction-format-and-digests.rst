@@ -344,9 +344,10 @@ The encodings of ``OrchardZSAAction`` and ``AssetBurn`` are described below.
   ``vActionsIronwood`` and MUST be ordered such that the proof or signature at a given
   index corresponds to the ``OrchardZSAAction`` at the same index.
 * If the value of ``nAGExpiryHeight`` is nonzero, it MUST be consistent with
-  the ``nExpiryHeight`` of the overall transaction. 
-* In NU7, ``nExpiryHeight`` MUST be set to ``0``; this restriction is expected
-  to be lifted in a future network upgrade.
+  the ``nExpiryHeight`` of the overall transaction. More specifically:
+
+    - If at least one ``nAGExpiryHeight`` is nonzero, ``nExpiryHeight`` must be nonzero.
+    - The value of ``nExpiryHeight`` MUST not exceed the minimum of all the nonzero ``nAGExpiryHeight`` values in the Action Groups in the transaction.
 
 Rationale for nAGExpiryHeight
 `````````````````````````````
