@@ -33,7 +33,7 @@ Abstract
 ========
 
 This proposal defines a new Zcash peer-to-peer transaction format, which supports the
-changes for the inclusion of Zcash Shielded Assets [#zip-0226]_,[#zip-0227]_ in a future network upgrade.
+changes for the inclusion of Zcash Shielded Assets [#zip-0226]_ [#zip-0227]_ in a future network upgrade.
 It follows the same design pattern as the v6 transaction format [#zip-0229]_.
 
 This proposal also defines the new concept of "sighash algorithm versioning":
@@ -141,11 +141,6 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 4                           |``nExpiryHeight``             |``uint32``                                       |A block height in the range {1 .. 499999999} after which             |
 |                             |                              |                                                 |the transaction will expire, or 0 to disable expiry. [#zip-0203]_    |
-+-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| 8                           |``fee``                       |``uint64``                                       |The fee to be paid by this transaction, in zatoshis.                 |
-+-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| 8                           |``zip233Amount``              |``uint64``                                       |The value to be removed from circulation in this transaction, in     |
-|                             |                              |                                                 |zatoshis. [#zip-0233]_                                               |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **Transparent Transaction Fields**                                                                                                                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -293,7 +288,7 @@ Sapling Output Description (``OutputDescriptionV6``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``ephemeralKey``              |``byte[32]``                                    |An encoding of an ephemeral Jubjub public key.                       |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 100                         |``encCiphertext``             |``byte[100]``                                   |The encrypted contents of the note plaintext.                        |
+| 580                         |``encCiphertext``             |``byte[580]``                                   |The encrypted contents of the note plaintext.                        |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 80                          |``outCiphertext``             |``byte[80]``                                    |The encrypted contents of the byte string created by concatenation   |
 |                             |                              |                                                |of the transmission key with the ephemeral secret key.               |
@@ -388,7 +383,7 @@ OrchardZSA Action Description (``OrchardZSAAction``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``ephemeralKey``              |``byte[32]``                                    |An encoding of an ephemeral Pallas public key.                       |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 132                         |``encCiphertext``             |``byte[132]``                                   |The encrypted contents of the note plaintext.                        |
+| 612                         |``encCiphertext``             |``byte[612]``                                   |The encrypted contents of the note plaintext.                        |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 80                          |``outCiphertext``             |``byte[80]``                                    |The encrypted contents of the byte string created by concatenation   |
 |                             |                              |                                                |of the transmission key with the ephemeral secret key.               |
@@ -552,7 +547,7 @@ and need not be distinguished in note plaintexts.
 
 Each new OrchardZSA note plaintext consists of
 
-.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[\ell_{\mathbb{P}}/8]}, \mathsf{K^{memo}} : \mathbb{B}^{\mathbb{Y}[32]})
+.. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[\ell_{\mathbb{P}}/8]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
 
 where (consistent with [#zip-0226-note-structure-and-commitment]_) $\mathsf{asset\_base}$
 is $\mathsf{LEBS2OSP}_{\ell_{\mathbb{P}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}))$.
