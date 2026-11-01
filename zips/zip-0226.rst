@@ -169,7 +169,7 @@ Updated rcm Computation
 
 We define $\mathsf{H^{rcm,OrchardZSA}_{rseed}}(\mathsf{g}\star_{\mathsf{d}}, \mathsf{pk}\star_{\mathsf{d}}, \mathsf{v}, \underline{\text{ρ}}, \text{ψ}, \mathsf{asset\_base}) := \mathsf{ToScalar^{Orchard}}\big(\mathsf{PRF^{expand}_{rseed}}(\mathsf{pre\_rcm})\kern-0.1em\big)$,
 
-where $\mathsf{pre\_rcm} = [\mathtt{0x0E}] \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{g}\star_{\mathsf{d}}) \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{pk}\star_{\mathsf{d}}) \,||\, \mathsf{I2LEOSP}_{64}(\mathsf{v}) \,||\, \underline{\text{ρ}} \,||\, \mathsf{I2LEOSP}_{256}(\text{ψ} \,||\, \mathsf{asset\_base})$.
+where $\mathsf{pre\_rcm} = [\mathtt{0x0E}] \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{g}\star_{\mathsf{d}}) \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{pk}\star_{\mathsf{d}}) \,||\, \mathsf{I2LEOSP}_{64}(\mathsf{v}) \,||\, \underline{\text{ρ}} \,||\, \mathsf{I2LEOSP}_{256}(\text{ψ}) \,||\, \mathsf{asset\_base}$.
 
 We then compute $\mathsf{rcm} = \mathsf{H^{rcm,OrchardZSA}_{rseed}}(\mathsf{g}\star_{\mathsf{d}}, \mathsf{pk}\star_{\mathsf{d}}, \mathsf{v}, \underline{\text{ρ}}, \text{ψ}, \mathsf{asset\_base})$.
 
