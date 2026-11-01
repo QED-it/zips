@@ -113,6 +113,7 @@ An OrchardZSA note differs from an Orchard note [#protocol-notes]_ by additional
 where
 
 - $\mathsf{AssetBase} : \mathbb{P}^*$ is the unique element of the Pallas group [#protocol-pallasandvesta]_ that identifies each Asset in the Orchard protocol, defined as the Asset Base in ZIP 227 [#zip-0227-assetidentifier]_, a valid group element that is not the identity and is not $\bot$. The byte representation of the Asset Base is defined as $\mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}^{[\ell_{\mathbb{P}}/8]}} := \mathsf{LEBS2OSP}_{\ell_{\mathbb{P}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}))$.
+- $\mathsf{rcm}$ is computed in an updated manner as compared to § 4.7.3 'Sending Notes (Orchard)' [#protocol-orchardsend]_, as described in the `Updated rcm Computation`_ subsection below.
 - The remaining terms are as defined in §3.2 ‘Notes’ [#protocol-notes]_.
 
 Note that the above assumes a canonical encoding, which is true for the Pallas group, but may not hold for future shielded protocols.
@@ -164,6 +165,15 @@ The OrchardZSA note plaintext also includes the Asset Base $\mathsf{asset\_base}
 When § 4.7.3 'Sending Notes (Orchard)' [#protocol-orchardsend]_ or § 4.8.3 'Dummy Notes (Orchard)' [#protocol-orcharddummynotes]_ are invoked directly or indirectly in the computation of $\text{ρ}$ and $\text{ψ}$ for an OrchardZSA note, $\mathsf{leadByte}$ MUST be set to {{ZSALEADBYTE}}. This is a placeholder for the note plaintext lead byte of OrchardZSA notes, whose value is yet to be assigned.
 
 The explicit order of addition of the note commitments to the note commitment tree is specified in ZIP 227 [#zip-0227-note-commitment-order]_.
+
+Updated rcm Computation
+```````````````````````
+
+We define $\mathsf{H^{rcm,OrchardZSA}_{rseed}}(\mathsf{g}\star_{\mathsf{d}}, \mathsf{pk}\star_{\mathsf{d}}, \mathsf{v}, \underline{\text{ρ}}, \text{ψ}, \mathsf{asset\_base}) := \mathsf{ToScalar^{Orchard}}\big(\mathsf{PRF^{expand}_{rseed}}(\mathsf{pre\_rcm})\kern-0.1em\big)$,
+
+where $\mathsf{pre\_rcm} = [\mathtt{0x0E}] \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{g}\star_{\mathsf{d}}) \,||\, \mathsf{LEBS2OSP}_{256}(\mathsf{pk}\star_{\mathsf{d}}) \,||\, \mathsf{I2LEOSP}_{64}(\mathsf{v}) \,||\, \underline{\text{ρ}} \,||\, \mathsf{I2LEOSP}_{256}(\text{ψ} \,||\, \mathsf{asset\_base})$.
+
+We then compute $\mathsf{rcm} = \mathsf{H^{rcm,OrchardZSA}_{rseed}}(\mathsf{g}\star_{\mathsf{d}}, \mathsf{pk}\star_{\mathsf{d}}, \mathsf{v}, \underline{\text{ρ}}, \text{ψ}, \mathsf{asset\_base})$.
 
 Rationale for Note Commitment
 `````````````````````````````
