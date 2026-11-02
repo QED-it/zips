@@ -815,7 +815,7 @@ Authorizing Data Commitment
 ===========================
 
 The authorizing data commitment (auth digest) is computed as in ZIP 229 [#zip-0229]_, with an updated **Ironwood component digest**, and a newly added **Issuance digest**.
-The auth digest structure becomes:
+The auth digest structure becomes::
 
     auth_digest_zsa
     ├── transparent_auth_digest
@@ -854,7 +854,6 @@ In the case that OrchardZSA Action Groups are present, this is a BLAKE2b-256 has
 
     A.4a: ironwood_action_groups_auth_digest    (32-byte hash output)
     A.4b: bindingSigIronwood                    (field encoding bytes)
-    A.4c: anchorIronwood                        (field encoding bytes)
 
 The personalization field of this hash is::
 
@@ -875,6 +874,7 @@ For each OrchardZSA Action Group, this is a BLAKE2b-256 hash of the following va
 
     A.4a.i  : proofsIronwood                               (field encoding bytes)
     A.4a.ii : ironwood_spend_auth_sigs_auth_digest         (32-byte hash output)
+    A.4a.iii: anchorIronwood                               (field encoding bytes)
 
 The personalization field of this hash is set to::
 
