@@ -832,8 +832,7 @@ The auth digest structure becomes::
     │   └── anchorOrchard
     └── ironwood_auth_digest_zsa (*)
     │   ├── ironwood_action_groups_auth_digest (+)
-    │   ├── bindingSigIronwood
-    │   └── anchorIronwood
+    │   └── bindingSigIronwood
     └── issuance_auth_digest (+)
       └── issueAuthSig
 
