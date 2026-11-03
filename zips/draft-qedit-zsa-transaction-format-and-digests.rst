@@ -498,11 +498,10 @@ An issuance note description, ``IssueNoteDescription`` contains the following fi
 Note Plaintexts
 ---------------
 
-New note plaintext formats using lead byte {{LEADBYTE}} are introduced for
-Sapling and Orchard, in order to support memo bundles and (for Orchard) ZSAs and
-quantum recoverability.
-
-The $\mathsf{leadByte}$ MUST be {{LEADBYTE}} for all note plaintexts in transactions including ZSAs.
+The $\mathsf{leadByte}$ of note plaintexts of OrchardZSA Action Group outputs MUST be
+$\mathtt{0x04}$, for all Assets including ZEC. Accordingly, in transactions using this format,
+$\mathsf{allowedLeadBytes}^{\textit{IronwoodPool}}$ as defined in ZIP 2005 [#zip-2005]_ is
+$\{ \mathtt{0x04} \}$.
 
 
 Orchard Note Plaintext
@@ -535,31 +534,15 @@ is similarly updated and is now defined as:
 
 The encodings of $\mathsf{d}$, $\mathsf{v}$, and $\mathsf{rseed}$ remain unchanged from the previous specification in §5.5 ‘Encodings of Note Plaintexts and Memo Fields’ of the Zcash Protocol Specification [#protocol-noteptencoding]_.
 
-Non-normative note: The *use* of the $\mathsf{rseed}$ in Orchard note decryption
-changes, but its type and encoding do not.
+Non-normative note: For lead byte $\mathtt{0x04}$, $\mathsf{rcm}$ also commits to
+$\mathsf{asset\_base}$ [#zip-0226]_.
 
-Rationale for requiring the lead byte to be {{LEADBYTE}}
-````````````````````````````````````````````````````````
+Rationale for requiring the lead byte to be 0x04
+````````````````````````````````````````````````
 
-It was decided to synchronize the changes to note encryption required for
-quantum recoverability, and ZSA support with a change to the
-transaction format, for two reasons:
-
-* This was necessary because the note ciphertexts must be a different size to
-  those in v6 transactions — to accommodate the ZSA $\mathsf{AssetBase}$ field
-  for Orchard.
-
-* The quantum recoverability change did not necessarily have to be done at the
-  same time as the ZSA changes. However, it would have
-  significantly increased overall protocol complexity for there to be a separate
-  note plaintext format for quantum-recoverable notes. Also, doing it at the
-  same time minimizes the risk that non-conformant wallets would create outputs
-  after this change that could not be successfully decrypted by conformant
-  wallets. That could potentially result in inaccessible funds, as was observed
-  with the previous note plaintext change at the Canopy upgrade [#zip-0212]_.
-  (As noted above, it is still possible for funds to be temporarily stuck if a
-  *receiving* wallet does not fully support v6 transactions, but this is less
-  problematic because upgrading the wallet will unstick them.)
+ZIP 2005's lead byte $\mathtt{0x03}$ [#zip-2005]_ cannot be reused: these plaintexts add
+$\mathsf{asset\_base}$, and their $\mathsf{rcm}$ derivation commits to it. Using $\mathtt{0x04}$ for
+every Asset, including ZEC, keeps one plaintext layout and one $\mathsf{rcm}$ derivation per lead byte.
 
 
 Transaction Identifiers, Auth Digests, and Signature Digests
@@ -961,7 +944,6 @@ References
 .. [#protocol-noteptencoding] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.5: Encodings of Note Plaintexts and Memo Fields <protocol/protocol.pdf#noteptencoding>`_
 .. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
 .. [#zip-0203] `ZIP 203: Transaction Expiry <zip-0203.rst>`_
-.. [#zip-0212] `ZIP 212: Allow Recipient to Derive Ephemeral Secret from Note Plaintext <zip-0212.rst>`_
 .. [#zip-0225] `ZIP 225: Version 5 Transaction Format <zip-0225.rst>`_
 .. [#zip-0225-transaction-format] `ZIP 225: Version 5 Transaction Format. Specification: Transaction Format <zip-0225.rst#transaction-format>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.rst>`_
@@ -984,6 +966,6 @@ References
 .. [#zip-0301] `ZIP 301: Zcash Stratum Protocol <zip-0301.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#zip-2002-motivation] `ZIP 231: Explicit Fees — Motivation <zip-2002.rst#motivation>`_
-.. [#zip-2005] `ZIP 2005: Quantum Recoverability <zip-2005.md>`_
+.. [#zip-2005] `ZIP 2005: Ironwood Quantum Recoverability <zip-2005.md>`_
 .. [#zip-2005-security-analysis] `ZIP 2005: Quantum Recoverability — Security Analysis <zip-2005.md#securityanalysis>`_
 .. [#draft-arya-deploy-nu7] `draft-arya-deploy-nu7: Deployment of the NU7 Network Upgrade <draft-arya-deploy-nu7.md>`_
