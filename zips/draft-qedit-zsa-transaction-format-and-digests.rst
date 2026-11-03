@@ -24,6 +24,9 @@ The terms "Zcash Shielded Asset", "OrchardZSA", "ZSA" and "Asset" in this docume
 
 The term "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
 
+"vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6,
+defined in ZIP 229 [#zip-0229]_.
+
 The character § is used when referring to sections of the Zcash Protocol Specification
 [#protocol]_.
 
@@ -92,15 +95,6 @@ The Zcash transaction format for transaction that include ZSAs is as follows:
 Sighash versioning
 ------------------
 
-Rough summary:
-
-- Sighash versions are numbered starting from 0 for each tx version.
-- v0 is by convention the "commit to all effecting data" sighash algorithm. Other
-  versions can commit to whatever makes sense for desired functionality within
-  that tx version.
-- Consensus rules choose the digest algorithm for each signer based on
-  ``sighashVersion``.
-
 The sighash version is encoded as a single byte alongside any associated data
 that the sighash algorithm version requires (for deterministically computing the
 digest):
@@ -109,15 +103,8 @@ digest):
 
 where ``associatedData`` is specific to the bundle it appears in.
 
-The following sighash algorithm versions are defined for v6 transactions:
-
-+--------------------+-------------------------------------------------------+
-|                    |:math:`\hspace{4.5em}` ``associatedData``              |
-+--------------------+-------------+-------------+-------------+-------------+
-| ``sighashVersion`` | Transparent |   Sapling   |   Orchard   |  Issuance   |
-+--------------------+-------------+-------------+-------------+-------------+
-| 0                  |``[]``       |``[]``       |``[]``       |``[]``       |
-+--------------------+-------------+-------------+-------------+-------------+
+In a vZSA transaction, every ``sighashInfo`` MUST be ``[0x00]`` (``sighashVersion`` 0, empty
+``associatedData``), which selects the digest defined in `Signature Digest`_.
 
 
 Transaction Format
@@ -393,7 +380,7 @@ Transparent Sighash Information (``TransparentSighashInfo``)
 | varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
-|                             |                              |                                                |[#zip-0246-sighash-info]_.                                           |
+|                             |                              |                                                |(see `Sighash versioning`_).                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 Sapling Signature (``SaplingSignature``)
@@ -405,7 +392,7 @@ Sapling Signature (``SaplingSignature``)
 | varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
-|                             |                              |                                                |[#zip-0246-sighash-info]_.                                           |
+|                             |                              |                                                |(see `Sighash versioning`_).                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 64                          |``signature``                 |``byte[64]``                                    |An encoding of a RedJubjub signature, which may be either a          |
 |                             |                              |                                                |``spendAuthSig`` or ``bindingSig`` depending on context.             |
@@ -420,7 +407,7 @@ Orchard Signature (``OrchardSignature``)
 | varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
-|                             |                              |                                                |[#zip-0246-sighash-info]_.                                           |
+|                             |                              |                                                |(see `Sighash versioning`_).                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 64                          |``signature``                 |``byte[64]``                                    |An encoding of a RedPallas signature, which may be either a          |
 |                             |                              |                                                |``spendAuthSig`` or ``bindingSig`` depending on context.             |
@@ -435,7 +422,7 @@ Issuance Authorization Signature (``IssueAuthSignature``)
 | varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
-|                             |                              |                                                |[#zip-0246-sighash-info]_.                                           |
+|                             |                              |                                                |(see `Sighash versioning`_).                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``sizeSignature``             |``compactSize``                                 |The size in bytes of `signature`.                                    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
@@ -548,7 +535,7 @@ every Asset, including ZEC, keeps one plaintext layout and one $\mathsf{rcm}$ de
 Transaction Identifiers, Auth Digests, and Signature Digests
 ============================================================
 
-Transaction identifiers (txids), authorizing-data commitments ("auth digests"),
+For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth digests"),
 and signature digests are computed as in ZIP 229 [#zip-0229]_, with a newly updated **Ironwood component digest**, and a newly added **Issuance digest**.
 
 TxId Digest
@@ -789,6 +776,13 @@ In case the transaction has no Issue Notes, ``issue_notes_digest`` is::
 
 The field encodings are specified in `Issue Note Description (IssueNoteDescription)`_.
 
+Signature Digest
+================
+
+The vZSA signature digest is ``txid_digest`` with T.2 replaced by ``transparent_sig_digest``
+from ZIP 244 [#zip-0244-sigdigest]_. Shielded and issuance signatures use it as ZIP 244
+specifies for an Orchard Action.
+
 Authorizing Data Commitment
 ===========================
 
@@ -962,7 +956,7 @@ References
 .. [#zip-0233] `ZIP 233: Network Sustainability Mechanism: Removing Funds From Circulation <zip-0233.md>`_
 .. [#zip-0235] `ZIP 235: Remove 60% of Transaction Fees From Circulation <zip-0235.md>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
-.. [#zip-0246-sighash-info] `ZIP 246: Digests for the Withdrawn Version 6 Transaction Format <zip-0246.rst#zip-0246-sighash-info>`_
+.. [#zip-0244-sigdigest] `ZIP 244: Transaction Identifier Non-Malleability — Signature Digest <zip-0244.rst#signature-digest>`_
 .. [#zip-0301] `ZIP 301: Zcash Stratum Protocol <zip-0301.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#zip-2002-motivation] `ZIP 231: Explicit Fees — Motivation <zip-2002.rst#motivation>`_

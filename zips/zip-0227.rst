@@ -476,7 +476,7 @@ We use $\mathsf{issued\_assets}_{\mathsf{IN}}$ and $\mathsf{issued\_assets}_{\ma
 Specification: Consensus Rule Changes
 =====================================
 
-Let $\mathsf{SigHash}$ be the SIGHASH transaction hash of this transaction, as defined in §4.10 ‘SIGHASH Transaction Hashing’ [#protocol-sighash]_ with the modifications described in `Sighash`_, using $\mathsf{SIGHASH\_ALL}$.
+Let $\mathsf{SigHash}$ be the signature digest of this transaction, as specified in `Sighash`_.
 
 For every transaction:
 
@@ -607,16 +607,9 @@ Concrete Applications
 Sighash
 =======
 
-ZIP 248 specifies the digest algorithms for the transaction version that it
-defines [#zip-0248-digest-algorithms]_, and a mechanism for versioning sighash
-algorithms [#zip-0248-sighash-versioning]_. Each bundle type defines its
-contributions to those digests, and the sighash versions available to its
-signers together with the associated data that each version requires.
-
-**Open Issue:** The digests of the issuance bundle are yet to be specified. So is
-the sighash version that the issuance authorization signature uses, in place of
-the $\mathsf{SIGHASH\_ALL}$ hash type referred to in
-`Specification: Consensus Rule Changes`_.
+The signature digest that $\mathsf{issueAuthSig}$ signs, its ``sighashInfo``, and the
+digests of the issuance bundle are specified in the ZSA transaction format
+[#draft-qedit-zsa-transaction-format-and-digests]_.
 
 
 Changes to ZIP 317 [#zip-0317]_
@@ -711,10 +704,9 @@ References
 .. [#zip-0230-issue-note] `ZIP 230: Withdrawn Version 6 Transaction Format — Issue Note Description (IssueNoteDescription) <zip-0230.rst#issue-note-description-issuenotedescription>`_
 .. [#zip-0230-transaction-format] `ZIP 230: Withdrawn Version 6 Transaction Format — Transaction Format <zip-0230.rst#transaction-format>`_
 .. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
-.. [#zip-0248-digest-algorithms] `ZIP 248: Extensible Transaction Format — Digest Algorithms <zip-0248.rst#digest-algorithms>`_
-.. [#zip-0248-sighash-versioning] `ZIP 248: Extensible Transaction Format — Sighash Versioning <zip-0248.rst#sighash-versioning>`_
 .. [#zip-0317] `ZIP 317: Proportional Transfer Fee Mechanism <zip-0317.rst>`_
 .. [#zip-0317-fee-calculation] `ZIP 317: Proportional Transfer Fee Mechanism — Fee calculation <zip-0317.rst#fee-calculation>`_
+.. [#draft-qedit-zsa-transaction-format-and-digests] `draft-qedit-zsa-transaction-format-and-digests: ZSA Transaction Format and Digests <draft-qedit-zsa-transaction-format-and-digests.rst>`_
 .. [#bip-0043] `BIP 43: Purpose Field for Deterministic Wallets <https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki>`_
 .. [#bip-0340] `BIP 340: Schnorr Signatures for secp256k1 <https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki>`_
 .. [#protocol] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1] or later. <protocol/protocol.pdf>`_
@@ -722,7 +714,6 @@ References
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-abstractsig] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.1.7: Signature <protocol/protocol.pdf#abstractsig>`_
 .. [#protocol-orchardkeycomponents] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.2.3: Orchard Key Components <protocol/protocol.pdf#orchardkeycomponents>`_
-.. [#protocol-sighash] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.10: SIGHASH Transaction Hashing <protocol/protocol.pdf#sighash>`_
 .. [#protocol-constants] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.3: Constants <protocol/protocol.pdf#constants>`_
 .. [#protocol-concreteprfs] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.4.2: Pseudo Random Functions <protocol/protocol.pdf#concreteprfs>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
