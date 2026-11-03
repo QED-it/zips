@@ -163,8 +163,9 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``nOutputsSapling``           |``compactSize``                                  |Number of Sapling Output Decriptions in ``vOutputsSapling``.         |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| 276 × ``nOutputsSapling``   |``vOutputsSapling``           |``OutputDescriptionV6[nOutputsSapling]``         |A sequence of Sapling Output descriptions, encoded per               |
-|                             |                              |                                                 |§7.4 ‘Output Description Encoding and Consensus’.                    |
+| 756 × ``nOutputsSapling``   |``vOutputsSapling``           |``OutputDescriptionV5[nOutputsSapling]``         |A sequence of Sapling Output descriptions, encoded per               |
+|                             |                              |                                                 |§7.4 ‘Output Description Encoding and Consensus’                     |
+|                             |                              |                                                 |[#protocol-outputencodingandconsensus]_ (unchanged from V5).         |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 8                           |``valueBalanceSapling``       |``int64``                                        |The net value of Sapling Spends minus Outputs                        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -242,12 +243,12 @@ Transaction Format
 
 * The elements of ``vSpendProofsSapling`` and ``vSpendAuthSigsSapling`` have a 1:1
   correspondence to the elements of ``vSpendsSapling`` and MUST be ordered such that the
-  proof or signature at a given index corresponds to the ``SpendDescriptionV6`` at the
+  proof or signature at a given index corresponds to the ``SpendDescriptionV5`` at the
   same index.
 
 * The elements of ``vOutputProofsSapling`` have a 1:1 correspondence to the elements of
   ``vOutputsSapling`` and MUST be ordered such that the proof at a given index corresponds
-  to the ``OutputDescriptionV6`` at the same index.
+  to the ``OutputDescriptionV5`` at the same index.
 
 * The fields ``flagsOrchard``, ``valueBalanceOrchard``, ``anchorOrchard``,
   ``sizeProofsOrchard``, ``proofsOrchard``, and ``bindingSigOrchard`` are present if and
@@ -267,34 +268,7 @@ Transaction Format
 The encodings of ``tx_in``, and ``tx_out`` are as in prior transaction versions (i.e.
 unchanged since Zcash launch). [#protocol-txnencoding]_ [#zip-0225-transaction-format]_
 
-The encodings of ``SpendDescriptionV6``, ``OutputDescriptionV6``, ``ActionGroupDescription``,
-``AssetBurn`` and ``IssueAction`` are described below.
-
-The encoding of Sapling Spends and Outputs has changed relative to prior versions in order
-to better separate data that describe the effects of the transaction from the proofs of and
-commitments to those effects, and for symmetry with this separation in the Orchard-related parts
-of the transaction format.
-
-Sapling Output Description (``OutputDescriptionV6``)
-----------------------------------------------------
-
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| Bytes                       | Name                         | Data Type                                      | Description                                                         |
-+=============================+==============================+================================================+=====================================================================+
-| 32                          |``cv``                        |``byte[32]``                                    |A value commitment to the net value of the output note.              |
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 32                          |``cmu``                       |``byte[32]``                                    |The :math:`u\!`-coordinate of the note commitment for the output     |
-|                             |                              |                                                |note.                                                                |
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 32                          |``ephemeralKey``              |``byte[32]``                                    |An encoding of an ephemeral Jubjub public key.                       |
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 580                         |``encCiphertext``             |``byte[580]``                                   |The encrypted contents of the note plaintext.                        |
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 80                          |``outCiphertext``             |``byte[80]``                                    |The encrypted contents of the byte string created by concatenation   |
-|                             |                              |                                                |of the transmission key with the ephemeral secret key.               |
-+-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-
-The encodings of each of these elements are defined in §7.4 ‘Output Description Encoding and Consensus’ [#protocol-outputdesc]_.
+The encodings of ``ActionGroupDescription``, ``AssetBurn`` and ``IssueAction`` are described below.
 
 OrchardZSA Action Group Description
 -----------------------------------
@@ -307,7 +281,7 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 | varies                      |``nActionsIronwood``          |``compactSize``                                 |The number of Action descriptions in ``vActionsIronwood``.           |
 |                             |                              |                                                |This MUST have a value strictly greater than ``0``.                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 372 × ``nActionsOrchard``   |``vActionsIronwood``          |``OrchardZSAAction[nActionsIronwood]``          |A sequence of OrchardZSA Action descriptions in the Action Group.    |
+| 852 × ``nActionsIronwood``  |``vActionsIronwood``          |``OrchardZSAAction[nActionsIronwood]``          |A sequence of OrchardZSA Action descriptions in the Action Group.    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 |``1``                        |``flagsIronwood``             |``byte``                                        |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                | * ``enableSpends``                                                  |
@@ -328,8 +302,8 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 | 40 × ``nAssetBurn``         | ``vAssetBurn``               | ``AssetBurn[nAssetBurn]``                      |A sequence of Asset Burn descriptions, encoded per                   |
 |                             |                              |                                                |`OrchardZSA Asset Burn Description`_.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``sizeProofsIronwood``        |``compactSize``                                 |As defined in §7.1 ‘Transaction Encoding and Consensus’              |
-|                             |                              |                                                |[#protocol-txnencoding]_.                                            |
+| varies                      |``sizeProofsIronwood``        |``compactSize``                                 |Length in bytes of ``proofsIronwood``. This MUST have the value      |
+|                             |                              |                                                |:math:`2848 + 2272 \cdot \mathtt{nActionsIronwood}\!`.               |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeProofsIronwood``      |``proofsIronwood``            |``byte[sizeProofsIronwood]``                    |The aggregated zk-SNARK proof for all Actions in the Action Group.   |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
@@ -951,7 +925,7 @@ References
 .. [#BCP14] `Information on BCP 14 — "RFC 2119: Key words for use in RFCs to Indicate Requirement Levels" and "RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words" <https://www.rfc-editor.org/info/bcp14>`_
 .. [#protocol] `Zcash Protocol Specification, Version 2025.6.2 or later [NU6.1] <protocol/protocol.pdf>`_
 .. [#protocol-spenddesc] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.4: Spend Descriptions <protocol/protocol.pdf#spenddesc>`_
-.. [#protocol-outputdesc] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.5: Output Descriptions <protocol/protocol.pdf#outputdesc>`_
+.. [#protocol-outputencodingandconsensus] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 7.4: Output Description Encoding and Consensus <protocol/protocol.pdf#outputencodingandconsensus>`_
 .. [#protocol-actiondesc] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.6: Action Descriptions <protocol/protocol.pdf#actiondesc>`_
 .. [#protocol-concretehomomorphiccommit] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard) <protocol/protocol.pdf#concretehomomorphiccommit>`_
 .. [#protocol-noteptencoding] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.5: Encodings of Note Plaintexts and Memo Fields <protocol/protocol.pdf#noteptencoding>`_
