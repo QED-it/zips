@@ -626,7 +626,7 @@ here will either be referenced or described in detail below::
     ├── ironwood_digest_zsa *
     │   ├── ironwood_action_groups_digest_zsa *
     │   │   ├── ironwood_actions_compact_digest_zsa *
-    │   │   ├── ironwood_actions_memos_digest_v6
+    │   │   ├── ironwood_actions_memos_digest_zsa *
     │   │   ├── ironwood_actions_noncompact_digest_zsa *
     │   │   ├── flagsIronwood
     │   │   ├── nAGExpiryHeight *
@@ -690,7 +690,7 @@ A BLAKE2b-256 hash of the subset of OrchardZSA Action Groups information for all
 For each Action Group, the following elements are included in the hash::
 
     T.5a.i   : ironwood_actions_compact_digest_zsa     (32-byte hash output)
-    T.5a.ii  : ironwood_actions_memos_digest_v6        (32-byte hash output)
+    T.5a.ii  : ironwood_actions_memos_digest_zsa       (32-byte hash output)
     T.5a.iii : ironwood_actions_noncompact_digest_zsa  (32-byte hash output)
     T.5a.iv  : flagsIronwood                           (1 byte)
     T.5a.v   : nAGExpiryHeight                         (4 bytes)
@@ -718,6 +718,27 @@ The personalization field of this hash is set to::
   "ZTxIdIrn_ACH_zsa"
 
 The field encodings are specified in `OrchardZSA Action Description (OrchardZSAAction)`_.
+
+T.5a.ii: ironwood_actions_memos_digest_zsa
+..........................................
+
+A BLAKE2b-256 hash of the subset of OrchardZSA Action information encrypting memo bytes
+for all OrchardZSA Actions belonging to the Action Group. For each Action, the following
+elements are included in the hash::
+
+   T.5a.ii.1 : encCiphertext[84..596]  (contents of the encrypted memo field)
+
+The personalization field of this hash is set to::
+
+  "ZTxIdIrn_AMH_zsa"
+
+The field encodings are specified in `OrchardZSA Action Description (OrchardZSAAction)`_.
+
+Non-normative note: The ``ironwood_actions_memos_digest_v6`` node of ZIP 229 [#zip-0229]_
+cannot be reused here. It hashes ``encCiphertext[52..564]``, which matches the layout of a
+note plaintext without an $\mathsf{asset\_base}$ field. In an OrchardZSA note plaintext the
+memo starts 32 bytes later, so that range would leave ``encCiphertext[564..596]`` (the end
+of the encrypted memo) outside every digest.
 
 T.5a.iii: ironwood_actions_noncompact_digest
 ............................................
