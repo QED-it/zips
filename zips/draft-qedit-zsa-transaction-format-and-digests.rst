@@ -17,12 +17,12 @@
 Terminology
 ===========
 
-The key words "MUST", "SHOULD", and "MAY" in this document are to be interpreted as
-described in BCP 14 [#BCP14]_ when, and only when, they appear in all capitals.
+The key word "MUST" in this document is to be interpreted as described in BCP 14
+[#BCP14]_ when, and only when, it appears in all capitals.
 
 The terms "Zcash Shielded Asset", "OrchardZSA", "ZSA" and "Asset" in this document are to be interpreted as described in ZIP 226 [#zip-0226]_.
 
-The term "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
+The terms "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
 
 "vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6,
 defined in ZIP 229 [#zip-0229]_.
@@ -56,7 +56,7 @@ The OrchardZSA protocol requires serialized data elements that are distinct from
 any previous Zcash transaction. Since ZIP 244 was activated in NU5, the
 v5 and later serialized transaction formats are not consensus-critical.
 Thus, this ZIP defines a format that can easily accommodate future extensions,
-where elements or a given pool are kept separate.
+where elements of a given pool are kept separate.
 
 
 ============
@@ -79,7 +79,7 @@ all newly incorporated elements that attest to transaction validity.
 Non-requirements
 ================
 
-More general forms of extensibility, such as definining a key/value format that
+More general forms of extensibility, such as defining a key/value format that
 allows for parsers that are unaware of some components, are not required.
 
 
@@ -89,11 +89,11 @@ Specification
 
 All fields in this specification are encoded as little-endian.
 
-The Zcash transaction format for transaction that include ZSAs is as follows:
+This section specifies the vZSA transaction format, its note plaintext encoding, and how its
+txid, auth digest and signature digest are computed.
 
-------------------
 Sighash versioning
-------------------
+==================
 
 As in ZIP 248 [#zip-0248]_, the sighash version is encoded as a single byte alongside any associated data
 that the sighash algorithm version requires (for deterministically computing the
@@ -148,7 +148,7 @@ Transaction Format
 | 96 × ``nSpendsSapling``     |``vSpendsSapling``            |``SpendDescriptionV5[nSpendsSapling]``           |A sequence of Sapling Spend descriptions, encoded per                |
 |                             |                              |                                                 |§7.3 ‘Spend Description Encoding and Consensus’ (unchanged from V5). |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``nOutputsSapling``           |``compactSize``                                  |Number of Sapling Output Decriptions in ``vOutputsSapling``.         |
+| varies                      |``nOutputsSapling``           |``compactSize``                                  |Number of Sapling Output Descriptions in ``vOutputsSapling``.        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 756 × ``nOutputsSapling``   |``vOutputsSapling``           |``OutputDescriptionV5[nOutputsSapling]``         |A sequence of Sapling Output descriptions, encoded per               |
 |                             |                              |                                                 |§7.4 ‘Output Description Encoding and Consensus’                     |
@@ -173,7 +173,8 @@ Transaction Format
 |                             |                              |                                                 |``vActionsOrchard``.                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 |``820 * nActionsOrchard``    |``vActionsOrchard``           |``OrchardAction[nActionsOrchard]``               |A sequence of Orchard Action descriptions, encoded per               |
-|                             |                              |                                                 |§7.5 ‘Action Description Encoding and Consensus’.                    |
+|                             |                              |                                                 |§7.5 ‘Action Description Encoding and Consensus’                     |
+|                             |                              |                                                 |[#protocol-actionencodingandconsensus]_.                             |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 |``1``                        |``flagsOrchard``              |``byte``                                         |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                 | * ``enableSpends``                                                  |
@@ -246,7 +247,7 @@ Transaction Format
   only if $\mathtt{nActionGroupsIronwood} > 0$. If ``valueBalanceIronwood`` is not present,
   then $\mathsf{v^{balanceIronwood}}$ is defined to be $0$.
 
-* The fields ``issueAuthSigLength`` and ``issueAuthSig`` are present if and only if $\mathtt{nIssueActions} > 0$.
+* The field ``issueAuthSig`` is present if and only if $\mathtt{nIssueActions} > 0$.
   The fields ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always present.
   If $\mathtt{nIssueActions} = 0$ then ``issuerLength`` MUST be set to $0$ (``issuer`` and ``vIssueActions`` will be empty in this case).
 
@@ -345,7 +346,7 @@ OrchardZSA Action Description (``OrchardZSAAction``)
 | 32                          |``nullifier``                 |``byte[32]``                                    |The nullifier of the input note.                                     |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``rk``                        |``byte[32]``                                    |The randomized validating key for the element of                     |
-|                             |                              |                                                |``spendAuthSigsOrchard`` corresponding to this Action.               |
+|                             |                              |                                                |``vSpendAuthSigsIronwood`` corresponding to this Action.             |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``cmx``                       |``byte[32]``                                    |The :math:`x\!`-coordinate of the note commitment for the output     |
 |                             |                              |                                                |note.                                                                |
@@ -358,7 +359,7 @@ OrchardZSA Action Description (``OrchardZSAAction``)
 |                             |                              |                                                |of the transmission key with the ephemeral secret key.               |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
-The encodings of each of these elements are defined in §7.5 ‘Action Description Encoding and Consensus’ [#protocol-actiondesc]_.
+These elements are encoded as in §7.5 [#protocol-actionencodingandconsensus]_.
 
 OrchardZSA Asset Burn Description
 ----------------------------------
@@ -385,7 +386,7 @@ Transparent Sighash Information (``TransparentSighashInfo``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
-| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
+| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of ``sighashInfo``.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
 |                             |                              |                                                |(see `Sighash versioning`_).                                         |
@@ -397,7 +398,7 @@ Sapling Signature (``SaplingSignature``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
-| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
+| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of ``sighashInfo``.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
 |                             |                              |                                                |(see `Sighash versioning`_).                                         |
@@ -412,7 +413,7 @@ Orchard Signature (``OrchardSignature``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
-| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
+| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of ``sighashInfo``.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
 |                             |                              |                                                |(see `Sighash versioning`_).                                         |
@@ -427,12 +428,12 @@ Issuance Authorization Signature (``IssueAuthSignature``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
-| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of `sighashInfo`.                                  |
+| varies                      |``sizeSighashInfo``           |``compactSize``                                 |The size in bytes of ``sighashInfo``.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeSighashInfo``         |``sighashInfo``               |``byte[sizeSighashInfo]``                       |The sighash version and associated information                       |
 |                             |                              |                                                |(see `Sighash versioning`_).                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``sizeSignature``             |``compactSize``                                 |The size in bytes of `signature`.                                    |
+| varies                      |``sizeSignature``             |``compactSize``                                 |The size in bytes of ``signature``.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``signature``                 |``byte[sizeSignature]``                         |The signature of the transaction SIGHASH, signed by the issuer,      |
 |                             |                              |                                                |preceded by a ``0x00`` byte indicating a BIP 340 signature. It is    |
@@ -622,7 +623,7 @@ the consensus branch ID for the epoch of the block containing the transaction.
 
 T.5: ironwood_digest_zsa
 ````````````````````````
-When OrchardZSA Actions Groups are present in the transaction, this digest is a BLAKE2b-256 hash of the following values::
+When OrchardZSA Action Groups are present in the transaction, this digest is a BLAKE2b-256 hash of the following values::
 
     T.5a: ironwood_action_groups_digest_zsa  (32-byte hash output)
     T.5b: valueBalanceIronwood               (64-bit signed little-endian)
@@ -696,7 +697,7 @@ T.5a.iii: ironwood_actions_noncompact_digest_zsa
 ................................................
 
 A BLAKE2b-256 hash of the remaining subset of OrchardZSA Action information **not** intended
-for inclusion in an updated version of the the ZIP 307 [#zip-0307]_ ``CompactBlock``
+for inclusion in an updated version of the ZIP 307 [#zip-0307]_ ``CompactBlock``
 format, for all OrchardZSA Actions belonging to the Action Group. For each Action,
 the following elements are included in the hash::
 
@@ -713,7 +714,7 @@ The field encodings are specified in `OrchardZSA Action Description (OrchardZSAA
 
 
 T.5a.vi: ironwood_burn_digest
-'''''''''''''''''''''''''''''
+.............................
 
 A BLAKE2b-256 hash of the data from the burn fields of the transaction. For each tuple in
 the $\mathsf{assetBurn}$ set, the following elements are included in the hash::
@@ -751,28 +752,28 @@ In case the transaction has no issuance components, ``issuance_digest`` is::
 
 The field encodings are specified in `Transaction Format`_.
 
-T.6a: issue_actions_digest
+T.6c: issue_actions_digest
 ''''''''''''''''''''''''''
 A BLAKE2b-256 hash of Issue Action information for all Issuance Actions belonging to the transaction. For each Action, the following elements are included in the hash::
 
-   T.6a.i  : assetDescHash           (field encoding bytes)
-   T.6a.ii : issue_notes_digest      (32-byte hash output)
-   T.6a.iii: flagsIssuance           (1 byte)
+   T.6c.i  : assetDescHash           (field encoding bytes)
+   T.6c.ii : issue_notes_digest      (32-byte hash output)
+   T.6c.iii: flagsIssuance           (1 byte)
 
 The personalization field of this hash is set to::
 
   "ZTxIdIssuActHash"
 
-The field encodings are specified in `Issuance Action Description (IssueAction)`.
+The field encodings are specified in `Issuance Action Description (IssueAction)`_.
 
-T.6a.ii: issue_notes_digest
+T.6c.ii: issue_notes_digest
 ...........................
 A BLAKE2b-256 hash of Note information for all Issue Note Descriptions belonging to the Issuance Action. For each Note, the following elements are included in the hash::
 
-   T.6a.i.1: recipient                    (field encoding bytes)
-   T.6a.i.2: value                        (field encoding bytes)
-   T.6a.i.3: rho                          (field encoding bytes)
-   T.6a.i.4: rseed                        (field encoding bytes)
+   T.6c.ii.1: recipient                   (field encoding bytes)
+   T.6c.ii.2: value                       (field encoding bytes)
+   T.6c.ii.3: rho                         (field encoding bytes)
+   T.6c.ii.4: rseed                       (field encoding bytes)
 
 The personalization field of this hash is set to::
 
@@ -935,52 +936,43 @@ In the case that the transaction has no Orchard Actions, ``issuance_auth_digest`
 The field encodings are specified in `Issuance Authorization Signature (IssueAuthSignature)`_.
 
 
+==========
 Deployment
 ==========
 
 TODO
 
+
+========================
 Reference implementation
 ========================
 
 TODO
 
 
+==========
 References
 ==========
 
 .. [#BCP14] `Information on BCP 14 — "RFC 2119: Key words for use in RFCs to Indicate Requirement Levels" and "RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words" <https://www.rfc-editor.org/info/bcp14>`_
-.. [#protocol] `Zcash Protocol Specification, Version 2025.6.2 or later [NU6.1] <protocol/protocol.pdf>`_
-.. [#protocol-spenddesc] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.4: Spend Descriptions <protocol/protocol.pdf#spenddesc>`_
-.. [#protocol-outputencodingandconsensus] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 7.4: Output Description Encoding and Consensus <protocol/protocol.pdf#outputencodingandconsensus>`_
-.. [#protocol-actiondesc] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 4.6: Action Descriptions <protocol/protocol.pdf#actiondesc>`_
-.. [#protocol-concretehomomorphiccommit] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard) <protocol/protocol.pdf#concretehomomorphiccommit>`_
-.. [#protocol-noteptencoding] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 5.5: Encodings of Note Plaintexts and Memo Fields <protocol/protocol.pdf#noteptencoding>`_
-.. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
+.. [#protocol] `Zcash Protocol Specification, Version 2026.8.0 or later [NU6.3] <protocol/protocol.pdf>`_
+.. [#protocol-outputencodingandconsensus] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.4: Output Description Encoding and Consensus <protocol/protocol.pdf#outputencodingandconsensus>`_
+.. [#protocol-actionencodingandconsensus] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.5: Action Description Encoding and Consensus <protocol/protocol.pdf#actionencodingandconsensus>`_
+.. [#protocol-concretehomomorphiccommit] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard) <protocol/protocol.pdf#concretehomomorphiccommit>`_
+.. [#protocol-noteptencoding] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.5: Encodings of Note Plaintexts and Memo Fields <protocol/protocol.pdf#noteptencoding>`_
+.. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
 .. [#zip-0203] `ZIP 203: Transaction Expiry <zip-0203.rst>`_
-.. [#zip-0225] `ZIP 225: Version 5 Transaction Format <zip-0225.rst>`_
 .. [#zip-0225-transaction-format] `ZIP 225: Version 5 Transaction Format. Specification: Transaction Format <zip-0225.rst#transaction-format>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.rst>`_
 .. [#zip-0226-burn-mechanism] `ZIP 226: Transfer and Burn of Zcash Shielded Assets - Burn Mechanism <zip-0226.rst#burn-mechanism>`_
-.. [#zip-0226-orchardzsa-transaction-structure] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — OrchardZSA Transaction Structure <zip-0226.rst#orchardzsa-transaction-structure>`_
-.. [#zip-0226-note-structure-and-commitment] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Note Structure and Commitment <zip-0226#note-structure-and-commitment>`_
+.. [#zip-0226-note-structure-and-commitment] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Note Structure and Commitment <zip-0226.rst#note-structure-and-commitment>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <zip-0227.rst>`_
 .. [#zip-0227-issuance-auth-sig] `ZIP 227: Issuance of Zcash Shielded Assets — Issuance Authorization Signature Scheme <zip-0227.rst#issuance-authorization-signature-scheme>`_
 .. [#zip-0227-issuer-identifier] `ZIP 227: Issuance of Zcash Shielded Assets — Issuer Identifier <zip-0227.rst#issuer-identifier>`_
 .. [#zip-0228] `ZIP 228: Asset Swaps for Zcash Shielded Assets <zip-0228.rst>`_
 .. [#zip-0229] `ZIP 229: Version 6 Transaction Format <zip-0229.md>`_
-.. [#zip-0231] `ZIP 231: Memo Bundles <zip-0231.md>`_
-.. [#zip-0231-motivation] `ZIP 231: Memo Bundles — Motivation <zip-0231.md#motivation>`_
-.. [#zip-0231-memo-encryption] `ZIP 231: Memo Bundles — Memo Encryption <zip-0231.md#memo-encryption>`_
-.. [#zip-0231-sapling-note-plaintext] `ZIP 231: Memo Bundles — Changes to the Zcash Protocol Specification <zip-0231.md#changes-to-the-zcash-protocol-specification>`_
-.. [#zip-0233] `ZIP 233: Network Sustainability Mechanism: Removing Funds From Circulation <zip-0233.md>`_
-.. [#zip-0235] `ZIP 235: Remove 60% of Transaction Fees From Circulation <zip-0235.md>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0244-sigdigest] `ZIP 244: Transaction Identifier Non-Malleability — Signature Digest <zip-0244.rst#signature-digest>`_
 .. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
-.. [#zip-0301] `ZIP 301: Zcash Stratum Protocol <zip-0301.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
-.. [#zip-2002-motivation] `ZIP 231: Explicit Fees — Motivation <zip-2002.rst#motivation>`_
 .. [#zip-2005] `ZIP 2005: Ironwood Quantum Recoverability <zip-2005.md>`_
-.. [#zip-2005-security-analysis] `ZIP 2005: Quantum Recoverability — Security Analysis <zip-2005.md#securityanalysis>`_
-.. [#draft-arya-deploy-nu7] `draft-arya-deploy-nu7: Deployment of the NU7 Network Upgrade <draft-arya-deploy-nu7.md>`_
