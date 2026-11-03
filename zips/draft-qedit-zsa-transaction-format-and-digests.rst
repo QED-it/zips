@@ -39,7 +39,7 @@ This proposal defines a new Zcash peer-to-peer transaction format, which support
 changes for the inclusion of Zcash Shielded Assets [#zip-0226]_ [#zip-0227]_ in a future network upgrade.
 It follows the same design pattern as the v6 transaction format [#zip-0229]_.
 
-This proposal also defines the new concept of "sighash algorithm versioning":
+This proposal also adopts "sighash algorithm versioning" from ZIP 248 [#zip-0248]_:
 where previously each transaction version had a single associated sighash
 algorithm, going forward it will be possible for signers to use any sighash
 algorithm within the closed set specified for a given transaction version (and
@@ -95,7 +95,7 @@ The Zcash transaction format for transaction that include ZSAs is as follows:
 Sighash versioning
 ------------------
 
-The sighash version is encoded as a single byte alongside any associated data
+As in ZIP 248 [#zip-0248]_, the sighash version is encoded as a single byte alongside any associated data
 that the sighash algorithm version requires (for deterministically computing the
 digest):
 
@@ -977,6 +977,7 @@ References
 .. [#zip-0235] `ZIP 235: Remove 60% of Transaction Fees From Circulation <zip-0235.md>`_
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0244-sigdigest] `ZIP 244: Transaction Identifier Non-Malleability — Signature Digest <zip-0244.rst#signature-digest>`_
+.. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
 .. [#zip-0301] `ZIP 301: Zcash Stratum Protocol <zip-0301.rst>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#zip-2002-motivation] `ZIP 231: Explicit Fees — Motivation <zip-2002.rst#motivation>`_
