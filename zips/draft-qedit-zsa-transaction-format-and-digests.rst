@@ -553,14 +553,14 @@ TxId Digest
 The overall structure of the TxID digest is as follows; each name referenced
 here will either be referenced or described in detail below::
 
-    txid_digest
+    txid_digest_zsa *
     ├── header_digest
     ├── transparent_digest
     │   ├── prevouts_digest
     │   ├── sequence_digest
     │   └── outputs_digest
     ├── sapling_digest_v6
-    │   ├── sapling_spends_digest
+    │   ├── sapling_spends_digest_v6
     │   │   ├── sapling_spends_compact_digest
     │   │   └── sapling_spends_noncompact_digest_v6
     │   │       ├── cv
@@ -601,8 +601,8 @@ In the specification below, nodes of the tree are presented in depth-first order
 The nodes with a ``*`` have new definitions given below. All other nodes have the
 same definition as in ZIP 229 [#zip-0229]_.
 
-txid_digest
------------
+txid_digest_zsa
+---------------
 A BLAKE2b-256 hash of the following values ::
 
    T.1: header_digest       (32-byte hash output)
@@ -716,8 +716,8 @@ The field encodings are specified in `OrchardZSA Action Description (OrchardZSAA
 T.5a.vi: ironwood_burn_digest
 .............................
 
-A BLAKE2b-256 hash of the data from the burn fields of the transaction. For each tuple in
-the $\mathsf{assetBurn}$ set, the following elements are included in the hash::
+A BLAKE2b-256 hash of the data from the burn fields of the Action Group. For each tuple in
+the Action Group's $\mathsf{assetBurn}$ set, the following elements are included in the hash::
 
     T.5a.vi.1 : assetBase    (field encoding bytes)
     T.5a.vi.2 : valueBurn    (64-bit unsigned little-endian)
@@ -726,8 +726,8 @@ The personalization field of this hash is set to::
 
     "ZTxIdIrnBurnHash"
 
-In case the transaction does not perform the burning of any Assets (i.e. the
-$\mathsf{assetBurn}$ set is empty), the ``ironwood_burn_digest`` is::
+In case the Action Group does not burn any Assets (i.e. its $\mathsf{assetBurn}$ set is
+empty), the ``ironwood_burn_digest`` is::
 
     BLAKE2b-256("ZTxIdIrnBurnHash", [])
 
@@ -779,7 +779,8 @@ The personalization field of this hash is set to::
 
   "ZTxIdIAcNoteHash"
 
-In case the transaction has no Issue Notes, ``issue_notes_digest`` is::
+In case the Issuance Action has no Issue Notes (for example, an Issuance Action that only
+finalizes an Asset), ``issue_notes_digest`` is::
 
     BLAKE2b-256("ZTxIdIAcNoteHash", [])
 
@@ -788,7 +789,7 @@ The field encodings are specified in `Issue Note Description (IssueNoteDescripti
 Signature Digest
 ================
 
-The vZSA signature digest is ``txid_digest`` with T.2 replaced by ``transparent_sig_digest``
+The vZSA signature digest is ``txid_digest_zsa`` with T.2 replaced by ``transparent_sig_digest``
 from ZIP 244 [#zip-0244-sigdigest]_. Shielded and issuance signatures use it as ZIP 244
 specifies for an Orchard Action.
 
@@ -798,7 +799,7 @@ Authorizing Data Commitment
 The authorizing data commitment (auth digest) is computed as in ZIP 229 [#zip-0229]_, with an updated **Ironwood component digest**, and a newly added **Issuance digest**.
 The auth digest structure becomes::
 
-    auth_digest_zsa
+    auth_digest_zsa (*)
     ├── transparent_auth_digest (*)
     │   ├── TransparentSighashInfo
     │   └── scriptSig
@@ -815,6 +816,10 @@ The auth digest structure becomes::
     │   └── anchorOrchard
     ├── ironwood_auth_digest_zsa (*)
     │   ├── ironwood_action_groups_auth_digest (+)
+    │   │   ├── proofsIronwood
+    │   │   ├── ironwood_spend_auth_sigs_auth_digest (+)
+    │   │   │   └── vSpendAuthSigsIronwood
+    │   │   └── anchorIronwood
     │   └── bindingSigIronwood
     └── issuance_auth_digest (+)
         └── issueAuthSig
@@ -892,7 +897,7 @@ A.4a: ironwood_action_groups_auth_digest
 ''''''''''''''''''''''''''''''''''''''''
 
 A BLAKE2b-256 hash of the subset of OrchardZSA Action Group information for all OrchardZSA Action Groups belonging to the transaction.
-For each OrchardZSA Action Group, this is a BLAKE2b-256 hash of the following values::
+For each OrchardZSA Action Group, the following elements are included in the hash::
 
     A.4a.i  : proofsIronwood                               (field encoding bytes)
     A.4a.ii : ironwood_spend_auth_sigs_auth_digest         (32-byte hash output)
@@ -929,7 +934,7 @@ The personalization field of this hash is set to::
 
   "ZTxAuthIssH__zsa" (2 underscore characters)
 
-In the case that the transaction has no Orchard Actions, ``issuance_auth_digest`` is ::
+In the case that the transaction has no Issuance Actions, ``issuance_auth_digest`` is ::
 
   BLAKE2b-256("ZTxAuthIssH__zsa", [])
 
