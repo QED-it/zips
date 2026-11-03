@@ -813,7 +813,9 @@ The authorizing data commitment (auth digest) is computed as in ZIP 229 [#zip-02
 The auth digest structure becomes::
 
     auth_digest_zsa
-    ├── transparent_auth_digest
+    ├── transparent_auth_digest (*)
+    │   ├── TransparentSighashInfo
+    │   └── scriptSig
     ├── sapling_auth_digest_v6
     │   ├── vSpendProofsSapling
     │   ├── vSpendAuthSigsSapling
@@ -833,13 +835,41 @@ The auth digest structure becomes::
 
 where (*) indicates an updated definition, and (+) indicates a new definition as compared to ZIP 229 [#zip-0229]_.
 
-Note that while the structure of ``transparent_auth_digest``, ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` remains the same as in ZIP 229, the field encodings of some of its components
-(viz. ``TransparentSighashInfo``, ``vSpendAuthSigsSapling``, ``bindingSigSapling``, ``vSpendAuthSigsOrchard`` and ``bindingSigOrchard``) differ due to changes to their field encodings in `Transaction Format`_.
+Note that while the structure of ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` remains
+the same as in ZIP 229, the field encodings of some of their components (viz.
+``vSpendAuthSigsSapling``, ``bindingSigSapling``, ``vSpendAuthSigsOrchard`` and
+``bindingSigOrchard``) differ due to changes to their field encodings in `Transaction Format`_.
+
+These nodes and ``transparent_auth_digest`` keep their ZIP 229 personalizations. The transaction
+version is committed in ``header_digest``, so a version 6 transaction and a transaction in the format
+defined here cannot share a (txid, auth digest) pair.
 
 The definitions of the updated/added hashes are given below.
 
 auth_digest_zsa
 ---------------
+
+A.1: transparent_auth_digest
+````````````````````````````
+
+In the case that the transaction contains transparent inputs, this is a BLAKE2b-256 hash of the
+following values for each transparent input::
+
+    A.1a: TransparentSighashInfo    (field encoding bytes)
+    A.1b: scriptSig                 (field encoding bytes, with compactSize length prefix)
+
+where ``TransparentSighashInfo`` is the element of ``vSighashInfo`` at the same index as the input.
+
+The personalization field of this hash is::
+
+    "ZTxAuthTransHash"
+
+In the case that the transaction has no transparent inputs, ``transparent_auth_digest`` is::
+
+    BLAKE2b-256("ZTxAuthTransHash", [])
+
+The encoding of ``TransparentSighashInfo`` is specified in
+`Transparent Sighash Information (TransparentSighashInfo)`_.
 
 A.4: ironwood_auth_digest_zsa
 `````````````````````````````
