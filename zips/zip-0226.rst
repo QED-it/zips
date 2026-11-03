@@ -444,7 +444,7 @@ In order to have backward compatibility with the ZEC notes, we have designed the
 Deployment
 ==========
 
-The Zcash Shielded Assets protocol is scheduled to be deployed in Network Upgrade 7 (NU7).
+The Zcash Shielded Assets protocol is scheduled to be deployed in the NUZSA network upgrade.
 This ZIP currently assumes that this will be the case.
 
 Test Vectors
