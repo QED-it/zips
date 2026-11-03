@@ -480,7 +480,6 @@ Let $\mathsf{SigHash}$ be the signature digest of this transaction, as specified
 
 For every transaction:
 
-- The ``nActionGroupsOrchard`` field MUST have a value of either ``0`` or ``1`` and the ``nAGExpiryHeight`` field MUST have a value of ``0``.
 - The output issuance state of the transaction MUST be initialized to be the same as the input issuance state, $\mathsf{issued\_assets}_{\mathsf{OUT}} = \mathsf{issued\_assets}_{\mathsf{IN}}$.
 - The $\mathsf{assetBurn}$ set MUST satisfy the consensus rules specified in ZIP 226 [#zip-0226-assetburn]_.
 - It MUST be the case that for all $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} \geq \mathsf{v}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase})$ prior to processing the issuance bundle in the following manner. For every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{AssetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} - \mathsf{v}$.
@@ -492,7 +491,7 @@ If the transaction contains an issuance bundle:
 - The issuance authorization signature, $\mathsf{issueAuthSig}$, MUST be a valid $\mathsf{IssueAuthSig}$ signature over $\mathsf{SigHash}$, i.e. $\mathsf{IssueAuthSig}.\!\mathsf{Validate}(\mathsf{ik}, \mathsf{SigHash}, \mathsf{issueAuthSig}) = 1$.
 - For every issuance action description ($\mathsf{IssueAction}_\mathsf{i},\ 1 \leq i \leq \mathtt{nIssueActions}$) in the issuance bundle:
 
-  - Every ``IssueNoteDescription`` in the ``IssueAction`` MUST be a valid field encoding as defined in ZIP 230 [#zip-0230-issue-note]_.
+  - Every ``IssueNoteDescription`` in the ``IssueAction`` MUST be a valid field encoding as defined in [#draft-qedit-zsa-transaction-format-and-digests]_.
   - Let an Issue Note (with type $\mathsf{Note^{Issue}}$) be constructed from the fields of each ``IssueNoteDescription``, with the $\mathsf{AssetBase}$ derived from the ``assetDescHash`` field of the ``IssueAction`` and the ``issuer`` field of the issuance bundle, as described in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section. 
   - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1$.
   - If $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \bot$, then let $\mathsf{new\_note_{ref}}$ be the first Issue Note in the Issuance Action.
@@ -508,7 +507,7 @@ If the transaction contains an issuance bundle:
     - The node MUST compute the note commitment, $\mathsf{cm}_{\mathsf{i,j}}$, as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-note-structure-and-commitment]_.
   - If $\mathsf{finalize} = 1$ within the ``flagsIssuance`` field of ``IssueAction``, the node MUST set $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} = 1$.
 
-**Open Issue:** These rules refer to the ``nActionGroupsOrchard`` and ``nAGExpiryHeight`` fields and to OrchardZSA Action Groups, which the transaction format of ZIP 248 does not support, as noted in `Computation of ρ`_. They also refer to the encoding of ``IssueNoteDescription``, which is yet to be specified, as noted in `Issue Note`_.
+The Action Groups and the ``IssueNoteDescription`` encoding used by these rules are specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Addition to the Note Commitment Tree
 ------------------------------------

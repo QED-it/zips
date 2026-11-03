@@ -118,9 +118,9 @@ Transaction Format
 | 4                           |``header``                    |``uint32``                                       |Contains:                                                            |
 |                             |                              |                                                 |                                                                     |
 |                             |                              |                                                 |* ``fOverwintered`` flag (bit 31, always set)                        |
-|                             |                              |                                                 |* ``version`` (bits 30 .. 0) – transaction version.                  |
+|                             |                              |                                                 |* ``version`` (bits 30 .. 0) – transaction version, MUST be ``7``.   |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| 4                           |``nVersionGroupId``           |``uint32``                                       |Version group ID (nonzero).                                          |
+| 4                           |``nVersionGroupId``           |``uint32``                                       |Version group ID, MUST be ``0x77777777``.                            |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 4                           |``nConsensusBranchId``        |``uint32``                                       |Consensus branch ID (nonzero).                                       |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -179,7 +179,7 @@ Transaction Format
 |                             |                              |                                                 | * ``enableSpends``                                                  |
 |                             |                              |                                                 | * ``enableOutputs``                                                 |
 |                             |                              |                                                 | * ``enableCrossAddress`` (new at NU6.3)                             |
-|                             |                              |                                                 | * The remaining bits are set to :math:`0\!`.                        |
+|                             |                              |                                                 | * The remaining bits MUST be :math:`0\!`.                           |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 |``8``                        |``valueBalanceOrchard``       |``int64``                                        |The net value of Orchard spends minus outputs.                       |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -250,7 +250,17 @@ Transaction Format
   The fields ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always present.
   If $\mathtt{nIssueActions} = 0$ then ``issuerLength`` MUST be set to $0$ (``issuer`` and ``vIssueActions`` will be empty in this case).
 
-* For coinbase transactions, the ``enableSpends`` and ``enableZSAs`` bits MUST be set to $0$.
+* The ``version`` and ``nVersionGroupId`` values are provisional and subject to change.
+
+* $\mathtt{nActionGroupsIronwood}$ MUST be $0$ or $1$.
+
+* ``enableCrossAddress`` in ``flagsOrchard`` MUST be $0$, as in version 6 [#zip-0229]_.
+
+* At least one of these MUST hold: $\mathtt{tx\_in\_count} > 0$, $\mathtt{nSpendsSapling} > 0$, or
+  ``enableSpends`` is set in ``flagsOrchard`` or in any ``flagsIronwood``. Likewise for outputs,
+  with $\mathtt{tx\_out\_count}$, $\mathtt{nOutputsSapling}$ and ``enableOutputs``.
+
+* In coinbase transactions, ``enableSpends`` and ``enableZSA`` MUST be $0$ in every ``flagsIronwood``.
 
 The encodings of ``tx_in``, and ``tx_out`` are as in prior transaction versions (i.e.
 unchanged since Zcash launch). [#protocol-txnencoding]_ [#zip-0225-transaction-format]_
@@ -266,7 +276,7 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
 | varies                      |``nActionsIronwood``          |``compactSize``                                 |The number of Action descriptions in ``vActionsIronwood``.           |
-|                             |                              |                                                |This MUST have a value strictly greater than ``0``.                  |
+|                             |                              |                                                |This MUST be greater than ``0`` and less than :math:`2^{16}\!`.      |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 852 × ``nActionsIronwood``  |``vActionsIronwood``          |``OrchardZSAAction[nActionsIronwood]``          |A sequence of OrchardZSA Action descriptions in the Action Group.    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
@@ -274,8 +284,8 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 |                             |                              |                                                | * ``enableSpends``                                                  |
 |                             |                              |                                                | * ``enableOutputs``                                                 |
 |                             |                              |                                                | * ``enableCrossAddress``                                            |
-|                             |                              |                                                | * ``enableZSAs``                                                    |
-|                             |                              |                                                | * The remaining bits are set to :math:`0\!`.                        |
+|                             |                              |                                                | * ``enableZSA``                                                     |
+|                             |                              |                                                | * The remaining bits MUST be :math:`0\!`.                           |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``anchorIronwood``            |``byte[32]``                                    |A root of the **Ironwood** note commitment tree at some block height |
 |                             |                              |                                                |in the past.                                                         |
@@ -304,11 +314,8 @@ The encodings of ``OrchardZSAAction`` and ``AssetBurn`` are described below.
   ``vSpendAuthSigsIronwood``, each have a 1:1 correspondence to the elements of
   ``vActionsIronwood`` and MUST be ordered such that the proof or signature at a given
   index corresponds to the ``OrchardZSAAction`` at the same index.
-* If the value of ``nAGExpiryHeight`` is nonzero, it MUST be consistent with
-  the ``nExpiryHeight`` of the overall transaction. More specifically:
-
-    - If at least one ``nAGExpiryHeight`` is nonzero, ``nExpiryHeight`` must be nonzero.
-    - The value of ``nExpiryHeight`` MUST not exceed the minimum of all the nonzero ``nAGExpiryHeight`` values in the Action Groups in the transaction.
+* At least one of ``enableSpends`` and ``enableOutputs`` MUST be set.
+* ``nAGExpiryHeight`` MUST be $0$.
 
 Rationale for nAGExpiryHeight
 `````````````````````````````
@@ -365,11 +372,12 @@ An OrchardZSA Asset Burn description is encoded in a transaction as an instance 
 |                             |                              |                                                |:math:`\mathsf{AssetBase^{Orchard}}\!`.                              |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 8                           |``valueBurn``                 |``uint64``                                      |The amount being burnt. The value is checked by consensus to be      |
-|                             |                              |                                                |non-zero, and less than :math:`\mathsf{MAX\_BURN\_VALUE}`            |
+|                             |                              |                                                |non-zero, and at most :math:`\mathsf{MAX\_BURN\_VALUE}`              |
 |                             |                              |                                                |[#zip-0226-burn-mechanism]_.                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 The encodings of each of these elements are defined in ZIP 226 [#zip-0226-burn-mechanism]_.
+The $\mathsf{assetBurn}$ set of ZIP 226 is the Action Group's ``vAssetBurn`` (empty if there is none).
 
 Transparent Sighash Information (``TransparentSighashInfo``)
 ------------------------------------------------------------
@@ -449,7 +457,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 | 1                           |``flagsIssuance``             |``byte``                                        |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                |                                                                     |
 |                             |                              |                                                |* :math:`\mathsf{finalize}`                                          |
-|                             |                              |                                                |* The remaining bits are set to :math:`0\!`.                         |
+|                             |                              |                                                |* The remaining bits MUST be :math:`0\!`.                            |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 The encoding of ``IssueNoteDescription`` is described below.
