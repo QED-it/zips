@@ -554,8 +554,8 @@ here will either be referenced or described in detail below::
     │   ├── sapling_spends_digest
     │   │   ├── sapling_spends_compact_digest
     │   │   └── sapling_spends_noncompact_digest_v6
-    │   │      ├── cv
-    │   │      └── rk
+    │   │       ├── cv
+    │   │       └── rk
     │   ├── sapling_outputs_digest
     │   │   ├── sapling_outputs_compact_digest
     │   │   ├── sapling_outputs_memos_digest
@@ -566,7 +566,7 @@ here will either be referenced or described in detail below::
     │   ├── orchard_actions_memos_digest
     │   ├── orchard_actions_noncompact_digest
     │   ├── flagsOrchard
-    │   ├── valueBalanceOrchard
+    │   └── valueBalanceOrchard
     ├── ironwood_digest_zsa *
     │   ├── ironwood_action_groups_digest_zsa *
     │   │   ├── ironwood_actions_compact_digest_zsa *
@@ -576,13 +576,13 @@ here will either be referenced or described in detail below::
     │   │   ├── nAGExpiryHeight *
     │   │   └── ironwood_burn_digest *
     │   └── valueBalanceIronwood
-    ├── issuance_digest *
-    │   ├── issuerLength *
-    │   ├── issuer *
-    │   └── issue_actions_digest *
-    │       ├── assetDescHash *
-    │       ├── issue_notes_digest *
-    │       └── flagsIssuance *
+    └── issuance_digest *
+        ├── issuerLength *
+        ├── issuer *
+        └── issue_actions_digest *
+            ├── assetDescHash *
+            ├── issue_notes_digest *
+            └── flagsIssuance *
 
 Each node written as ``snake_case`` in this tree is a BLAKE2b-256 hash of its
 children, initialized with a personalization string specific to that branch
@@ -804,11 +804,11 @@ The auth digest structure becomes::
     │   ├── vSpendAuthSigsOrchard
     │   ├── bindingSigOrchard
     │   └── anchorOrchard
-    └── ironwood_auth_digest_zsa (*)
+    ├── ironwood_auth_digest_zsa (*)
     │   ├── ironwood_action_groups_auth_digest (+)
     │   └── bindingSigIronwood
     └── issuance_auth_digest (+)
-      └── issueAuthSig
+        └── issueAuthSig
 
 where (*) indicates an updated definition, and (+) indicates a new definition as compared to ZIP 229 [#zip-0229]_.
 
