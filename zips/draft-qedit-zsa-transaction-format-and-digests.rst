@@ -679,7 +679,7 @@ The personalization field of this hash is set to::
 
     "ZTxIdIronwdH_zsa"
 
-In the case that the transaction has no OrchardZSA Action Groups, ``orchard_digest`` is ::
+In the case that the transaction has no OrchardZSA Action Groups, ``ironwood_digest_zsa`` is ::
 
     BLAKE2b-256("ZTxIdIronwdH_zsa", [])
 
@@ -740,8 +740,8 @@ note plaintext without an $\mathsf{asset\_base}$ field. In an OrchardZSA note pl
 memo starts 32 bytes later, so that range would leave ``encCiphertext[564..596]`` (the end
 of the encrypted memo) outside every digest.
 
-T.5a.iii: ironwood_actions_noncompact_digest
-............................................
+T.5a.iii: ironwood_actions_noncompact_digest_zsa
+................................................
 
 A BLAKE2b-256 hash of the remaining subset of OrchardZSA Action information **not** intended
 for inclusion in an updated version of the the ZIP 307 [#zip-0307]_ ``CompactBlock``
