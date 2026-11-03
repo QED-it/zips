@@ -160,7 +160,7 @@ The nullifier is generated in the same manner as in the Orchard protocol §4.16 
 
 The OrchardZSA note plaintext also includes the Asset Base $\mathsf{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]}$ in addition to the components in the Orchard note plaintext [#protocol-notept]_.
 
-**Open Issue:** The encoding of OrchardZSA bundles in the transaction format of ZIP 248 [#zip-0248]_ is yet to be specified, including the explicit encoding of the OrchardZSA note plaintext. These encodings, including that of the note plaintext [#zip-0230-orchard-note-plaintext]_, were specified for the withdrawn ZIP 230 design [#zip-0230]_.
+The encoding of OrchardZSA bundles, including the explicit encoding of the OrchardZSA note plaintext, is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 When § 4.7.3 'Sending Notes (Orchard)' [#protocol-orchardsend]_ or § 4.8.3 'Dummy Notes (Orchard)' [#protocol-orcharddummynotes]_ are invoked directly or indirectly in the computation of $\text{ρ}$ and $\text{ψ}$ for an OrchardZSA note, $\mathsf{leadByte}$ MUST be set to $\mathtt{0x04}$.
 
@@ -226,7 +226,7 @@ For every Custom Asset (represented by its $\mathsf{AssetBase}$) that is burnt i
 We define a constant $\mathsf{MAX\_BURN\_VALUE} := 2^{63} - 1$, which denotes the maximum amount of a given Custom Asset that can be burnt in a transaction.
 We denote by $L$ the cardinality of the $\mathsf{assetBurn}$ set in a transaction.
 
-**Open Issue:** The encoding of the $\mathsf{assetBurn}$ set is yet to be specified, as noted in `Note Structure and Commitment`_.
+The encoding of the $\mathsf{assetBurn}$ set is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 As described in `Value Balance Verification`_, this provides the information for the validator of the transaction to compute the value commitment with the corresponding Asset Base. 
 This ensures that the values are all balanced out on a per-Asset basis in the transaction.
@@ -263,7 +263,7 @@ The verifier MUST compute the value balance verification equation:
 
 After computing $\mathsf{bvk}$, the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.
 
-**Open Issue:** The transaction format of ZIP 248 [#zip-0248]_ records value balances as value pool deltas. How the value balance $\mathsf{v^{balanceOrchard}}$ and the $\mathsf{assetBurn}$ set used in this equation are represented in that format is yet to be specified, as noted in `Note Structure and Commitment`_.
+In the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_, $\mathsf{v^{balanceOrchard}}$ is ``valueBalanceIronwood``.
 
 
 Rationale for Value Balance Verification
@@ -386,27 +386,19 @@ The input note in the old note commitment integrity check must either include an
 OrchardZSA Transaction Structure
 --------------------------------
 
-ZIP 248 [#zip-0248]_ specifies a new transaction version, and provisionally
-registers a bundle variant for OrchardZSA in its format.
-
-**Open Issue:** The encoding of OrchardZSA bundles is yet to be specified, as
-noted in `Note Structure and Commitment`_.
+The vZSA transaction version is specified in the ZSA transaction format
+[#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Implications for Wallets
 ````````````````````````
 
-Once the transaction version specified by ZIP 248 is allowed on the network,
-that ZIP requires wallets to be able to parse transactions of that version, and
-to send only such transactions [#zip-0248-implications-for-wallets]_. For ZSAs,
-the corresponding requirements on wallets are:
+For ZSAs, the requirements on wallets are:
 
 * Once ZSAs have activated, *all* wallets should switch to sending only the transaction
-  version that supports ZSAs. They should also use the OrchardZSA bundle variant for all of
-  their Ironwood-pool actions, including those that transfer ZEC. The main consequence of
-  not doing so is that users would not otherwise obtain the privacy benefit of
-  indistinguishability between native and non-native assets in the Ironwood shielded pool,
-  because actions in v6 and earlier transactions, and in bundles of other variants, can only
-  transfer the native ZEC asset.
+  version that supports ZSAs. The main consequence of not doing so is that users would not
+  otherwise obtain the privacy benefit of indistinguishability between native and non-native
+  assets in the Ironwood shielded pool, because actions in v6 and earlier transactions can
+  only transfer the native ZEC asset.
 
 * *All* wallets should be ready to receive funds in outputs of the transaction version that
   supports ZSAs as soon as they activate. The consequence of not doing so would be that funds
@@ -417,14 +409,9 @@ the corresponding requirements on wallets are:
 Sighash
 -------
 
-ZIP 248 specifies the digest algorithms for the transaction version that it
-defines [#zip-0248-digest-algorithms]_, and a mechanism for versioning sighash
-algorithms [#zip-0248-sighash-versioning]_. Each bundle type defines its
-contributions to those digests, and the sighash versions available to its
-signers together with the associated data that each version requires.
-
-**Open Issue:** The digests of OrchardZSA bundles, and the sighash versions
-available to their signers, are yet to be specified.
+The digests of vZSA transactions, and the sighash versions available to their
+signers, are specified in the ZSA transaction format
+[#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Transaction Fees
 ----------------
@@ -473,13 +460,8 @@ References
 .. [#zip-0227-note-commitment-order] `ZIP 227: Issuance of Zcash Shielded Assets — Addition to the Note Commitment Tree <zip-0227.rst#addition-to-the-note-commitment-tree>`_
 .. [#zip-0227-orchardzsa-fee-calculation] `ZIP 227: Issuance of Zcash Shielded Assets — OrchardZSA Fee Calculation <zip-0227.rst#orchardzsa-fee-calculation>`_
 .. [#zip-0229] `ZIP 229: Version 6 Transaction Format <zip-0229.md>`_
-.. [#zip-0230] `ZIP 230: Withdrawn Version 6 Transaction Format <zip-0230.rst>`_
-.. [#zip-0230-orchard-note-plaintext] `ZIP 230: Withdrawn Version 6 Transaction Format — Orchard Note Plaintext <zip-0230.rst#orchard-note-plaintext>`_
-.. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
-.. [#zip-0248-digest-algorithms] `ZIP 248: Extensible Transaction Format — Digest Algorithms <zip-0248.rst#digest-algorithms>`_
-.. [#zip-0248-sighash-versioning] `ZIP 248: Extensible Transaction Format — Sighash Versioning <zip-0248.rst#sighash-versioning>`_
-.. [#zip-0248-implications-for-wallets] `ZIP 248: Extensible Transaction Format — Implications for Wallets <zip-0248.rst#implications-for-wallets>`_
 .. [#zip-2005] `ZIP 2005: Ironwood Quantum Recoverability <zip-2005.md>`_
+.. [#draft-qedit-zsa-transaction-format-and-digests] `draft-qedit-zsa-transaction-format-and-digests: ZSA Transaction Format and Digests <draft-qedit-zsa-transaction-format-and-digests.rst>`_
 .. [#protocol] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1] or later. <protocol/protocol.pdf>`_
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-actions] `Zcash Protocol Specification, Version 2025.6.2 [NU6.1]. Section 3.7: Action Transfers and their Descriptions <protocol/protocol.pdf#actions>`_
