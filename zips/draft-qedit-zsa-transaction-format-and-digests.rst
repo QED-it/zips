@@ -826,6 +826,18 @@ The definitions of the updated/added hashes are given below.
 auth_digest_zsa
 ---------------
 
+A BLAKE2b-256 hash of the following values ::
+
+   A.1: transparent_auth_digest   (32-byte hash output)
+   A.2: sapling_auth_digest_v6    (32-byte hash output)
+   A.3: orchard_auth_digest_v6    (32-byte hash output)
+   A.4: ironwood_auth_digest_zsa  (32-byte hash output)
+   A.5: issuance_auth_digest      (32-byte hash output)
+
+The personalization field of this hash is set to::
+
+  "ZTxAuthHash_" || CONSENSUS_BRANCH_ID
+
 A.1: transparent_auth_digest
 ````````````````````````````
 
@@ -898,7 +910,7 @@ The encoding of ``OrchardSignature`` is specified in `Orchard Signature (Orchard
 Note that this means the encoding of ``vSpendAuthSigsIronwood`` differs from that used in ZIP 229.
 
 A.5: issuance_auth_digest
--------------------------
+`````````````````````````
 
 In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the ``issueAuthSig`` field of the transaction::
 
