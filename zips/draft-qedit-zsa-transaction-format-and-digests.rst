@@ -24,6 +24,10 @@ The terms "Zcash Shielded Asset", "OrchardZSA", "ZSA" and "Asset" in this docume
 
 The terms "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
 
+The term "Action Group" in this document is to be interpreted as described in ZIP 228 [#zip-0228]_.
+
+The term "Ironwood pool" in this document is to be interpreted as described in ZIP 229 [#zip-0229]_.
+
 "vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6,
 defined in ZIP 229 [#zip-0229]_.
 
@@ -47,6 +51,9 @@ made available in consensus via network upgrades).
 
 This ZIP defines the sighash algorithms associated with this new transaction format.
 
+Issuance and burns are public, as in ZIP 227 [#zip-0227]_ and ZIP 226 [#zip-0226]_, while
+shielded outputs look the same for every Asset, including ZEC (see `Privacy Implications`_).
+
 
 ==========
 Motivation
@@ -57,6 +64,26 @@ any previous Zcash transaction. Since ZIP 244 was activated in NU5, the
 v5 and later serialized transaction formats are not consensus-critical.
 Thus, this ZIP defines a format that can easily accommodate future extensions,
 where elements of a given pool are kept separate.
+
+
+====================
+Privacy Implications
+====================
+
+ZIP 226 [#zip-0226-privacy-implications]_ covers the privacy of the OrchardZSA protocol. This
+section covers only what the encoding defined here makes visible.
+
+* Outputs of every Asset, including ZEC, have the same note plaintext lead byte and the same
+  ciphertext size, so the encoding does not show which Asset an Action carries.
+* Each Action Group shows whether ZSAs are enabled for it. With ZSAs disabled it can only carry
+  ZEC [#zip-0226-enablezsa]_, so a wallet that disables them for ZEC-only transfers reveals that.
+* Issuance is public: the issuer, each Asset description hash, whether the Asset is finalized,
+  and every issued note in full, including its recipient and value [#zip-0227]_.
+* Burns are public: each burnt Asset and amount [#zip-0226-burn-mechanism]_.
+* The sighash version, the Action Group expiry height and the number of Action Groups are fixed
+  by consensus, so they cannot be used to tell wallets apart.
+* If version 6 transactions stay valid alongside this format, which of the two versions a
+  transaction uses to reach the Ironwood pool is visible.
 
 
 ============
@@ -940,6 +967,12 @@ In the case that the transaction has no Issuance Actions, ``issuance_auth_digest
 
 The field encodings are specified in `Issuance Authorization Signature (IssueAuthSignature)`_.
 
+Block Commitments
+=================
+
+The ``hashAuthDataRoot`` component of ``hashBlockCommitments`` [#zip-0244]_ incorporates
+``auth_digest_zsa`` for each vZSA transaction, with no further structural change.
+
 
 ==========
 Deployment
@@ -970,7 +1003,9 @@ References
 .. [#zip-0225-transaction-format] `ZIP 225: Version 5 Transaction Format. Specification: Transaction Format <zip-0225.rst#transaction-format>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.rst>`_
 .. [#zip-0226-burn-mechanism] `ZIP 226: Transfer and Burn of Zcash Shielded Assets - Burn Mechanism <zip-0226.rst#burn-mechanism>`_
+.. [#zip-0226-enablezsa] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — The enableZSA Flag <zip-0226.rst#the-mathsf-enablezsa-flag>`_
 .. [#zip-0226-note-structure-and-commitment] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Note Structure and Commitment <zip-0226.rst#note-structure-and-commitment>`_
+.. [#zip-0226-privacy-implications] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Privacy Implications <zip-0226.rst#privacy-implications>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <zip-0227.rst>`_
 .. [#zip-0227-issuance-auth-sig] `ZIP 227: Issuance of Zcash Shielded Assets — Issuance Authorization Signature Scheme <zip-0227.rst#issuance-authorization-signature-scheme>`_
 .. [#zip-0227-issuer-identifier] `ZIP 227: Issuance of Zcash Shielded Assets — Issuer Identifier <zip-0227.rst#issuer-identifier>`_
