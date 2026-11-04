@@ -20,16 +20,18 @@ Terminology
 The key word "MUST" in this document is to be interpreted as described in BCP 14
 [#BCP14]_ when, and only when, it appears in all capitals.
 
-The terms "Zcash Shielded Asset", "OrchardZSA", "ZSA" and "Asset" in this document are to be interpreted as described in ZIP 226 [#zip-0226]_.
+The terms "Zcash Shielded Asset", "OrchardZSA" and "ZSA" in this document are to be interpreted
+as described in ZIP 226 [#zip-0226]_.
 
-The terms "Issuance" and "Issuance Action" in this document are to be interpreted as described in ZIP 227 [#zip-0227]_.
+The terms "Asset", "Custom Asset", "Issuance Action" and "Issuance Bundle" in this document are
+to be interpreted as described in ZIP 227 [#zip-0227]_.
 
 The term "Action Group" in this document is to be interpreted as described in ZIP 228 [#zip-0228]_.
 
 The term "Ironwood pool" in this document is to be interpreted as described in ZIP 229 [#zip-0229]_.
 
-"vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6,
-defined in ZIP 229 [#zip-0229]_.
+"vZSA" denotes the transaction version defined in this ZIP (provisionally 7). It is distinct from
+version 6, defined in ZIP 229 [#zip-0229]_.
 
 The character § is used when referring to sections of the Zcash Protocol Specification
 [#protocol]_.
@@ -80,8 +82,8 @@ section covers only what the encoding defined here makes visible.
 * Issuance is public: the issuer, each Asset description hash, whether the Asset is finalized,
   and every issued note in full, including its recipient and value [#zip-0227]_.
 * Burns are public: each burnt Asset and amount [#zip-0226-burn-mechanism]_.
-* The sighash version, the Action Group expiry height and the number of Action Groups are fixed
-  by consensus, so they cannot be used to tell wallets apart.
+* The sighash version and the Action Group expiry height are fixed by consensus, and a transaction
+  has at most one Action Group, so none of these can be used to tell wallets apart.
 * If version 6 transactions stay valid alongside this format, which of the two versions a
   transaction uses to reach the Ironwood pool is visible.
 
@@ -173,7 +175,8 @@ Transaction Format
 | varies                      |``nSpendsSapling``            |``compactSize``                                  |Number of Sapling Spend descriptions in ``vSpendsSapling``.          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 96 × ``nSpendsSapling``     |``vSpendsSapling``            |``SpendDescriptionV5[nSpendsSapling]``           |A sequence of Sapling Spend descriptions, encoded per                |
-|                             |                              |                                                 |§7.3 ‘Spend Description Encoding and Consensus’ (unchanged from V5). |
+|                             |                              |                                                 |§7.3 ‘Spend Description Encoding and Consensus’                      |
+|                             |                              |                                                 |[#protocol-spendencodingandconsensus]_ (unchanged from V5).          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``nOutputsSapling``           |``compactSize``                                  |Number of Sapling Output Descriptions in ``vOutputsSapling``.        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -196,32 +199,32 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **Orchard Transaction Fields**                                                                                                                                                     |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``nActionsOrchard``           |``compactSize``                                  |The number of Orchard Action descriptions in                         |
+| varies                      |``nActionsOrchard``           |``compactSize``                                  |The number of Orchard Action descriptions in                         |
 |                             |                              |                                                 |``vActionsOrchard``.                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``820 * nActionsOrchard``    |``vActionsOrchard``           |``OrchardAction[nActionsOrchard]``               |A sequence of Orchard Action descriptions, encoded per               |
+| 820 × ``nActionsOrchard``   |``vActionsOrchard``           |``OrchardAction[nActionsOrchard]``               |A sequence of Orchard Action descriptions, encoded per               |
 |                             |                              |                                                 |§7.5 ‘Action Description Encoding and Consensus’                     |
 |                             |                              |                                                 |[#protocol-actionencodingandconsensus]_.                             |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``1``                        |``flagsOrchard``              |``byte``                                         |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
+| 1                           |``flagsOrchard``              |``byte``                                         |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                 | * ``enableSpends``                                                  |
 |                             |                              |                                                 | * ``enableOutputs``                                                 |
 |                             |                              |                                                 | * ``enableCrossAddress`` (new at NU6.3)                             |
 |                             |                              |                                                 | * The remaining bits MUST be :math:`0\!`.                           |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``8``                        |``valueBalanceOrchard``       |``int64``                                        |The net value of Orchard spends minus outputs.                       |
+| 8                           |``valueBalanceOrchard``       |``int64``                                        |The net value of Orchard spends minus outputs.                       |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``32``                       |``anchorOrchard``             |``byte[32]``                                     |A root of the Orchard note commitment tree at some block             |
+| 32                          |``anchorOrchard``             |``byte[32]``                                     |A root of the Orchard note commitment tree at some block             |
 |                             |                              |                                                 |height in the past.                                                  |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``sizeProofsOrchard``         |``compactSize``                                  |Length in bytes of ``proofsOrchard``. Value is                       |
+| varies                      |``sizeProofsOrchard``         |``compactSize``                                  |Length in bytes of ``proofsOrchard``. Value is                       |
 |                             |                              |                                                 |:math:`2720 + 2272 \cdot \mathtt{nActionsOrchard}\!`.                |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``sizeProofsOrchard``        |``proofsOrchard``             |``byte[sizeProofsOrchard]``                      |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
+| ``sizeProofsOrchard``       |``proofsOrchard``             |``byte[sizeProofsOrchard]``                      |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``vSpendAuthSigsOrchard``     |``OrchardSignature[nActionsOrchard]``            |Authorizing signatures for each Orchard Action.                      |
+| varies                      |``vSpendAuthSigsOrchard``     |``OrchardSignature[nActionsOrchard]``            |Authorizing signatures for each Orchard Action.                      |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-|``varies``                   |``bindingSigOrchard``         |``OrchardSignature``                             |An Orchard binding signature on the SIGHASH transaction hash.        |
+| varies                      |``bindingSigOrchard``         |``OrchardSignature``                             |An Orchard binding signature on the SIGHASH transaction hash.        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **IronwoodZSA Transaction Fields**                                                                                                                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -244,9 +247,8 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``vIssueActions``             |``IssueAction[nIssueActions]``                   |A sequence of issuance action descriptions.                          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``issueAuthSig``              |``IssueAuthSignature``                           |The signature of the transaction SIGHASH, signed by the issuer,      |
-|                             |                              |                                                 |validated as in Issuance Authorization Signature Scheme              |
-|                             |                              |                                                 |[#zip-0227-issuance-auth-sig]_.                                      |
+| varies                      |``issueAuthSig``              |``IssueAuthSignature``                           |The issuer's signature on the SIGHASH transaction hash, encoded per  |
+|                             |                              |                                                 |`Issuance Authorization Signature (IssueAuthSignature)`_.            |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 
 
@@ -274,9 +276,10 @@ Transaction Format
   only if $\mathtt{nActionGroupsIronwood} > 0$. If ``valueBalanceIronwood`` is not present,
   then $\mathsf{v^{balanceIronwood}}$ is defined to be $0$.
 
-* The field ``issueAuthSig`` is present if and only if $\mathtt{nIssueActions} > 0$.
-  The fields ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always present.
-  If $\mathtt{nIssueActions} = 0$ then ``issuerLength`` MUST be set to $0$ (``issuer`` and ``vIssueActions`` will be empty in this case).
+* The field ``issueAuthSig`` is present if and only if $\mathtt{nIssueActions} > 0$. The fields
+  ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always present. If
+  $\mathtt{nIssueActions} = 0$ then ``issuerLength`` MUST be $0$ (so ``issuer`` and ``vIssueActions``
+  are empty).
 
 * The ``version`` and ``nVersionGroupId`` values are provisional and subject to change.
 
@@ -290,10 +293,8 @@ Transaction Format
 
 * In coinbase transactions, ``enableSpends`` and ``enableZSA`` MUST be $0$ in every ``flagsIronwood``.
 
-The encodings of ``tx_in``, and ``tx_out`` are as in prior transaction versions (i.e.
-unchanged since Zcash launch). [#protocol-txnencoding]_ [#zip-0225-transaction-format]_
-
-The encodings of ``ActionGroupDescription``, ``AssetBurn`` and ``IssueAction`` are described below.
+The encodings of ``tx_in`` and ``tx_out`` are unchanged since Zcash launch [#protocol-txnencoding]_
+[#zip-0225-transaction-format]_. The types introduced by this format are encoded as described below.
 
 OrchardZSA Action Group Description
 -----------------------------------
@@ -308,15 +309,15 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 852 × ``nActionsIronwood``  |``vActionsIronwood``          |``OrchardZSAAction[nActionsIronwood]``          |A sequence of OrchardZSA Action descriptions in the Action Group.    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-|``1``                        |``flagsIronwood``             |``byte``                                        |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
+| 1                           |``flagsIronwood``             |``byte``                                        |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                | * ``enableSpends``                                                  |
 |                             |                              |                                                | * ``enableOutputs``                                                 |
 |                             |                              |                                                | * ``enableCrossAddress``                                            |
 |                             |                              |                                                | * ``enableZSA``                                                     |
 |                             |                              |                                                | * The remaining bits MUST be :math:`0\!`.                           |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 32                          |``anchorIronwood``            |``byte[32]``                                    |A root of the **Ironwood** note commitment tree at some block height |
-|                             |                              |                                                |in the past.                                                         |
+| 32                          |``anchorIronwood``            |``byte[32]``                                    |A root of the Ironwood note commitment tree at some block height in  |
+|                             |                              |                                                |the past.                                                            |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 4                           |``nAGExpiryHeight``           |``uint32``                                      |A block height in the range {1 .. 499999999} after which any         |
 |                             |                              |                                                |transaction including this Action Group cannot be mined, or 0 if     |
@@ -336,8 +337,6 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 |                             |                              |                                                |transaction.                                                         |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
-The encodings of ``OrchardZSAAction`` and ``AssetBurn`` are described below.
-
 * The proofs aggregated in ``proofsIronwood``, and the elements of
   ``vSpendAuthSigsIronwood``, each have a 1:1 correspondence to the elements of
   ``vActionsIronwood`` and MUST be ordered such that the proof or signature at a given
@@ -348,17 +347,18 @@ The encodings of ``OrchardZSAAction`` and ``AssetBurn`` are described below.
 Rationale for nAGExpiryHeight
 `````````````````````````````
 
-We introduce the ``nAGExpiryHeight`` field in this transaction format in order to be forward compatible with Swaps over ZSAs, as proposed in ZIP 228 [#zip-0228]_.
-For the OrchardZSA protocol, which does not make use of an additional expiry height for transactions, we set the value of ``nAGExpiryHeight`` to be ``0`` by consensus.
-This serves as a default value to represent the situation where there is no expiry, analogous to the convention adopted for ``nExpiryHeight`` in ZIP 203 [#zip-0203]_.
+The ``nAGExpiryHeight`` field is included for forward compatibility with Swaps over ZSAs, as
+proposed in ZIP 228 [#zip-0228]_. The OrchardZSA protocol does not use an Action Group expiry, so
+consensus fixes the field at ``0``, the no-expiry value also used for ``nExpiryHeight`` in ZIP 203
+[#zip-0203]_.
 
 Rationale for including Burn fields inside OrchardZSA Action Groups
 ```````````````````````````````````````````````````````````````````
 
-Note that this transaction format includes the burn fields of the transaction inside the OrchardZSA Action Group rather than at the transaction level.
-This is a design choice that considers the future scenario where Action Groups may be generated by different parties before being bundled together into a transaction.
-In such a scenario, the individual parties can burn Assets of their choice in their corresponding Action Groups. 
-Maintaining the burn fields at the transaction level would provide the ability to burn Assets only to the party performing the bundling of the Action Groups.
+The burn fields are part of the Action Group rather than of the transaction so that, when Action
+Groups are generated by different parties and later bundled into one transaction, each party can
+burn Assets in its own Action Group. Transaction-level burn fields would reserve burning to the
+party that bundles the Action Groups.
 
 
 OrchardZSA Action Description (``OrchardZSAAction``)
@@ -396,16 +396,14 @@ An OrchardZSA Asset Burn description is encoded in a transaction as an instance 
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
-| 32                          |``AssetBase``                 |``byte[32]``                                    |For the OrchardZSA protocol, this is the encoding of the Asset Base  |
-|                             |                              |                                                |:math:`\mathsf{AssetBase^{Orchard}}\!`.                              |
+| 32                          |``assetBase``                 |``byte[32]``                                    |The encoding :math:`\mathsf{asset\_base}` of the Asset Base of the   |
+|                             |                              |                                                |Asset being burnt.                                                   |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 8                           |``valueBurn``                 |``uint64``                                      |The amount being burnt. The value is checked by consensus to be      |
-|                             |                              |                                                |non-zero, and at most :math:`\mathsf{MAX\_BURN\_VALUE}`              |
-|                             |                              |                                                |[#zip-0226-burn-mechanism]_.                                         |
+| 8                           |``valueBurn``                 |``uint64``                                      |The amount being burnt.                                              |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
-The encodings of each of these elements are defined in ZIP 226 [#zip-0226-burn-mechanism]_.
-The $\mathsf{assetBurn}$ set of ZIP 226 is the Action Group's ``vAssetBurn`` (empty if there is none).
+The $\mathsf{assetBurn}$ set of ZIP 226 [#zip-0226-burn-mechanism]_ is the Action Group's
+``vAssetBurn`` (empty if there is none); the consensus rules for its elements are specified there.
 
 Transparent Sighash Information (``TransparentSighashInfo``)
 ------------------------------------------------------------
@@ -462,9 +460,9 @@ Issuance Authorization Signature (``IssueAuthSignature``)
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``sizeSignature``             |``compactSize``                                 |The size in bytes of ``signature``.                                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``signature``                 |``byte[sizeSignature]``                         |The signature of the transaction SIGHASH, signed by the issuer,      |
-|                             |                              |                                                |preceded by a ``0x00`` byte indicating a BIP 340 signature. It is    |
-|                             |                              |                                                |validated as specified in [#zip-0227-issuance-auth-sig]_.            |
+| varies                      |``signature``                 |``byte[sizeSignature]``                         |The ``issueAuthSig`` encoding of ZIP 227                             |
+|                             |                              |                                                |[#zip-0227-issuance-auth-sig]_: a ``0x00`` byte indicating a BIP 340 |
+|                             |                              |                                                |signature, followed by the signature.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 
@@ -507,78 +505,62 @@ An issuance note description, ``IssueNoteDescription`` contains the following fi
 |                             |                              |                                                |diversifier and :math:`\mathsf{pk_d}` is the diversified             |
 |                             |                              |                                                |transmission key. **Non Normative Note**: This is the same as the    |
 |                             |                              |                                                |encoding of an Orchard Raw Payment Address, as defined in            |
-|                             |                              |                                                |§5.6.4.2 ‘Orchard Raw Payment Addresses’.                            |
+|                             |                              |                                                |§5.6.4.2 ‘Orchard Raw Payment Addresses’                             |
+|                             |                              |                                                |[#protocol-orchardpaymentaddrencoding]_.                             |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 8                           |``value``                     |``uint64``                                      |The amount being issued in this note.                                |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``rho``                       |``byte[32]``                                    |This is defined and encoded in the same manner as for Orchard notes  |
-|                             |                              |                                                |in §3.2.1 ‘Note Plaintexts and Memo Fields’.                         |
+|                             |                              |                                                |in §3.2.1 ‘Note Plaintexts and Memo Fields’                          |
+|                             |                              |                                                |[#protocol-noteptconcept]_.                                          |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 32                          |``rseed``                     |``byte[32]``                                    |The ``rseed`` field of the note, encoded as for Orchard notes in     |
-|                             |                              |                                                |§3.2.1 ‘Note Plaintexts and Memo Fields’.                            |
+|                             |                              |                                                |§3.2.1 ‘Note Plaintexts and Memo Fields’ [#protocol-noteptconcept]_. |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 Note Plaintexts
 ---------------
 
-The $\mathsf{leadByte}$ of note plaintexts of OrchardZSA Action Group outputs MUST be
-$\mathtt{0x04}$, for all Assets including ZEC. Accordingly, in transactions using this format,
-$\mathsf{allowedLeadBytes}^{\textit{IronwoodPool}}$ as defined in ZIP 2005 [#zip-2005]_ is
-$\{ \mathtt{0x04} \}$.
+OrchardZSA notes have an additional $\mathsf{AssetBase}$ field, included in the note plaintext as
+its byte encoding $\mathsf{asset\_base} = \mathsf{LEBS2OSP}_{\ell_{\mathbb{P}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}))$
+[#zip-0226-note-structure-and-commitment]_. An Orchard note is equivalent to an OrchardZSA note
+with $\mathsf{AssetBase} = \mathcal{V}^{\mathsf{Orchard}}$ (as defined in § 5.4.8.3 ‘Homomorphic
+Pedersen commitments (Sapling and Orchard)’ [#protocol-concretehomomorphiccommit]_); the two have
+the same note commitment, so note plaintexts need not distinguish them.
 
-
-Orchard Note Plaintext
-``````````````````````
-
-OrchardZSA notes have an additional $\mathsf{AssetBase}$ field, which needs to be included
-(as its byte sequence encoding $\mathsf{asset\_base}$) in an OrchardZSA note plaintext.
-
-Let $\mathcal{V}^{\mathsf{Orchard}}$ be as defined in
-§ 5.4.8.3 ‘Homomorphic Pedersen commitments (Sapling and Orchard)’
-[#protocol-concretehomomorphiccommit]_.
-
-An Orchard note is essentially equivalent to an OrchardZSA note with
-$\mathsf{AssetBase} = \mathcal{V}^{\mathsf{Orchard}}$; in particular, they have
-the same note commitment (as defined in [#zip-0226-note-structure-and-commitment]_),
-and need not be distinguished in note plaintexts.
-
-Each new OrchardZSA note plaintext consists of
+An OrchardZSA note plaintext consists of
 
 .. math:: (\mathsf{leadByte} : \mathbb{B}^{\mathbb{Y}}, \mathsf{d} : \mathbb{B}^{[\ell_{\mathsf{d}}]}, \mathsf{v} : \{0 .. 2^{\ell_{\mathsf{value}}} - 1\}, \mathsf{rseed} : \mathbb{B}^{\mathbb{Y}[32]}, \mathsf{asset\_base} : \mathbb{B}^{\mathbb{Y}[\ell_{\mathbb{P}}/8]}, \mathsf{memo} : \mathbb{B}^{\mathbb{Y}[512]})
 
-where (consistent with [#zip-0226-note-structure-and-commitment]_) $\mathsf{asset\_base}$
-is $\mathsf{LEBS2OSP}_{\ell_{\mathbb{P}}}(\mathsf{repr}_{\mathbb{P}}(\mathsf{AssetBase}))$.
-
-The encoding of a new OrchardZSA note plaintext in
-§ 5.5 ‘Encodings of Note Plaintexts and Memo Fields’ [#protocol-noteptencoding]_
-is similarly updated and is now defined as:
+Its encoding, updating § 5.5 ‘Encodings of Note Plaintexts and Memo Fields’
+[#protocol-noteptencoding]_, is
 
 .. math:: [\mathsf{leadByte}] \,||\, \mathsf{LEBS2OSP}_{88}(\mathsf{d}) \,||\, \mathsf{I2LEOSP}_{64}(\mathsf{v}) \,||\, \mathsf{rseed} \,||\, \mathsf{asset\_base} \,||\, \mathsf{memo}
 
-The encodings of $\mathsf{d}$, $\mathsf{v}$, and $\mathsf{rseed}$ remain unchanged from the previous specification in §5.5 ‘Encodings of Note Plaintexts and Memo Fields’ of the Zcash Protocol Specification [#protocol-noteptencoding]_.
+where the encodings of $\mathsf{d}$, $\mathsf{v}$, and $\mathsf{rseed}$ are unchanged from § 5.5.
 
-Non-normative note: For lead byte $\mathtt{0x04}$, $\mathsf{rcm}$ also commits to
-$\mathsf{asset\_base}$ [#zip-0226]_.
+The $\mathsf{leadByte}$ of every note plaintext of an OrchardZSA Action Group output MUST be
+$\mathtt{0x04}$, for all Assets including ZEC. This ZIP therefore changes
+$\mathsf{allowedLeadBytes}^{\textit{IronwoodPool}}$ of ZIP 2005 [#zip-2005]_ to return
+$\{ \mathtt{0x04} \}$ when $\mathsf{txVersion}$ is vZSA.
 
 Rationale for requiring the lead byte to be 0x04
 ````````````````````````````````````````````````
 
 ZIP 2005's lead byte $\mathtt{0x03}$ [#zip-2005]_ cannot be reused: these plaintexts add
-$\mathsf{asset\_base}$, and their $\mathsf{rcm}$ derivation commits to it. Using $\mathtt{0x04}$ for
-every Asset, including ZEC, keeps one plaintext layout and one $\mathsf{rcm}$ derivation per lead byte.
+$\mathsf{asset\_base}$, and for lead byte $\mathtt{0x04}$ the $\mathsf{rcm}$ derivation also commits
+to it [#zip-0226]_. Using $\mathtt{0x04}$ for every Asset, including ZEC, keeps one plaintext layout
+and one $\mathsf{rcm}$ derivation per lead byte.
 
-
-Transaction Identifiers, Auth Digests, and Signature Digests
-============================================================
-
-For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth digests"),
-and signature digests are computed as in ZIP 229 [#zip-0229]_, with a newly updated **Ironwood component digest**, and a newly added **Issuance digest**.
 
 TxId Digest
 ===========
 
-The overall structure of the TxID digest is as follows; each name referenced
-here will either be referenced or described in detail below::
+For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth
+digests"), and signature digests are computed as in ZIP 229 [#zip-0229]_, with a changed
+**Ironwood component digest** and a new **Issuance digest**.
+
+The overall structure of the txid digest is as follows::
 
     txid_digest_zsa *
     ├── header_digest
@@ -625,8 +607,8 @@ children, initialized with a personalization string specific to that branch
 of the tree. Nodes that are not themselves digests are written in ``camelCase``.
 In the specification below, nodes of the tree are presented in depth-first order.
 
-The nodes with a ``*`` have new definitions given below. All other nodes have the
-same definition as in ZIP 229 [#zip-0229]_.
+The nodes marked ``*`` are new or changed relative to ZIP 229 [#zip-0229]_; the digests among
+them are defined below. All other nodes are as defined in ZIP 229.
 
 txid_digest_zsa
 ---------------
@@ -650,7 +632,7 @@ the consensus branch ID for the epoch of the block containing the transaction.
 
 T.5: ironwood_digest_zsa
 ````````````````````````
-When OrchardZSA Action Groups are present in the transaction, this digest is a BLAKE2b-256 hash of the following values::
+If $\mathtt{nActionGroupsIronwood} > 0$, this digest is a BLAKE2b-256 hash of the following values::
 
     T.5a: ironwood_action_groups_digest_zsa  (32-byte hash output)
     T.5b: valueBalanceIronwood               (64-bit signed little-endian)
@@ -659,7 +641,7 @@ The personalization field of this hash is set to::
 
     "ZTxIdIronwdH_zsa"
 
-In the case that the transaction has no OrchardZSA Action Groups, ``ironwood_digest_zsa`` is ::
+If $\mathtt{nActionGroupsIronwood} = 0$, ``ironwood_digest_zsa`` is ::
 
     BLAKE2b-256("ZTxIdIronwdH_zsa", [])
 
@@ -714,11 +696,10 @@ The personalization field of this hash is set to::
 
 The field encodings are specified in `OrchardZSA Action Description (OrchardZSAAction)`_.
 
-Non-normative note: The ``ironwood_actions_memos_digest_v6`` node of ZIP 229 [#zip-0229]_
-cannot be reused here. It hashes ``encCiphertext[52..564]``, which matches the layout of a
-note plaintext without an $\mathsf{asset\_base}$ field. In an OrchardZSA note plaintext the
-memo starts 32 bytes later, so that range would leave ``encCiphertext[564..596]`` (the end
-of the encrypted memo) outside every digest.
+Non-normative note: ZIP 229's ``ironwood_actions_memos_digest_v6`` [#zip-0229]_ hashes
+``encCiphertext[52..564]``, the memo range of a note plaintext without $\mathsf{asset\_base}$.
+Here the memo starts 32 bytes later, so reusing that node would leave ``encCiphertext[564..596]``
+outside every digest.
 
 T.5a.iii: ironwood_actions_noncompact_digest_zsa
 ................................................
@@ -773,7 +754,7 @@ The personalization field of this hash is set to::
 
   "ZTxIdSAIssueHash"
 
-In case the transaction has no issuance components, ``issuance_digest`` is::
+If $\mathtt{nIssueActions} = 0$, ``issuance_digest`` is::
 
     BLAKE2b-256("ZTxIdSAIssueHash", [])
 
@@ -816,15 +797,15 @@ The field encodings are specified in `Issue Note Description (IssueNoteDescripti
 Signature Digest
 ================
 
-The vZSA signature digest is ``txid_digest_zsa`` with T.2 replaced by ``transparent_sig_digest``
-from ZIP 244 [#zip-0244-sigdigest]_. Shielded and issuance signatures use it as ZIP 244
-specifies for an Orchard Action.
+The vZSA signature digest is ``txid_digest_zsa`` with ``transparent_digest`` (T.2) replaced by
+``transparent_sig_digest`` as defined in ZIP 244 [#zip-0244-sigdigest]_. For a signature over a
+Sapling Spend, an Orchard-pool or Ironwood-pool Action, or the Issuance Bundle,
+``transparent_sig_digest`` is computed as ZIP 244 specifies for a Sapling Spend or Orchard Action.
 
 Authorizing Data Commitment
 ===========================
 
-The authorizing data commitment (auth digest) is computed as in ZIP 229 [#zip-0229]_, with an updated **Ironwood component digest**, and a newly added **Issuance digest**.
-The auth digest structure becomes::
+The auth digest structure is as follows::
 
     auth_digest_zsa (*)
     ├── transparent_auth_digest (*)
@@ -851,18 +832,16 @@ The auth digest structure becomes::
     └── issuance_auth_digest (+)
         └── issueAuthSig
 
-where (*) indicates an updated definition, and (+) indicates a new definition as compared to ZIP 229 [#zip-0229]_.
+where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
-Note that while the structure of ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` remains
-the same as in ZIP 229, the field encodings of some of their components (viz.
-``vSpendAuthSigsSapling``, ``bindingSigSapling``, ``vSpendAuthSigsOrchard`` and
-``bindingSigOrchard``) differ due to changes to their field encodings in `Transaction Format`_.
+``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` keep their ZIP 229 structure and
+personalizations, but ``vSpendAuthSigsSapling``, ``bindingSigSapling``, ``vSpendAuthSigsOrchard``
+and ``bindingSigOrchard`` are hashed in their `Transaction Format`_ encodings, which now include
+``sighashInfo``. ``transparent_auth_digest`` likewise keeps its ZIP 229 personalization. The
+transaction version is committed in ``header_digest``, so a version 6 transaction and a vZSA
+transaction cannot share a (txid, auth digest) pair.
 
-These nodes and ``transparent_auth_digest`` keep their ZIP 229 personalizations. The transaction
-version is committed in ``header_digest``, so a version 6 transaction and a transaction in the format
-defined here cannot share a (txid, auth digest) pair.
-
-The definitions of the updated/added hashes are given below.
+The updated and new nodes are defined below.
 
 auth_digest_zsa
 ---------------
@@ -904,7 +883,7 @@ The encoding of ``TransparentSighashInfo`` is specified in
 A.4: ironwood_auth_digest_zsa
 `````````````````````````````
 
-In the case that OrchardZSA Action Groups are present, this is a BLAKE2b-256 hash of the following values::
+If $\mathtt{nActionGroupsIronwood} > 0$, this is a BLAKE2b-256 hash of the following values::
 
     A.4a: ironwood_action_groups_auth_digest    (32-byte hash output)
     A.4b: bindingSigIronwood                    (field encoding bytes)
@@ -913,12 +892,11 @@ The personalization field of this hash is::
 
     "ZTxAuthIrnH__zsa" (2 underscore characters)
 
-In case that the transaction has no OrchardZSA Action Groups, ``ironwood_auth_digest_zsa`` is::
+If $\mathtt{nActionGroupsIronwood} = 0$, ``ironwood_auth_digest_zsa`` is::
 
     BLAKE2b-256("ZTxAuthIrnH__zsa", [])
 
 The field encodings are specified in `Transaction Format`_.
-Note that this means the encoding of ``bindingSigIronwood`` differs from that used in ZIP 229.
 
 A.4a: ironwood_action_groups_auth_digest
 ''''''''''''''''''''''''''''''''''''''''
@@ -948,12 +926,12 @@ The personalization field of this hash is set to::
     "ZTxAuthIrnSASH__" (2 underscore characters)
 
 The encoding of ``OrchardSignature`` is specified in `Orchard Signature (OrchardSignature)`_.
-Note that this means the encoding of ``vSpendAuthSigsIronwood`` differs from that used in ZIP 229.
 
 A.5: issuance_auth_digest
 `````````````````````````
 
-In the case that Issuance Actions are present, this is a BLAKE2b-256 hash of the field encoding of the ``issueAuthSig`` field of the transaction::
+If $\mathtt{nIssueActions} > 0$, this is a BLAKE2b-256 hash of the field encoding of the
+``issueAuthSig`` field of the transaction::
 
    A.5a: issueAuthSig            (field encoding bytes)
 
@@ -961,7 +939,7 @@ The personalization field of this hash is set to::
 
   "ZTxAuthIssH__zsa" (2 underscore characters)
 
-In the case that the transaction has no Issuance Actions, ``issuance_auth_digest`` is ::
+If $\mathtt{nIssueActions} = 0$, ``issuance_auth_digest`` is ::
 
   BLAKE2b-256("ZTxAuthIssH__zsa", [])
 
@@ -993,7 +971,10 @@ References
 ==========
 
 .. [#BCP14] `Information on BCP 14 — "RFC 2119: Key words for use in RFCs to Indicate Requirement Levels" and "RFC 8174: Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words" <https://www.rfc-editor.org/info/bcp14>`_
-.. [#protocol] `Zcash Protocol Specification, Version 2026.8.0 or later [NU6.3] <protocol/protocol.pdf>`_
+.. [#protocol] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3] or later <protocol/protocol.pdf>`_
+.. [#protocol-noteptconcept] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 3.2.1: Note Plaintexts and Memo Fields <protocol/protocol.pdf#noteptconcept>`_
+.. [#protocol-orchardpaymentaddrencoding] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.6.4.2: Orchard Raw Payment Addresses <protocol/protocol.pdf#orchardpaymentaddrencoding>`_
+.. [#protocol-spendencodingandconsensus] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.3: Spend Description Encoding and Consensus <protocol/protocol.pdf#spendencodingandconsensus>`_
 .. [#protocol-outputencodingandconsensus] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.4: Output Description Encoding and Consensus <protocol/protocol.pdf#outputencodingandconsensus>`_
 .. [#protocol-actionencodingandconsensus] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 7.5: Action Description Encoding and Consensus <protocol/protocol.pdf#actionencodingandconsensus>`_
 .. [#protocol-concretehomomorphiccommit] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.4.8.3: Homomorphic Pedersen commitments (Sapling and Orchard) <protocol/protocol.pdf#concretehomomorphiccommit>`_
