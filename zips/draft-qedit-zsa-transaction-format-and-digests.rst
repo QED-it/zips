@@ -127,7 +127,8 @@ Sighash versioning
 The ``sighashInfo`` encoding and sighash versioning are as specified in ZIP 248
 [#zip-0248-sighash-versioning]_. In a vZSA transaction, every ``sighashInfo`` MUST be ``[0x00]``
 (``sighashVersion`` 0, empty ``associatedData``), which selects the digest defined in
-`Signature Digest`_.
+`Signature Digest`_. Orchard-pool signatures (``vSpendAuthSigsOrchard`` and ``bindingSigOrchard``)
+are encoded as in version 6 [#zip-0229]_, without ``sighashInfo``, and always sign that digest.
 
 
 Transaction Format
@@ -216,9 +217,9 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeProofsOrchard``       |``proofsOrchard``             |``byte[sizeProofsOrchard]``                      |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``vSpendAuthSigsOrchard``     |``OrchardSignature[nActionsOrchard]``            |Authorizing signatures for each Orchard Action.                      |
+| 64 × ``nActionsOrchard``    |``vSpendAuthSigsOrchard``     |``byte[64 * nActionsOrchard]``                   |Authorizing signatures for each Orchard Action.                      |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``bindingSigOrchard``         |``OrchardSignature``                             |An Orchard binding signature on the SIGHASH transaction hash.        |
+| 64                          |``bindingSigOrchard``         |``byte[64]``                                     |An Orchard binding signature on the SIGHASH transaction hash.        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **IronwoodZSA Transaction Fields**                                                                                                                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -822,15 +823,13 @@ The auth digest structure is as follows::
     │   └── issueAuthSig
     └── sighash_info_digest (+)
         ├── vSighashInfo
-        ├── sighashInfo of each Sapling signature
-        └── sighashInfo of each Orchard signature
+        └── sighashInfo of each Sapling signature
 
 where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
 ``transparent_auth_digest``, ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are as in
-ZIP 229 [#zip-0229]_, with their Sapling and Orchard signatures hashed as the 64-byte ``signature``
-field only. The ``sighashInfo`` values they omit are committed in
-``sighash_info_digest`` instead, so what these nodes hash, and their personalizations, are unchanged.
+ZIP 229 [#zip-0229]_. ``sapling_auth_digest_v6`` hashes each Sapling signature as its 64-byte
+``signature`` only; the omitted ``sighashInfo`` values are committed in ``sighash_info_digest``.
 
 The updated and new nodes are defined below.
 
@@ -923,7 +922,6 @@ each of the following, in order::
 
     A.6a: each element of vSighashInfo
     A.6b: each element of vSpendAuthSigsSapling, then bindingSigSapling if present
-    A.6c: each element of vSpendAuthSigsOrchard, then bindingSigOrchard if present
 
 The personalization field of this hash is set to::
 
