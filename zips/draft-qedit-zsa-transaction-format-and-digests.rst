@@ -299,7 +299,7 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
 +=============================+==============================+================================================+=====================================================================+
 | varies                      |``nActionsIronwood``          |``compactSize``                                 |The number of Action descriptions in ``vActionsIronwood``.           |
-|                             |                              |                                                |This MUST be greater than ``0`` and less than :math:`2^{16}\!`.      |
+|                             |                              |                                                |This MUST have a value strictly greater than ``0``.                  |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 852 × ``nActionsIronwood``  |``vActionsIronwood``          |``OrchardZSAAction[nActionsIronwood]``          |A sequence of OrchardZSA Action descriptions in the Action Group.    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
