@@ -124,16 +124,10 @@ txid, auth digest and signature digest are computed.
 Sighash versioning
 ==================
 
-As in ZIP 248 [#zip-0248]_, the sighash version is encoded as a single byte alongside any associated data
-that the sighash algorithm version requires (for deterministically computing the
-digest):
-
-``sighashInfo = [sighashVersion] || associatedData``
-
-where ``associatedData`` is specific to the bundle it appears in.
-
-In a vZSA transaction, every ``sighashInfo`` MUST be ``[0x00]`` (``sighashVersion`` 0, empty
-``associatedData``), which selects the digest defined in `Signature Digest`_.
+The ``sighashInfo`` encoding and sighash versioning are as specified in ZIP 248
+[#zip-0248-sighash-versioning]_. In a vZSA transaction, every ``sighashInfo`` MUST be ``[0x00]``
+(``sighashVersion`` 0, empty ``associatedData``), which selects the digest defined in
+`Signature Digest`_.
 
 
 Transaction Format
@@ -991,5 +985,6 @@ References
 .. [#zip-0244] `ZIP 244: Transaction Identifier Non-Malleability <zip-0244.rst>`_
 .. [#zip-0244-sigdigest] `ZIP 244: Transaction Identifier Non-Malleability — Signature Digest <zip-0244.rst#signature-digest>`_
 .. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
+.. [#zip-0248-sighash-versioning] `ZIP 248: Extensible Transaction Format — Sighash Versioning <zip-0248.rst#sighash-versioning>`_
 .. [#zip-0307] `ZIP 307: Light Client Protocol for Payment Detection <zip-0307.rst>`_
 .. [#zip-2005] `ZIP 2005: Ironwood Quantum Recoverability <zip-2005.md>`_
