@@ -558,7 +558,8 @@ TxId Digest
 
 For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth
 digests"), and signature digests are computed as in ZIP 229 [#zip-0229]_, with a changed
-**Ironwood component digest** and a new **Issuance digest**.
+**Ironwood component digest**, a new **Issuance digest**, and, in the auth digest only, a new
+**sighash info digest**.
 
 The overall structure of the txid digest is as follows::
 
@@ -808,9 +809,7 @@ Authorizing Data Commitment
 The auth digest structure is as follows::
 
     auth_digest_zsa (*)
-    ├── transparent_auth_digest (*)
-    │   ├── TransparentSighashInfo
-    │   └── scriptSig
+    ├── transparent_auth_digest
     ├── sapling_auth_digest_v6
     │   ├── vSpendProofsSapling
     │   ├── vSpendAuthSigsSapling
@@ -829,17 +828,19 @@ The auth digest structure is as follows::
     │   │   │   └── vSpendAuthSigsIronwood
     │   │   └── anchorIronwood
     │   └── bindingSigIronwood
-    └── issuance_auth_digest (+)
-        └── issueAuthSig
+    ├── issuance_auth_digest (+)
+    │   └── issueAuthSig
+    └── sighash_info_digest (+)
+        ├── vSighashInfo
+        ├── sighashInfo of each Sapling signature
+        └── sighashInfo of each Orchard signature
 
 where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
-``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` keep their ZIP 229 structure and
-personalizations, but ``vSpendAuthSigsSapling``, ``bindingSigSapling``, ``vSpendAuthSigsOrchard``
-and ``bindingSigOrchard`` are hashed in their `Transaction Format`_ encodings, which now include
-``sighashInfo``. ``transparent_auth_digest`` likewise keeps its ZIP 229 personalization. The
-transaction version is committed in ``header_digest``, so a version 6 transaction and a vZSA
-transaction cannot share a (txid, auth digest) pair.
+``transparent_auth_digest``, ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are as in
+ZIP 229 [#zip-0229]_, with their Sapling and Orchard signatures hashed as the 64-byte ``signature``
+field only. The ``sighashInfo`` values they omit are committed in
+``sighash_info_digest`` instead, so what these nodes hash, and their personalizations, are unchanged.
 
 The updated and new nodes are defined below.
 
@@ -853,32 +854,11 @@ A BLAKE2b-256 hash of the following values ::
    A.3: orchard_auth_digest_v6    (32-byte hash output)
    A.4: ironwood_auth_digest_zsa  (32-byte hash output)
    A.5: issuance_auth_digest      (32-byte hash output)
+   A.6: sighash_info_digest       (32-byte hash output)
 
 The personalization field of this hash is set to::
 
   "ZTxAuthHash_" || CONSENSUS_BRANCH_ID
-
-A.1: transparent_auth_digest
-````````````````````````````
-
-In the case that the transaction contains transparent inputs, this is a BLAKE2b-256 hash of the
-following values for each transparent input::
-
-    A.1a: TransparentSighashInfo    (field encoding bytes)
-    A.1b: scriptSig                 (field encoding bytes, with compactSize length prefix)
-
-where ``TransparentSighashInfo`` is the element of ``vSighashInfo`` at the same index as the input.
-
-The personalization field of this hash is::
-
-    "ZTxAuthTransHash"
-
-In the case that the transaction has no transparent inputs, ``transparent_auth_digest`` is::
-
-    BLAKE2b-256("ZTxAuthTransHash", [])
-
-The encoding of ``TransparentSighashInfo`` is specified in
-`Transparent Sighash Information (TransparentSighashInfo)`_.
 
 A.4: ironwood_auth_digest_zsa
 `````````````````````````````
@@ -944,6 +924,26 @@ If $\mathtt{nIssueActions} = 0$, ``issuance_auth_digest`` is ::
   BLAKE2b-256("ZTxAuthIssH__zsa", [])
 
 The field encodings are specified in `Issuance Authorization Signature (IssueAuthSignature)`_.
+
+A.6: sighash_info_digest
+````````````````````````
+
+A BLAKE2b-256 hash of the ``sizeSighashInfo`` and ``sighashInfo`` fields (field encoding bytes) of
+each of the following, in order::
+
+    A.6a: each element of vSighashInfo
+    A.6b: each element of vSpendAuthSigsSapling, then bindingSigSapling if present
+    A.6c: each element of vSpendAuthSigsOrchard, then bindingSigOrchard if present
+
+The personalization field of this hash is set to::
+
+    "ZTxAuthSInfH_zsa"
+
+If none of these are present, ``sighash_info_digest`` is::
+
+    BLAKE2b-256("ZTxAuthSInfH_zsa", [])
+
+The field encodings are specified in `Transaction Format`_.
 
 Block Commitments
 =================
