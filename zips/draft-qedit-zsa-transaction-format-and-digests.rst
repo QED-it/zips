@@ -49,7 +49,7 @@ algorithm, going forward it will be possible for signers to use any sighash
 algorithm within the closed set specified for a given transaction version (and
 made available in consensus via network upgrades).
 
-This ZIP defines the sighash algorithms associated with this new transaction format.
+This ZIP also defines the sighash algorithms associated with this new transaction format.
 
 Issuance and burns are public, as in ZIP 227 [#zip-0227]_ and ZIP 226 [#zip-0226]_, while
 shielded outputs look the same for every Asset, including ZEC (see `Privacy Implications`_).
@@ -74,15 +74,15 @@ ZIP 226 [#zip-0226-privacy-implications]_ covers the privacy of the OrchardZSA p
 section covers only what the encoding defined here makes visible.
 
 * Outputs of every Asset, including ZEC, have the same note plaintext lead byte and the same
-  ciphertext size, so the encoding does not show which Asset an Action carries.
+  ciphertext size, so the encoding does not reveal which Asset an Action carries.
 * Each Action Group shows whether ZSAs are enabled for it. With ZSAs disabled it can only carry
-  ZEC [#zip-0226-enablezsa]_, so a wallet that disables them for ZEC-only transfers reveals that.
+  ZEC [#zip-0226-enablezsa]_, so a wallet that disables them for ZEC-only transfers reveals that information.
 * Issuance is public: the issuer, each Asset description hash, whether the Asset is finalized,
   and every issued note in full, including its recipient and value [#zip-0227]_.
 * Burns are public: each burnt Asset and amount [#zip-0226-burn-mechanism]_.
 * The sighash version, the Action Group expiry height and the number of Action Groups are fixed
   by consensus, so they cannot be used to tell wallets apart.
-* If version 6 transactions stay valid alongside this format, which of the two versions a
+* If Version 6 transactions stay valid alongside this format, which of the two versions a
   transaction uses to reach the Ironwood pool is visible.
 
 
@@ -280,7 +280,7 @@ Transaction Format
 
 * The ``version`` and ``nVersionGroupId`` values are provisional and subject to change.
 
-* $\mathtt{nActionGroupsIronwood}$ MUST be $0$ or $1$.
+* ``nActionGroupsIronwood`` MUST be $0$ or $1$.
 
 * ``enableCrossAddress`` in ``flagsOrchard`` MUST be $0$, as in version 6 [#zip-0229]_.
 
@@ -344,6 +344,7 @@ The encodings of ``OrchardZSAAction`` and ``AssetBurn`` are described below.
   index corresponds to the ``OrchardZSAAction`` at the same index.
 * At least one of ``enableSpends`` and ``enableOutputs`` MUST be set.
 * ``nAGExpiryHeight`` MUST be $0$.
+* The $\mathsf{assetBurn}$ set of ZIP 226 [#zip-0226-burn-mechanism]_ is the Action Group's ``vAssetBurn`` (empty if there is none).
 
 Rationale for nAGExpiryHeight
 `````````````````````````````
@@ -405,7 +406,6 @@ An OrchardZSA Asset Burn description is encoded in a transaction as an instance 
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 The encodings of each of these elements are defined in ZIP 226 [#zip-0226-burn-mechanism]_.
-The $\mathsf{assetBurn}$ set of ZIP 226 is the Action Group's ``vAssetBurn`` (empty if there is none).
 
 Transparent Sighash Information (``TransparentSighashInfo``)
 ------------------------------------------------------------
@@ -573,6 +573,7 @@ Transaction Identifiers, Auth Digests, and Signature Digests
 
 For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth digests"),
 and signature digests are computed as in ZIP 229 [#zip-0229]_, with a newly updated **Ironwood component digest**, and a newly added **Issuance digest**.
+Furthermore, the encodings of the components of the authorizing data commitments are updated to reflect the addition of SIGHASH versioning.
 
 TxId Digest
 ===========
@@ -713,12 +714,6 @@ The personalization field of this hash is set to::
   "ZTxIdIrn_AMH_zsa"
 
 The field encodings are specified in `OrchardZSA Action Description (OrchardZSAAction)`_.
-
-Non-normative note: The ``ironwood_actions_memos_digest_v6`` node of ZIP 229 [#zip-0229]_
-cannot be reused here. It hashes ``encCiphertext[52..564]``, which matches the layout of a
-note plaintext without an $\mathsf{asset\_base}$ field. In an OrchardZSA note plaintext the
-memo starts 32 bytes later, so that range would leave ``encCiphertext[564..596]`` (the end
-of the encrypted memo) outside every digest.
 
 T.5a.iii: ironwood_actions_noncompact_digest_zsa
 ................................................
