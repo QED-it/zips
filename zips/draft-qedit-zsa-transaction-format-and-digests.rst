@@ -554,8 +554,7 @@ TxId Digest
 
 For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth
 digests"), and signature digests are computed as in ZIP 229 [#zip-0229]_, with a changed
-**Ironwood component digest**, a new **Issuance digest**, and, in the auth digest only, a new
-**sighash info digest**.
+**Ironwood component digest** and a new **Issuance digest**.
 
 The overall structure of the txid digest is as follows::
 
@@ -800,7 +799,9 @@ Authorizing Data Commitment
 The auth digest structure is as follows::
 
     auth_digest_zsa (*)
-    ├── transparent_auth_digest
+    ├── transparent_auth_digest (*)
+    │   ├── TransparentSighashInfo
+    │   └── scriptSig
     ├── sapling_auth_digest_v6
     │   ├── vSpendProofsSapling
     │   ├── vSpendAuthSigsSapling
@@ -819,17 +820,14 @@ The auth digest structure is as follows::
     │   │   │   └── vSpendAuthSigsIronwood
     │   │   └── anchorIronwood
     │   └── bindingSigIronwood
-    ├── issuance_auth_digest (+)
-    │   └── issueAuthSig
-    └── sighash_info_digest (+)
-        ├── vSighashInfo
-        └── sighashInfo of each Sapling signature
+    └── issuance_auth_digest (+)
+        └── issueAuthSig
 
 where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
-``transparent_auth_digest``, ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are as in
-ZIP 229 [#zip-0229]_. ``sapling_auth_digest_v6`` hashes each Sapling signature as its 64-byte
-``signature`` only; the omitted ``sighashInfo`` values are committed in ``sighash_info_digest``.
+``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are as in ZIP 229 [#zip-0229]_, with
+Sapling signatures hashed in their `Transaction Format`_ encodings, including ``sighashInfo``.
+Personalizations are unchanged, as ``header_digest`` commits to the transaction version.
 
 The updated and new nodes are defined below.
 
@@ -843,11 +841,16 @@ A BLAKE2b-256 hash of the following values ::
    A.3: orchard_auth_digest_v6    (32-byte hash output)
    A.4: ironwood_auth_digest_zsa  (32-byte hash output)
    A.5: issuance_auth_digest      (32-byte hash output)
-   A.6: sighash_info_digest       (32-byte hash output)
 
 The personalization field of this hash is set to::
 
   "ZTxAuthHash_" || CONSENSUS_BRANCH_ID
+
+A.1: transparent_auth_digest
+````````````````````````````
+
+As in ZIP 229 [#zip-0229]_, with each ``scriptSig`` preceded by the ``TransparentSighashInfo``
+element of ``vSighashInfo`` at the same index (field encoding bytes).
 
 A.4: ironwood_auth_digest_zsa
 `````````````````````````````
@@ -913,25 +916,6 @@ If $\mathtt{nIssueActions} = 0$, ``issuance_auth_digest`` is ::
   BLAKE2b-256("ZTxAuthIssH__zsa", [])
 
 The field encodings are specified in `Issuance Authorization Signature (IssueAuthSignature)`_.
-
-A.6: sighash_info_digest
-````````````````````````
-
-A BLAKE2b-256 hash of the ``sizeSighashInfo`` and ``sighashInfo`` fields (field encoding bytes) of
-each of the following, in order::
-
-    A.6a: each element of vSighashInfo
-    A.6b: each element of vSpendAuthSigsSapling, then bindingSigSapling if present
-
-The personalization field of this hash is set to::
-
-    "ZTxAuthSInfH_zsa"
-
-If none of these are present, ``sighash_info_digest`` is::
-
-    BLAKE2b-256("ZTxAuthSInfH_zsa", [])
-
-The field encodings are specified in `Transaction Format`_.
 
 Block Commitments
 =================
