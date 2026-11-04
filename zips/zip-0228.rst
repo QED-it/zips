@@ -84,9 +84,7 @@ v1 Signature Digest
 -------------------
 
 The ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_ specifies versioning for SIGHASH algorithms.
-We define the **v1 Signature Digest** for an Action Group as the output of the ``orchard_action_groups_digest`` for that Action Group.
-
-**Open Issue:** ``orchard_action_groups_digest`` was a digest of the withdrawn ZIP 230 design. The v1 Signature Digest is yet to be specified as a sighash version of the ZSA transaction format, which defines only version 0.
+We define the **v1 Signature Digest** for an Action Group as the output of the ``ironwood_action_groups_digest_zsa`` for that Action Group.
 
 Spend Authorization Signature Changes
 -------------------------------------
@@ -207,7 +205,7 @@ However, in the context of Asset Swaps, there are two problems that prevent this
 - The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a v0 SIGHASH as per the ZSA transaction format. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
 
 To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. 
-The ``orchard_action_groups_digest`` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest. 
+The ``ironwood_action_groups_digest_zsa `` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest. 
 The non-malleability of the expiry height and other fields of received orders during order matching is guaranteed by the unforgeability of the sender's Spend Authorization Signature.
 
 This approach is natural and aligns with the goal of the protocol.

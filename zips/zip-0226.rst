@@ -160,7 +160,7 @@ The nullifier is generated in the same manner as in the Orchard protocol §4.16 
 
 The OrchardZSA note plaintext also includes the Asset Base $\mathsf{asset\_base} : \mathbb{B}^{[\ell_{\mathbb{P}}]}$ in addition to the components in the Orchard note plaintext [#protocol-notept]_.
 
-The encoding of OrchardZSA bundles, including the explicit encoding of the OrchardZSA note plaintext, is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
+The encoding of IronwoodZSA bundles, including the explicit encoding of the OrchardZSA note plaintext, is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 When § 4.7.3 'Sending Notes (Orchard)' [#protocol-orchardsend]_ or § 4.8.3 'Dummy Notes (Orchard)' [#protocol-orcharddummynotes]_ are invoked directly or indirectly in the computation of $\text{ρ}$ and $\text{ψ}$ for an OrchardZSA note, $\mathsf{leadByte}$ MUST be set to $\mathtt{0x04}$.
 
@@ -397,7 +397,7 @@ For ZSAs, the requirements on wallets are:
 * Once ZSAs have activated, *all* wallets should switch to sending only the transaction
   version that supports ZSAs. The main consequence of not doing so is that users would not
   otherwise obtain the privacy benefit of indistinguishability between native and non-native
-  assets in the Ironwood shielded pool, because actions in v6 and earlier transactions can
+  assets in the Ironwood shielded pool, because v6 and earlier transactions can
   only transfer the native ZEC asset.
 
 * *All* wallets should be ready to receive funds in outputs of the transaction version that
