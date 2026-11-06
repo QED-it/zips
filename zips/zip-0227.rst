@@ -325,10 +325,8 @@ An Issue Note is a tuple $(\mathsf{d}, \mathsf{pk_d}, \mathsf{v}, \mathsf{AssetB
 - $\text{ρ}: \mathbb{F}_{q_{\mathbb{P}}}$ is used to derive the nullifier of the note, and is computed as in `Computation of ρ`_.
 - $\mathsf{rseed}: \mathbb{B}^{[\mathbb{Y}^{32}]}$ MUST be sampled uniformly at random by the issuer.
 
-**Open Issue:** The encodings of Issue Notes, issuance actions, and the issuance bundle in the
-transaction format of ZIP 248 [#zip-0248]_ are yet to be specified. In the withdrawn ZIP 230 design,
-an Issue Note is specified by the field encodings in ``IssueNoteDescription``
-[#zip-0230-issue-note]_, together with $\mathsf{issuer}$ from the parent `Issuance Bundle`_ and
+An Issue Note is specified by the field encodings in ``IssueNoteDescription``
+[#draft-qedit-zsa-transaction-format-and-digests]_, together with $\mathsf{issuer}$ from the parent `Issuance Bundle`_ and
 $\mathsf{AssetDescHash}$ from the parent `Issuance Action`_.
 
 Let $\mathsf{Note^{Issue}}$ be the type of an Issue Note, i.e.
@@ -354,7 +352,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 The $\mathsf{finalize}$ boolean is set by the Issuer to signal that there will be no further issuance of the specific Custom Asset.
 As we will see in `Specification: Consensus Rule Changes`_, transactions that attempt to issue further amounts of a Custom Asset that has previously been finalized will be rejected.
 
-**Open Issue:** The complete encoding of these fields into an ``IssueAction`` is yet to be specified, as noted in `Issue Note`_.
+The encoding of these fields into an ``IssueAction`` is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 
 Issuance Bundle
@@ -370,7 +368,7 @@ It contains the following fields:
 
 The issuance bundle is added within the transaction format as a new bundle.
 
-**Open Issue:** ZIP 248 [#zip-0248]_ lists ZSA issuance among its potential future bundle kinds. The encoding of the issuance bundle is yet to be specified, as noted in `Issue Note`_.
+The encoding of the issuance bundle is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Computation of ρ
 ----------------
@@ -394,7 +392,7 @@ where $\mathsf{nf}_{0,0}$ is the nullifier for the input note in the first Actio
 **NOTE:** This implicitly requires that there always is an Action Group in the OrchardZSA bundle of the transaction.
 This is enforced by a consensus rule in the `Specification: Consensus Rule Changes`_ section.
 
-**Open Issue:** Action Groups were part of the withdrawn ZIP 230 design. Supporting them would require a modification to the transaction format of ZIP 248 [#zip-0248]_, which is possible independently of whether ZSAs activate at the same time.
+Action Groups are specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Issuance Protocol
 -----------------
@@ -414,7 +412,7 @@ For all actions ``IssueAction``:
 
 - encode the ``IssueAction`` into the vector ``vIssueActions`` of the bundle.
 
-For the ``IssueBundle`` (see “ZSA Issuance Bundle Fields” in [#zip-0230-transaction-format]_):
+For the ``IssueBundle`` (see “ZSA Issuance Bundle Fields” in [#draft-qedit-zsa-transaction-format-and-digests]_):
 
 - encode the ``vIssueActions`` vector.
 - fill the ``issuerLength`` and ``issuer`` fields using $\mathsf{issuer}$.
@@ -476,11 +474,10 @@ We use $\mathsf{issued\_assets}_{\mathsf{IN}}$ and $\mathsf{issued\_assets}_{\ma
 Specification: Consensus Rule Changes
 =====================================
 
-Let $\mathsf{SigHash}$ be the SIGHASH transaction hash of this transaction, as defined in §4.10 ‘SIGHASH Transaction Hashing’ [#protocol-sighash]_ with the modifications described in `Sighash`_, using $\mathsf{SIGHASH\_ALL}$.
+Let $\mathsf{SigHash}$ be the signature digest of this transaction, as specified in `Sighash`_.
 
 For every transaction:
 
-- The ``nActionGroupsOrchard`` field MUST have a value of either ``0`` or ``1`` and the ``nAGExpiryHeight`` field MUST have a value of ``0``.
 - The output issuance state of the transaction MUST be initialized to be the same as the input issuance state, $\mathsf{issued\_assets}_{\mathsf{OUT}} = \mathsf{issued\_assets}_{\mathsf{IN}}$.
 - The $\mathsf{assetBurn}$ set MUST satisfy the consensus rules specified in ZIP 226 [#zip-0226-assetburn]_.
 - It MUST be the case that for all $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} \geq \mathsf{v}$. The node then MUST update $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase})$ prior to processing the issuance bundle in the following manner. For every $(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{AssetBurn}$, $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} = \mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{balance} - \mathsf{v}$.
@@ -492,7 +489,7 @@ If the transaction contains an issuance bundle:
 - The issuance authorization signature, $\mathsf{issueAuthSig}$, MUST be a valid $\mathsf{IssueAuthSig}$ signature over $\mathsf{SigHash}$, i.e. $\mathsf{IssueAuthSig}.\!\mathsf{Validate}(\mathsf{ik}, \mathsf{SigHash}, \mathsf{issueAuthSig}) = 1$.
 - For every issuance action description ($\mathsf{IssueAction}_\mathsf{i},\ 1 \leq i \leq \mathtt{nIssueActions}$) in the issuance bundle:
 
-  - Every ``IssueNoteDescription`` in the ``IssueAction`` MUST be a valid field encoding as defined in ZIP 230 [#zip-0230-issue-note]_.
+  - Every ``IssueNoteDescription`` in the ``IssueAction`` MUST be a valid field encoding as defined in [#draft-qedit-zsa-transaction-format-and-digests]_.
   - Let an Issue Note (with type $\mathsf{Note^{Issue}}$) be constructed from the fields of each ``IssueNoteDescription``, with the $\mathsf{AssetBase}$ derived from the ``assetDescHash`` field of the ``IssueAction`` and the ``issuer`` field of the issuance bundle, as described in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section. 
   - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1$.
   - If $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \bot$, then let $\mathsf{new\_note_{ref}}$ be the first Issue Note in the Issuance Action.
@@ -508,7 +505,7 @@ If the transaction contains an issuance bundle:
     - The node MUST compute the note commitment, $\mathsf{cm}_{\mathsf{i,j}}$, as defined in the Note Structure and Commitment section of ZIP 226 [#zip-0226-note-structure-and-commitment]_.
   - If $\mathsf{finalize} = 1$ within the ``flagsIssuance`` field of ``IssueAction``, the node MUST set $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} = 1$.
 
-**Open Issue:** These rules refer to the ``nActionGroupsOrchard`` and ``nAGExpiryHeight`` fields and to OrchardZSA Action Groups, which the transaction format of ZIP 248 does not support, as noted in `Computation of ρ`_. They also refer to the encoding of ``IssueNoteDescription``, which is yet to be specified, as noted in `Issue Note`_.
+The Action Groups and the ``IssueNoteDescription`` encoding used by these rules are specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 Addition to the Note Commitment Tree
 ------------------------------------
@@ -524,8 +521,6 @@ The order of addition to the tree is as specified below:
 
   - For every Issue Note in the Issue Action, append the note commitment of the Issue Note to the note commitment tree.
 
-**Open Issue:** This order is defined in terms of OrchardZSA Action Groups, which the transaction format of ZIP 248 does not support, as noted in `Computation of ρ`_.
-
 Rationale
 =========
 The following is a list of rationale for different decisions made in the proposal:
@@ -533,8 +528,6 @@ The following is a list of rationale for different decisions made in the proposa
 - The issuance key structure is independent of the original key tree, but derived in an analogous manner (via ZIP 32). This keeps the issuance details and the Asset Identifiers consistent across multiple shielded pools. It also separates the issuance authority from the spend authority, allowing for the potential transfer of issuance authority without compromising the spend authority.
 - The Custom Asset is described via a combination of the issuer identifier and an asset description string, to preclude the possibility of two different issuers creating colliding Custom Assets.
 - The requirement of at least one OrchardZSA Action Group in the presence of an issue bundle is both to allow for the computation of the $\text{ρ}$ field of the issue notes, as well as to prevent replay attacks. If a transaction includes only an issue bundle, the SIGHASH transaction hash would be computed solely based on the issue bundle. A duplicate bundle would have the same SIGHASH transaction hash, potentially allowing for a replay attack.
-
-  **Open Issue:** The transaction format of ZIP 248 does not support Action Groups, as noted in `Computation of ρ`_.
 
 Hash of the asset description
 -----------------------------
@@ -607,16 +600,9 @@ Concrete Applications
 Sighash
 =======
 
-ZIP 248 specifies the digest algorithms for the transaction version that it
-defines [#zip-0248-digest-algorithms]_, and a mechanism for versioning sighash
-algorithms [#zip-0248-sighash-versioning]_. Each bundle type defines its
-contributions to those digests, and the sighash versions available to its
-signers together with the associated data that each version requires.
-
-**Open Issue:** The digests of the issuance bundle are yet to be specified. So is
-the sighash version that the issuance authorization signature uses, in place of
-the $\mathsf{SIGHASH\_ALL}$ hash type referred to in
-`Specification: Consensus Rule Changes`_.
+The signature digest that $\mathsf{issueAuthSig}$ signs, its ``sighashInfo``, and the
+digests of the issuance bundle are specified in the ZSA transaction format
+[#draft-qedit-zsa-transaction-format-and-digests]_.
 
 
 Changes to ZIP 317 [#zip-0317]_
@@ -708,13 +694,9 @@ References
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.rst>`_
 .. [#zip-0226-note-structure-and-commitment] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Note Structure and Commitment <zip-0226.rst#note-structure-and-commitment>`_
 .. [#zip-0226-assetburn] `ZIP 226: Transfer and Burn of Zcash Shielded Assets — Additional Consensus Rules for the assetBurn set <zip-0226.rst#additional-consensus-rules-for-the-assetburn-set>`_
-.. [#zip-0230-issue-note] `ZIP 230: Withdrawn Version 6 Transaction Format — Issue Note Description (IssueNoteDescription) <zip-0230.rst#issue-note-description-issuenotedescription>`_
-.. [#zip-0230-transaction-format] `ZIP 230: Withdrawn Version 6 Transaction Format — Transaction Format <zip-0230.rst#transaction-format>`_
-.. [#zip-0248] `ZIP 248: Extensible Transaction Format <zip-0248.rst>`_
-.. [#zip-0248-digest-algorithms] `ZIP 248: Extensible Transaction Format — Digest Algorithms <zip-0248.rst#digest-algorithms>`_
-.. [#zip-0248-sighash-versioning] `ZIP 248: Extensible Transaction Format — Sighash Versioning <zip-0248.rst#sighash-versioning>`_
 .. [#zip-0317] `ZIP 317: Proportional Transfer Fee Mechanism <zip-0317.rst>`_
 .. [#zip-0317-fee-calculation] `ZIP 317: Proportional Transfer Fee Mechanism — Fee calculation <zip-0317.rst#fee-calculation>`_
+.. [#draft-qedit-zsa-transaction-format-and-digests] `draft-qedit-zsa-transaction-format-and-digests: ZSA Transaction Format and Digests <draft-qedit-zsa-transaction-format-and-digests.rst>`_
 .. [#bip-0043] `BIP 43: Purpose Field for Deterministic Wallets <https://github.com/bitcoin/bips/blob/master/bip-0043.mediawiki>`_
 .. [#bip-0340] `BIP 340: Schnorr Signatures for secp256k1 <https://github.com/bitcoin/bips/blob/master/bip-0340.mediawiki>`_
 .. [#protocol] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3] or later. <protocol/protocol.pdf>`_
@@ -722,7 +704,6 @@ References
 .. [#protocol-notes] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 3.2: Shielded Pools and Notes <protocol/protocol.pdf#notes>`_
 .. [#protocol-abstractsig] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 4.1.7: Signature <protocol/protocol.pdf#abstractsig>`_
 .. [#protocol-orchardkeycomponents] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 4.2.3: Orchard Key Components <protocol/protocol.pdf#orchardkeycomponents>`_
-.. [#protocol-sighash] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 4.10: SIGHASH Transaction Hashing <protocol/protocol.pdf#sighash>`_
 .. [#protocol-constants] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.3: Constants <protocol/protocol.pdf#constants>`_
 .. [#protocol-concreteprfs] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.4.2: Pseudo Random Functions <protocol/protocol.pdf#concreteprfs>`_
 .. [#protocol-concretegrouphashpallasandvesta] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 5.4.9.8: Group Hash into Pallas and Vesta <protocol/protocol.pdf#concretegrouphashpallasandvesta>`_
