@@ -30,8 +30,8 @@ The term "Action Group" in this document is to be interpreted as described in ZI
 
 The term "Ironwood pool" in this document is to be interpreted as described in ZIP 229 [#zip-0229]_.
 
-"vZSA" denotes the transaction version defined in this ZIP (provisionally 7). It is distinct from
-version 6, defined in ZIP 229 [#zip-0229]_.
+"vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6, defined
+in ZIP 229 [#zip-0229]_.
 
 "NuZSA" denotes the network upgrade that deploys Zcash Shielded Assets [#zip-0226]_ [#zip-0227]_,
 including the vZSA transaction format defined in this ZIP.
@@ -146,7 +146,8 @@ Transaction Format
 | 4                           |``header``                    |``uint32``                                       |Contains:                                                            |
 |                             |                              |                                                 |                                                                     |
 |                             |                              |                                                 |* ``fOverwintered`` flag (bit 31, always set)                        |
-|                             |                              |                                                 |* ``version`` (bits 30 .. 0) – transaction version, MUST be ``7``.   |
+|                             |                              |                                                 |* ``version`` (bits 30 .. 0) – transaction version; the vZSA         |
+|                             |                              |                                                 |  version number is not yet assigned.                                |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 4                           |``nVersionGroupId``           |``uint32``                                       |Version group ID, MUST be ``0x77777777``.                            |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
