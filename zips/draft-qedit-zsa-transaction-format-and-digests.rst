@@ -191,7 +191,7 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 192 × ``nOutputsSapling``   |``vOutputProofsSapling``      |``byte[192 * nOutputsSapling]``                  |Encodings of the zk-SNARK proofs for each Sapling Output.            |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``bindingSigSapling``         |``SaplingSignature``                             |A Sapling binding signature on the SIGHASH transaction hash.         |
+| varies                      |``bindingSigSapling``         |``SaplingSignature``                             |A Sapling binding signature on the `Signature Digest`_.              |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **Orchard Transaction Fields**                                                                                                                                                     |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -220,7 +220,7 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 64 × ``nActionsOrchard``    |``vSpendAuthSigsOrchard``     |``byte[64 * nActionsOrchard]``                   |Authorizing signatures for each Orchard Action.                      |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| 64                          |``bindingSigOrchard``         |``byte[64]``                                     |An Orchard binding signature on the SIGHASH transaction hash.        |
+| 64                          |``bindingSigOrchard``         |``byte[64]``                                     |An Orchard binding signature on the `Signature Digest`_.             |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **IronwoodZSA Transaction Fields**                                                                                                                                                 |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -231,7 +231,7 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | 8                           |``valueBalanceIronwood``      |``int64``                                        |The net value of Ironwood spends minus outputs.                      |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``bindingSigIronwood``        |``OrchardSignature``                             |An OrchardZSA binding signature on the SIGHASH transaction hash.     |
+| varies                      |``bindingSigIronwood``        |``OrchardSignature``                             |An OrchardZSA binding signature on the `Signature Digest`_.          |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | **ZSA Issuance Bundle Fields**                                                                                                                                                     |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
@@ -239,14 +239,17 @@ Transaction Format
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``issuer``                    |``byte[issuerLength]``                           |The issuer identifier as defined in [#zip-0227-issuer-identifier]_.  |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``nIssueActions``             |``compactSize``                                  |The number of issuance actions in the bundle.                        |
+| varies                      |``nIssueActions``             |``compactSize``                                  |The number of Issuance Actions in the bundle.                        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``vIssueActions``             |``IssueAction[nIssueActions]``                   |A sequence of issuance action descriptions.                          |
+| varies                      |``vIssueActions``             |``IssueAction[nIssueActions]``                   |A sequence of Issuance Actions, encoded per                          |
+|                             |                              |                                                 |`Issuance Action Description (IssueAction)`_.                        |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``issueAuthSig``              |``IssueAuthSignature``                           |The issuer's signature on the SIGHASH transaction hash, encoded per  |
+| varies                      |``issueAuthSig``              |``IssueAuthSignature``                           |The issuer's signature on the `Signature Digest`_, encoded per       |
 |                             |                              |                                                 |`Issuance Authorization Signature (IssueAuthSignature)`_.            |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 
+
+Field presence and ordering:
 
 * The fields ``valueBalanceSapling`` and ``bindingSigSapling`` are present if and only if
   $\mathtt{nSpendsSapling} + \mathtt{nOutputsSapling} > 0$. If ``valueBalanceSapling``
@@ -272,22 +275,25 @@ Transaction Format
   only if $\mathtt{nActionGroupsIronwood} > 0$. If ``valueBalanceIronwood`` is not present,
   then $\mathsf{v^{balanceIronwood}}$ is defined to be $0$.
 
-* The field ``issueAuthSig`` is present if and only if $\mathtt{nIssueActions} > 0$. The fields
-  ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always present. If
-  $\mathtt{nIssueActions} = 0$ then ``issuerLength`` MUST be $0$ (so ``issuer`` and ``vIssueActions``
-  are empty).
+* The fields ``issuerLength``, ``issuer``, ``nIssueActions``, and ``vIssueActions`` are always
+  present; ``issueAuthSig`` is present if and only if $\mathtt{nIssueActions} > 0$. If
+  $\mathtt{nIssueActions} = 0$, ``issuerLength`` MUST be $0$ (so ``issuer`` is empty).
 
-* The ``version`` and ``nVersionGroupId`` values are provisional and subject to change.
+Consensus rules:
 
 * ``nActionGroupsIronwood`` MUST be $0$ or $1$.
 
 * ``enableCrossAddress`` in ``flagsOrchard`` MUST be $0$, as in version 6 [#zip-0229]_.
 
 * At least one of these MUST hold: $\mathtt{tx\_in\_count} > 0$, $\mathtt{nSpendsSapling} > 0$, or
-  ``enableSpends`` is set in ``flagsOrchard`` or in any ``flagsIronwood``. Likewise for outputs,
-  with $\mathtt{tx\_out\_count}$, $\mathtt{nOutputsSapling}$ and ``enableOutputs``.
+  ``enableSpends`` is set in ``flagsOrchard`` or in any ``flagsIronwood``.
+
+* At least one of these MUST hold: $\mathtt{tx\_out\_count} > 0$, $\mathtt{nOutputsSapling} > 0$, or
+  ``enableOutputs`` is set in ``flagsOrchard`` or in any ``flagsIronwood``.
 
 * In coinbase transactions, ``enableSpends`` and ``enableZSA`` MUST be $0$ in every ``flagsIronwood``.
+
+The ``version`` and ``nVersionGroupId`` values are provisional and subject to change.
 
 The encodings of ``tx_in`` and ``tx_out`` are unchanged since Zcash launch [#protocol-txnencoding]_
 [#zip-0225-transaction-format]_. The types introduced by this format are encoded as described below.
@@ -466,7 +472,7 @@ Issuance Authorization Signature (``IssueAuthSignature``)
 Issuance Action Description (``IssueAction``)
 ---------------------------------------------
 
-An issuance action, ``IssueAction``, is the instance of issuing a specific Custom Asset, and contains the following fields:
+An Issuance Action, ``IssueAction``, is the instance of issuing a specific Custom Asset, and contains the following fields:
 
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
@@ -475,7 +481,7 @@ An issuance action, ``IssueAction``, is the instance of issuing a specific Custo
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | varies                      |``nNotes``                    |``compactSize``                                 |The number of notes in the Issuance Action.                          |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 115 × ``nNotes``            |``vNotes``                    |``IssueNoteDescription[nNotes]``                |A sequence of issue note descriptions within the Issuance Action.    |
+| 115 × ``nNotes``            |``vNotes``                    |``IssueNoteDescription[nNotes]``                |A sequence of Issue Note descriptions within the Issuance Action.    |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | 1                           |``flagsIssuance``             |``byte``                                        |An 8-bit value representing a set of flags. Ordered from LSB to MSB: |
 |                             |                              |                                                |                                                                     |
@@ -490,7 +496,7 @@ This allows for issuers to create Issuance Actions to only finalize an issued As
 Issue Note Description (``IssueNoteDescription``)
 -------------------------------------------------
 
-An issuance note description, ``IssueNoteDescription`` contains the following fields:
+An Issue Note description, ``IssueNoteDescription``, contains the following fields:
 
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | Bytes                       | Name                         | Data Type                                      | Description                                                         |
@@ -754,7 +760,7 @@ The field encodings are specified in `Transaction Format`_.
 
 T.6c: issue_actions_digest
 ''''''''''''''''''''''''''
-A BLAKE2b-256 hash of Issue Action information for all Issuance Actions belonging to the transaction. For each Issuance Action, the following elements are included in the hash::
+A BLAKE2b-256 hash of Issuance Action information for all Issuance Actions belonging to the transaction. For each Issuance Action, the following elements are included in the hash::
 
    T.6c.i  : assetDescHash           (field encoding bytes)
    T.6c.ii : issue_notes_digest      (32-byte hash output)
@@ -768,7 +774,7 @@ The field encodings are specified in `Issuance Action Description (IssueAction)`
 
 T.6c.ii: issue_notes_digest
 ...........................
-A BLAKE2b-256 hash of Note information for all Issue Note Descriptions belonging to the Issuance Action. For each Note, the following elements are included in the hash::
+A BLAKE2b-256 hash of Issue Note information for all Issue Note descriptions belonging to the Issuance Action. For each Issue Note, the following elements are included in the hash::
 
    T.6c.ii.1: recipient                   (field encoding bytes)
    T.6c.ii.2: value                       (field encoding bytes)
@@ -790,9 +796,9 @@ Signature Digest
 ================
 
 The vZSA signature digest is ``txid_digest_zsa`` with ``transparent_digest`` (T.2) replaced by
-``transparent_sig_digest`` as defined in ZIP 244 [#zip-0244-sigdigest]_. For a signature over a
-Sapling Spend, an Orchard-pool or Ironwood-pool Action, or the Issuance Bundle,
-``transparent_sig_digest`` is computed as ZIP 244 specifies for a Sapling Spend or Orchard Action.
+``transparent_sig_digest`` as defined in ZIP 244 [#zip-0244-sigdigest]_. For any signature other
+than a transparent input signature, ``transparent_sig_digest`` is computed as ZIP 244 specifies
+for a Sapling Spend or Orchard Action.
 
 Authorizing Data Commitment
 ===========================
