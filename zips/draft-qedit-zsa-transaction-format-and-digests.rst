@@ -49,13 +49,8 @@ changes for the inclusion of Zcash Shielded Assets [#zip-0226]_ [#zip-0227]_ in 
 network upgrade.
 It follows the same design pattern as the v6 transaction format [#zip-0229]_.
 
-This proposal also adopts "sighash algorithm versioning" from ZIP 248 [#zip-0248]_:
-where previously each transaction version had a single associated sighash
-algorithm, going forward it will be possible for signers to use any sighash
-algorithm within the closed set specified for a given transaction version (and
-made available in consensus via network upgrades).
-
-This ZIP also defines the sighash algorithms associated with this new transaction format.
+This ZIP also defines the txid, auth and signature digests for this format. It adopts the
+``sighashInfo`` encoding of ZIP 248 [#zip-0248]_, allowing only sighash version 0.
 
 Issuance and burns are public, as in ZIP 227 [#zip-0227]_ and ZIP 226 [#zip-0226]_, while
 shielded outputs look the same for every Asset, including ZEC (see `Privacy Implications`_).
@@ -66,10 +61,11 @@ Motivation
 ==========
 
 The OrchardZSA protocol requires serialized data elements that are distinct from
-any previous Zcash transaction. Since ZIP 244 was activated in NU5, the
-v5 and later serialized transaction formats are not consensus-critical.
-Thus, this ZIP defines a format that can easily accommodate future extensions,
-where elements of a given pool are kept separate.
+any previous Zcash transaction. Since ZIP 244 [#zip-0244]_, transaction
+identifiers and signature digests are computed from per-component digests
+rather than from the serialized encoding. This format keeps each pool's fields
+in a separate section with its own digest subtree, so that future pools or
+bundles can be added without changing existing ones.
 
 
 ====================
@@ -120,7 +116,7 @@ allows for parsers that are unaware of some components, are not required.
 Specification
 =============
 
-All fields in this specification are encoded as little-endian.
+All integer fields in this specification are encoded as little-endian.
 
 This section specifies the vZSA transaction format, its note plaintext encoding, and how its
 txid, auth digest and signature digest are computed.
@@ -217,7 +213,7 @@ Transaction Format
 | 32                          |``anchorOrchard``             |``byte[32]``                                     |A root of the Orchard note commitment tree at some block             |
 |                             |                              |                                                 |height in the past.                                                  |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
-| varies                      |``sizeProofsOrchard``         |``compactSize``                                  |Length in bytes of ``proofsOrchard``. Value is                       |
+| varies                      |``sizeProofsOrchard``         |``compactSize``                                  |Length in bytes of ``proofsOrchard``. This MUST have the value       |
 |                             |                              |                                                 |:math:`2720 + 2272 \cdot \mathtt{nActionsOrchard}\!`.                |
 +-----------------------------+------------------------------+-------------------------------------------------+---------------------------------------------------------------------+
 | ``sizeProofsOrchard``       |``proofsOrchard``             |``byte[sizeProofsOrchard]``                      |Encoding of aggregated zk-SNARK proofs for Orchard Actions.          |
@@ -319,9 +315,7 @@ The OrchardZSA Action Group Description is encoded in a transaction as an instan
 | 32                          |``anchorIronwood``            |``byte[32]``                                    |A root of the Ironwood note commitment tree at some block height in  |
 |                             |                              |                                                |the past.                                                            |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
-| 4                           |``nAGExpiryHeight``           |``uint32``                                      |A block height in the range {1 .. 499999999} after which any         |
-|                             |                              |                                                |transaction including this Action Group cannot be mined, or 0 if     |
-|                             |                              |                                                |this Action Group places no constraint on transaction expiry.        |
+| 4                           |``nAGExpiryHeight``           |``uint32``                                      |Action Group expiry height (see `Rationale for nAGExpiryHeight`_).   |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 | varies                      | ``nAssetBurn``               | ``compactSize``                                |The number of Assets burnt.                                          |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
@@ -387,7 +381,9 @@ OrchardZSA Action Description (``OrchardZSAAction``)
 |                             |                              |                                                |of the transmission key with the ephemeral secret key.               |
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
-These elements are encoded as in §7.5 [#protocol-actionencodingandconsensus]_.
+These elements are encoded as in §7.5 [#protocol-actionencodingandconsensus]_, except that
+``encCiphertext`` is 612 bytes rather than 580, as the note plaintext includes
+$\mathsf{asset\_base}$ (see `Note Plaintexts`_).
 
 OrchardZSA Asset Burn Description
 ----------------------------------
@@ -558,8 +554,8 @@ TxId Digest
 ===========
 
 For vZSA transactions, transaction identifiers (txids), authorizing-data commitments ("auth
-digests"), and signature digests are computed as in ZIP 229 [#zip-0229]_, with a changed
-**Ironwood component digest** and a new **Issuance digest**.
+digests"), and signature digests are computed as in ZIP 229 [#zip-0229]_, except for the nodes
+marked as new or changed in the trees below.
 
 The overall structure of the txid digest is as follows::
 
@@ -758,7 +754,7 @@ The field encodings are specified in `Transaction Format`_.
 
 T.6c: issue_actions_digest
 ''''''''''''''''''''''''''
-A BLAKE2b-256 hash of Issue Action information for all Issuance Actions belonging to the transaction. For each Action, the following elements are included in the hash::
+A BLAKE2b-256 hash of Issue Action information for all Issuance Actions belonging to the transaction. For each Issuance Action, the following elements are included in the hash::
 
    T.6c.i  : assetDescHash           (field encoding bytes)
    T.6c.ii : issue_notes_digest      (32-byte hash output)
@@ -807,7 +803,7 @@ The auth digest structure is as follows::
     ├── transparent_auth_digest (*)
     │   ├── TransparentSighashInfo
     │   └── scriptSig
-    ├── sapling_auth_digest_v6
+    ├── sapling_auth_digest_v6 (*)
     │   ├── vSpendProofsSapling
     │   ├── vSpendAuthSigsSapling
     │   ├── vOutputProofsSapling
@@ -830,9 +826,10 @@ The auth digest structure is as follows::
 
 where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
-``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are as in ZIP 229 [#zip-0229]_, with
-Sapling signatures hashed in their `Transaction Format`_ encodings, including ``sighashInfo``.
-Personalizations are unchanged, as ``header_digest`` commits to the transaction version.
+``orchard_auth_digest_v6`` is as in ZIP 229 [#zip-0229]_. ``sapling_auth_digest_v6`` is as in
+ZIP 229, except that Sapling signatures are hashed in their `Transaction Format`_ encodings,
+including ``sighashInfo``. Its personalization is unchanged: the txid commits to the transaction
+version, which determines how this data is parsed.
 
 The updated and new nodes are defined below.
 
