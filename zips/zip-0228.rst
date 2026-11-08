@@ -40,7 +40,7 @@ We define the following additional terms:
 Abstract
 ========
 
-This ZIP introduces Asset Swaps for Zcash Shielded Assets (ZSA). It builds on top of ZIP 227 [#zip-0227]_ and ZIP 226 [#zip-0226]_, and uses the transaction format encoding described in ZIP 230 [#zip-0230]_. 
+This ZIP introduces Asset Swaps for Zcash Shielded Assets (ZSA). It builds on top of ZIP 227 [#zip-0227]_ and ZIP 226 [#zip-0226]_, and uses the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 ZSA Swaps simplify the process of trading assets within the Zcash ecosystem, and lower the reliance on centralized exchanges for trading.
 
 Motivation
@@ -83,8 +83,8 @@ The specification of the structure of Swap Orders (that are sent off-chain) is p
 v1 Signature Digest
 -------------------
 
-ZIP 246 [#zip-0246]_ introduces versioning for SIGHASH algorithms.
-We define the **v1 Signature Digest** for an Action Group as the output of the ``orchard_action_groups_digest`` for that Action Group.
+The ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_ specifies versioning for SIGHASH algorithms.
+We define the **v1 Signature Digest** for an Action Group as the output of the ``ironwood_action_groups_digest_zsa`` for that Action Group.
 
 Spend Authorization Signature Changes
 -------------------------------------
@@ -94,7 +94,7 @@ The spend authorization signature is computed in the manner specified in Section
 Binding Signature Changes
 -------------------------
 
-The binding signature is generated using the Orchard Binding Signature scheme, by signing the v0 Signature Digest as defined in ZIP 246 [#zip-0246]_, using the signing key $\mathsf{bsk}$ computed as described below.
+The binding signature is generated using the Orchard Binding Signature scheme, by signing the v0 Signature Digest as defined in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_, using the signing key $\mathsf{bsk}$ computed as described below.
 
 The party performing the matching has some Swap Orders $\mathsf{SO}_i$, each of which contains a $\mathsf{bsk}_i$.
 The party generates the $\mathsf{bsk}$ for the binding signature by summing up the $\mathsf{bsk}_i$ values of the Swap Orders that are matched into the Swap Bundle.
@@ -105,9 +105,9 @@ The binding signature is verified against the value commitments of all Actions i
 Swap Bundle 
 -----------
 
-The V6 transaction format [#zip-0230-transaction-format]_ groups Actions [#protocol-actions]_ into **Action Groups** characterized by anchors, ``flagsOrchard`` and ``nAGExpiryHeight``. 
+The ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_ groups Actions [#protocol-actions]_ into **Action Groups** characterized by anchors, ``flagsIronwood`` and ``nAGExpiryHeight``.
 We continue to use the same transaction format. 
-The consensus rules are updated to remove the requirement that there be only one Action Group per transaction.
+The consensus rules are updated to remove the requirements that there be only one Action Group per transaction, and that ``nAGExpiryHeight`` be 0.
 The Spend Authorization Signatures for Action Group in the Swap Bundle signs a `v1 Signature Digest`_, as specified above.
 A Swap Bundle then consists of two or more Action Groups, as illustrated in the figure below.
 
@@ -135,6 +135,8 @@ Specifically, the consensus rule becomes (if any checks fail, the transaction MU
 
             - check the result of ZKAction.Verify on the proof $\mathsf{AG}.\mathtt{proofsOrchard}[i]$
             - check $\mathsf{SpendAuthSig.Validate}(\mathsf{AG}.\mathtt{vActionsOrchard}[i].\mathsf{rk}, \mathtt{v1\_sig\_digest}, \mathsf{AG}.\mathtt{vSpendAuthSigsOrchard}[i])$
+
+**Open Issue:** These rules use ``Orchard`` field names; the corresponding fields of the ZSA transaction format end in ``Ironwood``. The v1 Signature Digest that they use is yet to be specified, as noted in `v1 Signature Digest`_.
 
 Fees
 ----
@@ -200,10 +202,10 @@ Rationale for v1 Signature Digests and Spend Authorization Signature Changes
 In the OrchardZSA protocol, each Action includes a Spend Authorization Signature [#protocol-spendauthsig]_ that binds a specific spend instruction to a specific transaction and prevents replay attacks.
 However, in the context of Asset Swaps, there are two problems that prevent this mechanism from being carried over unchanged.
 
-- The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a v0 SIGHASH as per ZIP 246. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
+- The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a v0 SIGHASH as per the ZSA transaction format. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
 
 To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. 
-The ``orchard_action_groups_digest`` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest. 
+The ``ironwood_action_groups_digest_zsa `` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest. 
 The non-malleability of the expiry height and other fields of received orders during order matching is guaranteed by the unforgeability of the sender's Spend Authorization Signature.
 
 This approach is natural and aligns with the goal of the protocol.
@@ -247,6 +249,8 @@ We specify here the structure of a Swap Order. Note that this is not a change to
 |                             |                          |                                           |Swap operation. It must contain at least two Actions, the Swap       |  
 |                             |                          |                                           |Action and the Fee Action.                                           |  
 +-----------------------------+--------------------------+-------------------------------------------+---------------------------------------------------------------------+
+
+``ActionGroupDescription`` is specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 The ``SwapIO`` data type is used to represent the input and output of a Swap Order.
 
@@ -432,15 +436,10 @@ References
 .. [#zip-0200] `ZIP 200: Network Upgrade Mechanism <zip-0200.html>`_
 .. [#zip-0224] `ZIP 224: Orchard <zip-0224.html>`_
 .. [#zip-0226] `ZIP 226: Transfer and Burn of Zcash Shielded Assets <zip-0226.html>`_
-.. [#zip-0226-circuit-statement] `ZIP 226: Transfer and Burn of Zcash Shielded Assets - Circuit Statement <zip-0226.html#circuit-statement>`_
 .. [#zip-0227] `ZIP 227: Issuance of Zcash Shielded Assets <zip-0227.html>`_
 .. [#zip-0227-assetbase] `ZIP 227: Issuance of Zcash Shielded Assets - Specification: Asset Identifier <zip-0227.html#specification-asset-identifier>`_
-.. [#zip-0230] `ZIP 230: Version 6 Transaction Format <zip-0230.html>`_
-.. [#zip-0230-transaction-format] `ZIP 230: Version 6 Transaction Format - Transaction Format <zip-0230.html#transaction-format>`_
-.. [#zip-0244-orchard-digest] `ZIP 244: Transaction Identifier Non-Malleability: T4. orchard_digest <zip-0244.html#t-4-orchard-digest>`_
-.. [#zip-0246] `ZIP 246: Digests for the Version 6 Transaction Format <zip-0246.html>`_
-.. [#protocol-notes] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.2: Notes <protocol/protocol.pdf#notes>`_
-.. [#protocol-actions] `Zcash Protocol Specification, Version 2024.5.1 [NU6]. Section 3.7: Action Transfers and their Descriptions <protocol/protocol.pdf#actions>`_
-.. [#protocol-spendauthsig] `Zcash Protocol Specification, Version 2024.5.1. Section 4.15: Spend Authorization Signature (Sapling and Orchard) <protocol/protocol.pdf#spendauthsig>`_
-.. [#protocol-txnencoding] `Zcash Protocol Specification, Version 2024.5.1. Section 7.1: Transaction Encoding and Consensus <protocol/protocol.pdf#txnencoding>`_
+.. [#draft-qedit-zsa-transaction-format-and-digests] `draft-qedit-zsa-transaction-format-and-digests: ZSA Transaction Format and Digests <draft-qedit-zsa-transaction-format-and-digests.html>`_
+.. [#protocol-notes] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 3.2: Shielded Pools and Notes <protocol/protocol.pdf#notes>`_
+.. [#protocol-actions] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 3.7: Action Transfers and their Descriptions <protocol/protocol.pdf#actions>`_
+.. [#protocol-spendauthsig] `Zcash Protocol Specification, Version 2026.8.0 [NU6.3]. Section 4.15: Spend Authorization Signature (Sapling and Orchard) <protocol/protocol.pdf#spendauthsig>`_
 .. [#clob] `Central Limit Order Book Definition - Risk.net <https://www.risk.net/definition/central-limit-order-book-clob>`_
