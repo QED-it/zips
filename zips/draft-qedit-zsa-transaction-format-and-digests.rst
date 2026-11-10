@@ -453,16 +453,16 @@ Its encoding, updating § 5.5 ‘Encodings of Note Plaintexts and Memo Fields’
 where the encodings of $\mathsf{d}$, $\mathsf{v}$, and $\mathsf{rseed}$ are unchanged from § 5.5.
 
 The $\mathsf{leadByte}$ of every note plaintext of an OrchardZSA Action Group output MUST be
-$\mathtt{0x04}$, for all Assets including ZEC. This ZIP therefore changes
+$\mathtt{0xF0}$, for all Assets including ZEC. This ZIP therefore changes
 $\mathsf{allowedLeadBytes}^{\textit{IronwoodPool}}$ of ZIP 2005 [#zip-2005]_ to return
-$\{ \mathtt{0x04} \}$ when $\mathsf{txVersion}$ is vZSA.
+$\{ \mathtt{0xF0} \}$ when $\mathsf{txVersion}$ is vZSA.
 
-Rationale for requiring the lead byte to be 0x04
+Rationale for requiring the lead byte to be 0xF0
 ````````````````````````````````````````````````
 
 ZIP 2005's lead byte $\mathtt{0x03}$ [#zip-2005]_ cannot be reused: these plaintexts add
-$\mathsf{asset\_base}$, and for lead byte $\mathtt{0x04}$ the $\mathsf{rcm}$ derivation also commits
-to it [#zip-0226]_. Using $\mathtt{0x04}$ for every Asset, including ZEC, keeps one plaintext layout
+$\mathsf{asset\_base}$, and for lead byte $\mathtt{0xF0}$ the $\mathsf{rcm}$ derivation also commits
+to it [#zip-0226]_. Using $\mathtt{0xF0}$ for every Asset, including ZEC, keeps one plaintext layout
 and one $\mathsf{rcm}$ derivation per lead byte.
 
 
