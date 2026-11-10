@@ -387,9 +387,9 @@ The $\text{ρ}$ field of an Issue Note is computed as
 
     \text{ρ} := \mathsf{DeriveIssuedRho}(\mathsf{nf}_{0,0}, \mathsf{index_{Action}}, \mathsf{index_{Note}}),
 
-where $\mathsf{nf}_{0,0}$ is the nullifier for the input note in the first Action in the first Action Group of the OrchardZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the zero-based index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the zero-based index of the Issue Note in the Issuance Action.
+where $\mathsf{nf}_{0,0}$ is the nullifier for the input note in the first Action in the first Action Group of the IronwoodZSA Bundle of the transaction, $\mathsf{index_{Action}}$ is the zero-based index of the Issuance Action in the Issuance Bundle, and $\mathsf{index_{Note}}$ is the zero-based index of the Issue Note in the Issuance Action.
 
-**NOTE:** This implicitly requires that there always is an Action Group in the OrchardZSA bundle of the transaction.
+**NOTE:** This implicitly requires that there always is an Action Group in the IronwoodZSA bundle of the transaction.
 This is enforced by a consensus rule in the `Specification: Consensus Rule Changes`_ section.
 
 Action Groups are specified in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
@@ -513,7 +513,7 @@ Addition to the Note Commitment Tree
 If the transaction is added to the block chain, the note commitments of all the OrchardZSA Notes and the Issue Notes in the transaction are added to the note commitment tree of the associated treestate. 
 The order of addition to the tree is as specified below:
 
-- For each Action Group in the OrchardZSA Bundle:
+- For each Action Group in the IronwoodZSA Bundle:
 
   - For every Action in the Action Group, append the note commitment of every new OrchardZSA note in the Action to the note commitment tree.
 

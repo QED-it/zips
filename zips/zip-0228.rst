@@ -127,16 +127,14 @@ The spend authorization signature for each Action MUST be a valid $\mathsf{Spend
 The time limit also needs to be checked during verification. 
 Specifically, the consensus rule becomes (if any checks fail, the transaction MUST be rejected):
 
-    - for all $\mathsf{AG}$ in ``vActionGroupsOrchard`` do:
+    - for all $\mathsf{AG}$ in ``vActionGroupsIronwood`` do:
 
         - check that $\mathsf{AG}.\mathtt{nAGExpiryHeight} \leq \mathsf{current\ block\ height}$ 
-        - compute $\mathtt{v1\_sig\_digest} := \mathtt{orchard\_action\_groups\_digest}(\mathsf{AG})$.
-        - for ($i = 0$; $i < \mathsf{AG}.\mathtt{nActionsOrchard}; $i++$):
+        - compute $\mathtt{v1\_sig\_digest} := \mathtt{ironwood\_action\_groups\_digest}(\mathsf{AG})$.
+        - for ($i = 0$; $i < \mathsf{AG}.\mathtt{nActionsIronwood}; $i++$):
 
-            - check the result of ZKAction.Verify on the proof $\mathsf{AG}.\mathtt{proofsOrchard}[i]$
-            - check $\mathsf{SpendAuthSig.Validate}(\mathsf{AG}.\mathtt{vActionsOrchard}[i].\mathsf{rk}, \mathtt{v1\_sig\_digest}, \mathsf{AG}.\mathtt{vSpendAuthSigsOrchard}[i])$
-
-**Open Issue:** These rules use ``Orchard`` field names; the corresponding fields of the ZSA transaction format end in ``Ironwood``. The v1 Signature Digest that they use is yet to be specified, as noted in `v1 Signature Digest`_.
+            - check the result of ZKAction.Verify on the proof $\mathsf{AG}.\mathtt{proofsIronwood}[i]$
+            - check $\mathsf{SpendAuthSig.Validate}(\mathsf{AG}.\mathtt{vActionsIronwood}[i].\mathsf{rk}, \mathtt{v1\_sig\_digest}, \mathsf{AG}.\mathtt{vSpendAuthSigsIronwood}[i])$
 
 Fees
 ----
@@ -205,7 +203,7 @@ However, in the context of Asset Swaps, there are two problems that prevent this
 - The SIGHASH represents a hash over a full consensus-compliant transaction object. Since a Swap Order is a trade intent to be used by the party performing the matching to form a valid bundle/transaction, the sender of the Swap Order cannot compute a v0 SIGHASH as per the ZSA transaction format. This trader doesn't know all the transaction fields in advance, as they are set when the full bundle transaction is formed and sent to the chain.
 
 To make sure the time limit isn't malleable, the sender signs the information in the Action Group of the Order. 
-The ``ironwood_action_groups_digest_zsa `` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest. 
+The ``ironwood_action_groups_digest_zsa`` contains all the information that is in a Swap Order, which is why we use this for the v1 Signature Digest.
 The non-malleability of the expiry height and other fields of received orders during order matching is guaranteed by the unforgeability of the sender's Spend Authorization Signature.
 
 This approach is natural and aligns with the goal of the protocol.

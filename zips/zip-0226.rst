@@ -68,7 +68,7 @@ In order to ensure the security of the transfers, and as we will explain below, 
 
 We include the ability to pause the ZSA functionality, via a $\mathsf{enableZSA}$ boolean flag. 
 When this flag is set to false, the proof will fail for any non-native Asset, making it  impossible to perform transactions involving Custom Assets.
-When this flag is set to true, the circuit will allow transactions involving Custom Assets subject to the values of the $\mathsf{enableSpendsOrchard}$ and $\mathsf{enableOutputsOrchard}$ flags, similar to the vanilla Orchard setting.
+When this flag is set to true, the circuit will allow transactions involving Custom Assets subject to the values of the $\mathsf{enableSpends}$ and $\mathsf{enableOutputs}$ flags, similar to the vanilla Orchard setting.
 
 Finally, in this ZIP we also describe the *burn* mechanism, which is a direct extension of the transfer mechanism. The burn process uses a similar mechanism to what is used in Orchard to unshield ZEC, by using the $\mathsf{valueBalance}$ of the Asset in question. Burning Assets is useful for many purposes, including bridging, and removing supply of Assets.
 
@@ -259,11 +259,11 @@ $\mathsf{bsk} = \sum_{i=1}^{n} \mathsf{rcv}_i$.
 
 The verifier MUST compute the value balance verification equation:
 
-.. math:: \mathsf{bvk} = (\sum_{i=1}^{n}  \mathsf{cv}^{\mathsf{net}}_i) - \mathsf{ValueCommit_0^{OrchardZSA}(\mathcal{V}^{\mathsf{Orchard}}, v^{balanceOrchard})} - \sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{AssetBase}, \mathsf{v})
+.. math:: \mathsf{bvk} = (\sum_{i=1}^{n}  \mathsf{cv}^{\mathsf{net}}_i) - \mathsf{ValueCommit_0^{OrchardZSA}(\mathcal{V}^{\mathsf{Orchard}}, v^{balanceIronwood})} - \sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} \mathsf{ValueCommit_0^{OrchardZSA}}(\mathsf{AssetBase}, \mathsf{v})
 
 After computing $\mathsf{bvk}$, the verifier MUST use it to verify the binding signature on the SIGHASH transaction hash.
 
-In the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_, $\mathsf{v^{balanceOrchard}}$ is ``valueBalanceIronwood``.
+In the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_, $\mathsf{v^{balanceIronwood}}$ is ``valueBalanceIronwood``.
 
 
 Rationale for Value Balance Verification
@@ -274,7 +274,7 @@ We denote by $S_{\mathsf{ZEC}} \subseteq \{1 .. n\}$ the set of indices of Actio
 
 The right hand side of the value balance verification equation can be expanded to:
 
-.. math:: ((\sum_{i \in S_{\mathsf{ZEC}}} \mathsf{cv}^{\mathsf{net}}_i) + (\sum_{j \in S_{\mathsf{CA}}} \mathsf{cv}^{\mathsf{net}}_j)) - ([\mathsf{v^{balanceOrchard}}]\,\mathcal{V}^{\mathsf{Orchard}} + [0]\,\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} [\mathsf{v}]\,\mathsf{AssetBase} + [0]\,\mathcal{R}^{\mathsf{Orchard}})
+.. math:: ((\sum_{i \in S_{\mathsf{ZEC}}} \mathsf{cv}^{\mathsf{net}}_i) + (\sum_{j \in S_{\mathsf{CA}}} \mathsf{cv}^{\mathsf{net}}_j)) - ([\mathsf{v^{balanceIronwood}}]\,\mathcal{V}^{\mathsf{Orchard}} + [0]\,\mathcal{R}^{\mathsf{Orchard}}) - (\sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} [\mathsf{v}]\,\mathsf{AssetBase} + [0]\,\mathcal{R}^{\mathsf{Orchard}})
 
 This equation contains the balance check of the Orchard protocol [#protocol-orchardbalance]_.
 With ZSA, transfer Actions for Custom Assets must also be balanced across Asset Bases.
@@ -283,7 +283,7 @@ Custom Assets can be burnt, the mechanism for which reveals the amount and ident
 As such, for a correctly constructed transaction, we will get $\sum_{j \in S_{\mathsf{CA}}} \mathsf{cv}^{\mathsf{net}}_j - \sum_{(\mathsf{AssetBase}, \mathsf{v}) \in \mathsf{assetBurn}} [\mathsf{v}]\,\mathsf{AssetBase} = \sum_{j \in S_{\mathsf{CA}}} [\mathsf{rcv}^{\mathsf{net}}_j]\,\mathcal{R}^{\mathsf{Orchard}}$.
 
 When the Asset is not being burnt, the net balance of the input and output values is zero, and there will be no addition to the $\mathsf{assetBurn}$ vector.
-Therefore, the relationship between $\mathsf{bvk}$ and $\mathsf{bsk}$ will hold if and only if, per Custom Asset, the sum of the net values of the relevant Actions equals the corresponding $\mathsf{v}_k$ value (or equals $0$ if that Asset is not in the $\mathsf{assetBurn}$ set), and for ZEC, the sum of the net values of the relevant Actions equals the $\mathsf{v^{balanceOrchard}}$ value.
+Therefore, the relationship between $\mathsf{bvk}$ and $\mathsf{bsk}$ will hold if and only if, per Custom Asset, the sum of the net values of the relevant Actions equals the corresponding $\mathsf{v}_k$ value (or equals $0$ if that Asset is not in the $\mathsf{assetBurn}$ set), and for ZEC, the sum of the net values of the relevant Actions equals the $\mathsf{v^{balanceIronwood}}$ value.
 
 As in the Orchard protocol, the binding signature verification key, $\mathsf{bvk}$, will only be valid (and hence verify the signature correctly), as long as the committed values sum to zero. In contrast, in this protocol, the committed values must sum to zero **per Asset Base**, as the Pedersen commitments add up homomorphically only with respect to the same value base point.
 
@@ -388,6 +388,7 @@ OrchardZSA Transaction Structure
 
 The vZSA transaction version is specified in the ZSA transaction format
 [#draft-qedit-zsa-transaction-format-and-digests]_.
+A vZSA transaction contains no Sapling or Orchard bundles.
 
 Implications for Wallets
 ````````````````````````
@@ -395,7 +396,8 @@ Implications for Wallets
 For ZSAs, the requirements on wallets are:
 
 * Once ZSAs have activated, *all* wallets should switch to sending only the transaction
-  version that supports ZSAs. The main consequence of not doing so is that users would not
+  version that supports ZSAs for every transaction that does not involve the Sapling or Orchard pools.
+  The main consequence of not doing so is that users would not
   otherwise obtain the privacy benefit of indistinguishability between native and non-native
   assets in the Ironwood shielded pool, because v6 and earlier transactions can
   only transfer the native ZEC asset.
