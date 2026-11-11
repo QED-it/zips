@@ -88,7 +88,7 @@ section covers only what the encoding defined here makes visible.
   has at most one Action Group, so none of these can be used to tell wallets apart.
 * A vZSA transaction cannot create Sapling-pool or Orchard-pool notes.
   To operate within those pools, earlier transaction versions must be used, and the version of such a transaction will be visible.
-* If Version 6 transactions stay valid alongside this format, which of the two versions a
+* Version 6 transactions stay valid alongside this format, so which of the two versions a
   transaction uses to reach the Ironwood pool is visible.
 
 
@@ -816,6 +816,9 @@ This transaction format is proposed to be deployed in the NuZSA network upgrade,
 the Zcash Shielded Assets protocol [#zip-0226]_ [#zip-0227]_. The NuZSA activation heights,
 the NuZSA consensus branch ID, and the final vZSA ``version`` and ``nVersionGroupId`` values are
 not yet specified.
+
+Version 6 transactions MUST remain valid after NuZSA activation, so that Sapling and Orchard
+notes can still be spent and their value moved to the Ironwood pool.
 
 
 ========================
