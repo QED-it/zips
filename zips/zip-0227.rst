@@ -30,7 +30,7 @@ The character § is used when referring to sections of the Zcash Protocol Specif
 The terms "Orchard" and "Action" in this document are to be interpreted as described in
 ZIP 224 [#zip-0224]_.
 
-The term "IronwoodZSA Bundle" in this document is to be interpreted as "IronwoodZSA bundle" is
+The term "IronwoodZSA Bundle" in this document is to be interpreted as
 described in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 We define the following additional terms:

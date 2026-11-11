@@ -697,7 +697,7 @@ Signature Digest
 The vZSA signature digest is ``txid_digest_zsa`` with ``transparent_digest`` (T.2) replaced by
 ``transparent_sig_digest`` as defined in ZIP 244 [#zip-0244-sigdigest]_. For any signature other
 than a transparent input signature (that is, an Ironwood Spend Authorization Signature, the
-Ironwood binding signature, or an ``issueAuthSig``), ``transparent_sig_digest`` is computed as
+Ironwood binding signature, or an Issuance Authorization Signature), ``transparent_sig_digest`` is computed as
 ZIP 244 specifies for a Sapling Spend or Orchard Action.
 
 Authorizing Data Commitment
