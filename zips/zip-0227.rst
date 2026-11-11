@@ -30,6 +30,9 @@ The character § is used when referring to sections of the Zcash Protocol Specif
 The terms "Orchard" and "Action" in this document are to be interpreted as described in
 ZIP 224 [#zip-0224]_.
 
+The term "IronwoodZSA Bundle" in this document is to be interpreted as "IronwoodZSA bundle" is
+described in the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
+
 We define the following additional terms:
 
 - Asset: A type of note that can be transferred on the Zcash blockchain. Each Asset is identified by an Asset Identifier `Specification: Asset Identifier, Asset Digest, and Asset Base`_.
@@ -608,10 +611,23 @@ digests of the issuance bundle are specified in the ZSA transaction format
 Changes to ZIP 317 [#zip-0317]_
 ===============================
 
-The conventional fee in ZEC is altered to take into account both the presence of
-issuance actions within a transaction, and the creation of new Custom Assets
-within the global chain state. See the Fee calculation section of ZIP 317
-[#zip-0317-fee-calculation]_ for details.
+From activation of this ZIP, the $\mathit{logical\_actions}$ sum of the ZIP 317 conventional fee
+[#zip-0317-fee-calculation]_ additionally includes:
+
+.. math::
+
+   \begin{array}{lcl}
+     \mathit{contribution}_{\,\mathsf{ZSAIssuance}} &=& \mathit{nZSAIssueNotes} \\
+     \mathit{contribution}_{\,\mathsf{ZSACreation}} &=& \mathit{creation\_cost} \cdot \mathit{nAssetCreations}
+   \end{array}
+
+where $\mathit{creation\_cost} = 100$ logical actions, $\mathit{nZSAIssueNotes}$ is the number of
+Issue Notes in the Issuance Bundle, and $\mathit{nAssetCreations}$ is the number of distinct
+Assets issued by the transaction that are not in the `Global Issuance State`_ before it.
+
+Every new Custom Asset adds a row to the Global Issuance State that validators keep forever,
+whereas later issuance, finalization or burn only update that row. The higher cost of creation
+discourages "garbage" Custom Assets.
 
 
 Rationale for paying fees in ZEC

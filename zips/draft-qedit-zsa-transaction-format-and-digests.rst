@@ -30,6 +30,9 @@ The term "Action Group" in this document is to be interpreted as described in ZI
 
 The term "Ironwood pool" in this document is to be interpreted as described in ZIP 229 [#zip-0229]_.
 
+"IronwoodZSA bundle" denotes the Action Groups of a vZSA transaction and the fields that accompany
+them, as specified in this ZIP. Its notes are OrchardZSA notes in the Ironwood pool.
+
 "vZSA" denotes the transaction version defined in this ZIP. It is distinct from version 6, defined
 in ZIP 229 [#zip-0229]_.
 
@@ -86,8 +89,9 @@ section covers only what the encoding defined here makes visible.
 * Burns are public: each burnt Asset and amount [#zip-0226-burn-mechanism]_.
 * The sighash version and the Action Group expiry height are fixed by consensus, and a transaction
   has at most one Action Group, so none of these can be used to tell wallets apart.
-* A vZSA transaction cannot create Sapling-pool or Orchard-pool notes.
-  To operate within those pools, earlier transaction versions must be used, and the version of such a transaction will be visible.
+* A vZSA transaction cannot spend or create Sapling or Orchard notes, so those pools are only
+  reachable with Version 6 (or earlier) transactions. Moving their value into ZSA activity takes a
+  separate transaction, and its version is visible.
 * Version 6 transactions stay valid alongside this format, so which of the two versions a
   transaction uses to reach the Ironwood pool is visible.
 
@@ -198,7 +202,10 @@ Transaction Format
 
 Field presence and ordering:
 
-* For a vZSA transaction, $\mathsf{v^{balanceSapling}}$ and $\mathsf{v^{balanceOrchard}}$ are defined to be $0$.
+* For a vZSA transaction, $\mathtt{nSpendsSapling}$, $\mathtt{nOutputsSapling}$,
+  $\mathtt{nActionsOrchard}$, $\mathsf{v^{balanceSapling}}$ and $\mathsf{v^{balanceOrchard}}$
+  are defined to be $0$. Consensus rules and fee rules that refer to them therefore apply
+  unchanged.
 
 * The fields ``valueBalanceIronwood`` and ``bindingSigIronwood`` are present if and
   only if $\mathtt{nActionGroupsIronwood} > 0$. If ``valueBalanceIronwood`` is not present,
@@ -503,9 +510,9 @@ children, initialized with a personalization string specific to that branch
 of the tree. Nodes that are not themselves digests are written in ``camelCase``.
 In the specification below, nodes of the tree are presented in depth-first order.
 
-The nodes marked ``*`` are new or changed relative to ZIP 229 [#zip-0229]_; the digests among them are defined below.
-All other nodes are as defined in ZIP 229, and the ``sapling_digest_v6`` and ``orchard_digest_v6`` are not used
-in the computation of ``txid_digest_zsa``.
+The nodes marked ``*`` are new or changed relative to ZIP 229 [#zip-0229]_; the digests among
+them are defined below. All other nodes are as defined in ZIP 229, and the ``sapling_digest_v6``
+and ``orchard_digest_v6`` are not used in the computation of ``txid_digest_zsa``.
 
 txid_digest_zsa
 ---------------
@@ -689,8 +696,9 @@ Signature Digest
 
 The vZSA signature digest is ``txid_digest_zsa`` with ``transparent_digest`` (T.2) replaced by
 ``transparent_sig_digest`` as defined in ZIP 244 [#zip-0244-sigdigest]_. For any signature other
-than a transparent input signature, ``transparent_sig_digest`` is computed as ZIP 244 specifies
-for a Sapling Spend or Orchard Action.
+than a transparent input signature (that is, an Ironwood Spend Authorization Signature, the
+Ironwood binding signature, or an ``issueAuthSig``), ``transparent_sig_digest`` is computed as
+ZIP 244 specifies for a Sapling Spend or Orchard Action.
 
 Authorizing Data Commitment
 ===========================
@@ -713,7 +721,8 @@ The auth digest structure is as follows::
 
 where (*) indicates an updated definition, and (+) a new definition, relative to ZIP 229 [#zip-0229]_.
 
-The ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are not used in the computation of ``auth_digest_zsa``.
+The ``sapling_auth_digest_v6`` and ``orchard_auth_digest_v6`` are not used in the computation of
+``auth_digest_zsa``.
 
 The updated and new nodes are defined below.
 

@@ -130,10 +130,10 @@ Specifically, the consensus rule becomes (if any checks fail, the transaction MU
     - for all $\mathsf{AG}$ in ``vActionGroupsIronwood`` do:
 
         - check that $\mathsf{AG}.\mathtt{nAGExpiryHeight} \leq \mathsf{current\ block\ height}$ 
-        - compute $\mathtt{v1\_sig\_digest} := \mathtt{ironwood\_action\_groups\_digest}(\mathsf{AG})$.
+        - compute $\mathtt{v1\_sig\_digest} := \mathtt{ironwood\_action\_groups\_digest\_zsa}(\mathsf{AG})$.
+        - check the result of ZKAction.Verify on the aggregated proof $\mathsf{AG}.\mathtt{proofsIronwood}$
         - for ($i = 0$; $i < \mathsf{AG}.\mathtt{nActionsIronwood}; $i++$):
 
-            - check the result of ZKAction.Verify on the proof $\mathsf{AG}.\mathtt{proofsIronwood}[i]$
             - check $\mathsf{SpendAuthSig.Validate}(\mathsf{AG}.\mathtt{vActionsIronwood}[i].\mathsf{rk}, \mathtt{v1\_sig\_digest}, \mathsf{AG}.\mathtt{vSpendAuthSigsIronwood}[i])$
 
 Fees
