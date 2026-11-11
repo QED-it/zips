@@ -407,8 +407,8 @@ An Issuance Action, ``IssueAction``, is the instance of issuing a specific Custo
 +-----------------------------+------------------------------+------------------------------------------------+---------------------------------------------------------------------+
 
 The encoding of ``IssueNoteDescription`` is described below.
-Note that we allow the number of notes (represented by ``nNotes``) to be zero.
-This allows for issuers to create Issuance Actions to only finalize an issued Asset, without needing them to simultaneously issue more of that Asset.
+``nNotes`` may be zero only in an Issuance Action that finalizes an already issued Asset, without
+issuing more of it [#zip-0227]_.
 
 Issue Note Description (``IssueNoteDescription``)
 -------------------------------------------------

@@ -495,6 +495,7 @@ If the transaction contains an issuance bundle:
   - Every ``IssueNoteDescription`` in the ``IssueAction`` MUST be a valid field encoding as defined in [#draft-qedit-zsa-transaction-format-and-digests]_.
   - Let an Issue Note (with type $\mathsf{Note^{Issue}}$) be constructed from the fields of each ``IssueNoteDescription``, with the $\mathsf{AssetBase}$ derived from the ``assetDescHash`` field of the ``IssueAction`` and the ``issuer`` field of the issuance bundle, as described in the `Specification: Asset Identifier, Asset Digest, and Asset Base`_ section. 
   - It MUST be the case that $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{final} \neq 1$.
+  - If $\mathtt{nNotes} = 0$, then $\mathsf{finalize}$ MUST be $1$ and $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}}$ MUST NOT be $\bot$.
   - If $\mathsf{issued\_assets}_{\mathsf{OUT}}(\mathsf{AssetBase}).\mathsf{note_{ref}} = \bot$, then let $\mathsf{new\_note_{ref}}$ be the first Issue Note in the Issuance Action.
 
       - The recipient address $(\mathsf{d}, \mathsf{pk}_{\mathsf{d}})$ of $\mathsf{new\_note_{ref}}$ MUST be the default diversified payment address derived from the all-zero Orchard spending key, as described in the `Reference Notes`_ section.
