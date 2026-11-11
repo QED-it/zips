@@ -611,7 +611,7 @@ digests of the issuance bundle are specified in the ZSA transaction format
 Changes to ZIP 317 [#zip-0317]_
 ===============================
 
-From activation of this ZIP, the $\mathit{logical\_actions}$ sum of the ZIP 317 conventional fee
+From NuZSA activation, the $\mathit{logical\_actions}$ sum of the ZIP 317 conventional fee
 [#zip-0317-fee-calculation]_ additionally includes:
 
 .. math::
@@ -692,7 +692,8 @@ Reference Implementation
 Deployment
 ==========
 
-TBD
+This ZIP is proposed to be deployed in the NuZSA network upgrade, together with ZIP 226
+[#zip-0226]_ and the ZSA transaction format [#draft-qedit-zsa-transaction-format-and-digests]_.
 
 
 References
